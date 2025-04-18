@@ -6,7 +6,6 @@ import { MoviesModule } from './movies/movies.module';
 @Module({
   imports: [MoviesModule],
 })
-
 @Injectable()
 export class AppService {
   getHello(): string {

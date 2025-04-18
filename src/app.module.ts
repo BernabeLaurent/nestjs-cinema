@@ -13,7 +13,7 @@ import { MoviesModule } from './movies/movies.module';
       envFilePath: '.env',
       load: [tmdbConfig],
     }),
-    MoviesModule
+    MoviesModule,
   ],
   controllers: [AppController],
   providers: [AppService, TmdbProvider],

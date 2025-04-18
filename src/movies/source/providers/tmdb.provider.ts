@@ -21,7 +21,7 @@ export class TmdbProvider implements MoviesProvider {
 
     const { data } = await axios.get(url, {
       params: {
-        query:encodeURIComponent(query),
+        query: encodeURIComponent(query),
       },
       headers: {
         Authorization: `Bearer ${this.tmdbConfiguration.apiKey}`,
@@ -37,10 +37,10 @@ export class TmdbProvider implements MoviesProvider {
 
   async getMovieDetails(id: string): Promise<Movie> {
     const url = `${this.tmdbConfiguration.baseUrl}/movie/${id}?language=fr-FR`;
-    const { data } = await axios.get(url,{
+    const { data } = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${this.tmdbConfiguration.apiKey}`,
-          'accept-Type': 'application/json',
+        'accept-Type': 'application/json',
       },
     });
     const m: TmdbMovieDto = data;

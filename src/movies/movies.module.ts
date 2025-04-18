@@ -8,13 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import tmdbConfig from './config/tmdb.config';
 
 @Module({
-  imports: [
-    ConfigModule.forFeature(tmdbConfig)],
+  imports: [ConfigModule.forFeature(tmdbConfig)],
   controllers: [MoviesController],
-  providers: [
-    MoviesService,
-    getMovieProvider(),
-    TmdbProvider,
-  ],
+  providers: [MoviesService, getMovieProvider(), TmdbProvider],
 })
 export class MoviesModule {}

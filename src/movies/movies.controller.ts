@@ -2,7 +2,6 @@ import { Controller, Get, Query, Param } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-
 @Controller('movies')
 @ApiTags('movies')
 export class MoviesController {
