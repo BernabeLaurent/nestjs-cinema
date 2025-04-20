@@ -5,13 +5,14 @@ import { TmdbProvider } from './movies/source/providers/tmdb.provider';
 import { ConfigModule } from '@nestjs/config';
 import tmdbConfig from './movies/config/tmdb.config';
 import { MoviesModule } from './movies/movies.module';
+import appConfig from './config/app.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [tmdbConfig],
+      load: [tmdbConfig, appConfig],
     }),
     MoviesModule,
   ],
