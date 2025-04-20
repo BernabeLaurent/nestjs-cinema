@@ -13,13 +13,17 @@ import { RegionsIso } from '../../../common/enums/regions-iso.enum';
 
 @Injectable()
 export class TmdbProvider implements MoviesProvider {
+  private readonly defaultLanguage: Languages;
+
   constructor(
     @Inject(tmdbConfig.KEY)
     private readonly tmdbConfiguration: ConfigType<typeof tmdbConfig>, // Assuming you have a JWT configuration for token generation
-  ) {}
+  ) {
+    this.defaultLanguage = this.tmdbConfiguration.defaultLanguage as Languages;
+  }
 
   async searchMovies(query: string): Promise<Movie[]> {
-    const url = `${this.tmdbConfiguration.baseUrl}/search/movie?language=fr-FR`;
+    const url = `${this.tmdbConfiguration.baseUrl}/search/movie?language=${this.defaultLanguage}`;
 
     try {
       const { data }: { data: { results: TmdbMovieDto[] } } = await axios.get(
@@ -52,7 +56,7 @@ export class TmdbProvider implements MoviesProvider {
   }
 
   async getMovieDetails(id: string): Promise<Movie> {
-    const url = `${this.tmdbConfiguration.baseUrl}/movie/${id}?language=fr-FR`;
+    const url = `${this.tmdbConfiguration.baseUrl}/movie/${id}?language=${this.defaultLanguage}`;
     try {
       const { data }: { data: TmdbMovieDto } = await axios.get(url, {
         headers: {
@@ -77,23 +81,15 @@ export class TmdbProvider implements MoviesProvider {
     }
   }
 
-  async getUpcomingMovies(query: string): Promise<Movie[]> {
-    const url = `${this.tmdbConfiguration.baseUrl}/movie/upcoming/?language=fr-FR`;
-    const parsedQuery = JSON.parse(query) as {
-      page?: number;
-      language?: Languages;
-      region?: RegionsIso;
-    };
-    let {
-      page,
-      language,
-      region,
-    }: { page?: number; language?: Languages; region?: RegionsIso } =
-      parsedQuery;
+  async getUpcomingMovies(
+    region?: RegionsIso,
+    language?: Languages,
+    page?: number,
+  ): Promise<Movie[]> {
+    const url = `${this.tmdbConfiguration.baseUrl}/movie/upcoming`;
 
     page = page || this.tmdbConfiguration.defaultPage;
-    language =
-      language || (this.tmdbConfiguration.defaultLanguage as Languages);
+    language = language || this.defaultLanguage;
     region = region || (this.tmdbConfiguration.defaultCountry as RegionsIso);
 
     try {
@@ -105,9 +101,9 @@ export class TmdbProvider implements MoviesProvider {
             'accept-Type': 'application/json',
           },
           params: {
-            page: page, // Par page
-            language: language, // Par code langue
-            region: region, // Par pays
+            page, // Par page
+            language, // Par code langue
+            region, // Par pays
           },
         },
       );

@@ -56,7 +56,11 @@ export class MoviesController {
     description: 'Movies found successfully',
   })
   @Get('search/upcoming')
-  async getUpcoming(@Query() query: string) {
-    return await this.moviesService.getUpcomingMovies(query);
+  public getUpcoming(
+    @Query('region') region?: RegionsIso,
+    @Query('language') language?: Languages,
+    @Query('page') page?: number,
+  ) {
+    return this.moviesService.getUpcomingMovies(region, language, page);
   }
 }

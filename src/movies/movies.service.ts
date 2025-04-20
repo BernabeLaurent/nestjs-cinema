@@ -3,6 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { MoviesProviderToken } from './movies.config';
 import { MoviesProvider, Movie } from './interfaces/movies-provider.interface';
+import { RegionsIso } from '../common/enums/regions-iso.enum';
+import { Languages } from '../common/enums/languages.enum';
 
 @Injectable()
 export class MoviesService {
@@ -11,15 +13,19 @@ export class MoviesService {
     private readonly provider: MoviesProvider,
   ) {}
 
-  search(query: string): Promise<Movie[]> {
-    return this.provider.searchMovies(query);
+  async search(query: string): Promise<Movie[]> {
+    return await this.provider.searchMovies(query);
   }
 
-  getDetails(id: string): Promise<Movie> {
-    return this.provider.getMovieDetails(id);
+  async getDetails(id: string): Promise<Movie> {
+    return await this.provider.getMovieDetails(id);
   }
 
-  getUpcomingMovies(query: string): Promise<Movie[]> {
-    return this.provider.getUpcomingMovies(query);
+  async getUpcomingMovies(
+    region?: RegionsIso,
+    language?: Languages,
+    page?: number,
+  ): Promise<Movie[]> {
+    return await this.provider.getUpcomingMovies(region, language, page);
   }
 }
