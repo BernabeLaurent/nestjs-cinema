@@ -111,6 +111,7 @@ export class TmdbProvider implements MoviesProvider {
           },
         },
       );
+      console.log('data', data);
 
       if (!data) {
         throw new Error('Pb de connexion avec TMDB');

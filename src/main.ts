@@ -3,9 +3,11 @@ import { AppModule } from './app.module';
 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -18,6 +20,8 @@ async function bootstrap() {
     }),
   );
 
+  const portNestjs: number = configService.get('appConfig.nestjsPort') || 3000;
+
   // Swagger config
   const config = new DocumentBuilder()
     .setTitle('API documentation')
@@ -28,13 +32,14 @@ async function bootstrap() {
       'https://github.com/BernabeLaurent/nestjs-cinema',
     )
     .setVersion('1.0')
-    .addServer('http://localhost:3000')
+    .addServer('http://localhost:' + portNestjs)
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   //enable cors
   app.enableCors();
-  await app.listen(process.env.PORT ?? 3000);
+
+  await app.listen(portNestjs);
 }
 bootstrap();

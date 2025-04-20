@@ -35,7 +35,7 @@ export class MoviesController {
     type: 'number',
     required: false,
     description: 'Retourne la page de résultats',
-    example: 11,
+    example: 1,
   })
   @ApiQuery({
     name: 'language',
