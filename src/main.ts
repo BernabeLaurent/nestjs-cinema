@@ -40,7 +40,7 @@ async function bootstrap() {
   //enable cors
   app.enableCors();
 
-  await app.listen(portNestjs);
+  await app.listen(portNestjs, '0.0.0.0', () => {});
 }
 
 bootstrap();

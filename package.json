@@ -6,10 +6,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "kill-port": "PORT=${NESTJS_PORT:-3000} && fuser -k $PORT/tcp || true",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "dockerUp": "docker compose up -d",
     "dockerDown": "docker compose down --remove-orphans",
+    "start-clean": "npm run kill-port && npm run start",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
