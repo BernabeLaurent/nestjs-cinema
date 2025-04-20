@@ -10,6 +10,7 @@ import {
 } from '../../interfaces/movies-provider.interface';
 import { Languages } from '../../../common/enums/languages.enum';
 import { RegionsIso } from '../../../common/enums/regions-iso.enum';
+import { UpcomingMoviesInterface } from '../../interfaces/upcoming-movies.interface';
 
 @Injectable()
 export class TmdbProvider implements MoviesProvider {
@@ -86,6 +87,9 @@ export class TmdbProvider implements MoviesProvider {
     language?: Languages,
     page?: number,
   ): Promise<Movie[]> {
+    const allMovies: Movie[] = [];
+    let totalPages: number = 1;
+
     const url = `${this.tmdbConfiguration.baseUrl}/movie/upcoming`;
 
     page = page || this.tmdbConfiguration.defaultPage;
@@ -93,9 +97,8 @@ export class TmdbProvider implements MoviesProvider {
     region = region || (this.tmdbConfiguration.defaultCountry as RegionsIso);
 
     try {
-      const { data }: { data: { results: TmdbMovieDto[] } } = await axios.get(
-        url,
-        {
+      do {
+        const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${this.tmdbConfiguration.apiKey}`,
             'accept-Type': 'application/json',
@@ -105,19 +108,23 @@ export class TmdbProvider implements MoviesProvider {
             language, // Par code langue
             region, // Par pays
           },
-        },
-      );
-      console.log('data', data);
+        });
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { results, total_pages }: UpcomingMoviesInterface = response.data;
 
-      if (!data) {
-        throw new Error('Pb de connexion avec TMDB');
-      }
+        const movie = results.map((m: TmdbMovieDto) => ({
+          title: m.title,
+          year: m.release_date?.split('-')[0] ?? '',
+          description: m.overview,
+        }));
 
-      return data.results.map((m: TmdbMovieDto) => ({
-        title: m.title,
-        year: m.release_date?.split('-')[0] ?? '',
-        description: m.overview,
-      }));
+        allMovies.push(...movie);
+        totalPages = total_pages;
+        page++;
+      } while (page <= totalPages);
+      console.log('data', allMovies);
+
+      return allMovies;
     } catch (error) {
       throw new UnauthorizedException(error);
     }
