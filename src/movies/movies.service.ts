@@ -18,4 +18,8 @@ export class MoviesService {
   getDetails(id: string): Promise<Movie> {
     return this.provider.getMovieDetails(id);
   }
+
+  getUpcomingMovies(query: string): Promise<Movie[]> {
+    return this.provider.getUpcomingMovies(query);
+  }
 }

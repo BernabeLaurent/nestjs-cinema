@@ -7,7 +7,7 @@ export const MoviesProviderToken = 'MOVIES_PROVIDER';
 export const getMovieProvider = (): Provider => {
   const source = process.env.MOVIES_SOURCE || 'tmdb';
 
-  let useClass;
+  let useClass: new (...args: any[]) => any;
   switch (source.toLowerCase()) {
     // Pour le moment que tmdb
     case 'tmdb':
