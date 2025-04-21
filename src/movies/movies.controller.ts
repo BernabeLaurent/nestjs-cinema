@@ -1,35 +1,38 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
+import { Controller, Get, Query, Param, Patch, Body } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Languages } from '../common/enums/languages.enum';
 import { RegionsIso } from '../common/enums/regions-iso.enum';
+import { PatchMovieDto } from './dtos/patch-movie.dto';
 
 @Controller('movies')
 @ApiTags('Movies')
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
-  @ApiOperation({ summary: 'Cherche un film' })
+  @ApiOperation({ summary: 'Cherche un film sur le service externe' })
   @Get('search')
   @ApiResponse({
     status: 200,
     description: 'Movies found successfully',
   })
-  public search(@Query('q') q: string) {
+  public searchExternal(@Query('q') q: string) {
     return this.moviesService.search(q);
   }
 
-  @ApiOperation({ summary: "Voir le détail d'un film" })
+  @ApiOperation({ summary: "Voir le détail d'un film sur le service externe" })
   @Get(':id')
   @ApiResponse({
     status: 200,
     description: 'Movie details found successfully',
   })
-  public getDetails(@Param('id') id: string) {
+  public getDetailsExternal(@Param('id') id: string) {
     return this.moviesService.getDetails(id);
   }
 
-  @ApiOperation({ summary: 'Recherche les prochaines sorties cinémas' })
+  @ApiOperation({
+    summary: 'Recherche les prochaines sorties cinémas sur le service externe',
+  })
   @ApiQuery({
     name: 'page',
     type: 'number',
@@ -56,11 +59,32 @@ export class MoviesController {
     description: 'Movies found successfully',
   })
   @Get('search/upcoming')
-  public getUpcoming(
+  public getUpcomingMoviesExternal(
     @Query('region') region?: RegionsIso,
     @Query('language') language?: Languages,
     @Query('page') page?: number,
   ) {
     return this.moviesService.getUpcomingMovies(region, language, page);
+  }
+
+  @ApiOperation({ summary: 'Cherche un film par son ID' })
+  @Get('search/:movieId')
+  @ApiResponse({
+    status: 200,
+    description: 'Movie found successfully',
+  })
+  public getMovie(@Param('movieId') movieId: number) {
+    return this.moviesService.getMovieById(movieId);
+  }
+
+  @ApiOperation({ summary: 'Updates a movie' })
+  @ApiResponse({
+    status: 200,
+    description: 'The movie has been successfully updated.',
+  })
+  @Patch()
+  public updateMovie(@Body() patchMovieDto: PatchMovieDto){
+    return this.moviesService.updateMovie(patchMovieDto);
+
   }
 }

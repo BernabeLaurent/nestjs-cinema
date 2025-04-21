@@ -4,13 +4,11 @@ import tmdbConfig from '../../config/tmdb.config';
 import { TmdbMovieDto } from '../dtos/tmdb-movie.dto';
 import { ConfigType } from '@nestjs/config';
 
-import {
-  MoviesProvider,
-  Movie,
-} from '../../interfaces/movies-provider.interface';
+import { MoviesProvider } from '../../interfaces/movies-provider.interface';
 import { Languages } from '../../../common/enums/languages.enum';
 import { RegionsIso } from '../../../common/enums/regions-iso.enum';
 import { UpcomingMoviesInterface } from '../../interfaces/upcoming-movies.interface';
+import { CreateMovieDto } from '../../dtos/create-movie.dto';
 
 @Injectable()
 export class TmdbProvider implements MoviesProvider {
@@ -23,8 +21,28 @@ export class TmdbProvider implements MoviesProvider {
     this.defaultLanguage = this.tmdbConfiguration.defaultLanguage as Languages;
   }
 
-  async searchMovies(query: string): Promise<Movie[]> {
+  public mapTmdbDtoToMovie(dto: TmdbMovieDto): Partial<CreateMovieDto> {
+    return {
+      movieExterneId: dto.id,
+      title: dto.title,
+      originalTitle: dto.original_title,
+      description: dto.overview,
+      originalDescription: dto.overview,
+      tagline: dto.tagline,
+      originalTagline: dto.tagline,
+      isAdult: dto.adult,
+      averageRatingExterne: dto.vote_average,
+      releaseDate: new Date(dto.release_date),
+      startDate: new Date(dto.release_date),
+      endDate: new Date(dto.release_date),
+      runtime: dto.runtime,
+      originalLanguage: dto.original_language as Languages,
+    };
+  }
+
+  public async searchMovies(query: string): Promise<TmdbMovieDto[]> {
     const url = `${this.tmdbConfiguration.baseUrl}/search/movie?language=${this.defaultLanguage}`;
+    const allMovies: TmdbMovieDto[] = [];
 
     try {
       const { data }: { data: { results: TmdbMovieDto[] } } = await axios.get(
@@ -45,18 +63,16 @@ export class TmdbProvider implements MoviesProvider {
           "Aucune donnée reçue de TMDB. Vérifiez la connexion ou l'API.",
         );
       }
+      const movie = data.results.map((m: TmdbMovieDto) => m);
+      allMovies.push(...movie);
 
-      return data.results.map((m: TmdbMovieDto) => ({
-        title: m.title,
-        year: m.release_date?.split('-')[0] ?? '',
-        description: m.overview,
-      }));
+      return allMovies;
     } catch (error) {
       throw new UnauthorizedException(error);
     }
   }
 
-  async getMovieDetails(id: string): Promise<Movie> {
+  public async getMovieDetails(id: string): Promise<TmdbMovieDto> {
     const url = `${this.tmdbConfiguration.baseUrl}/movie/${id}?language=${this.defaultLanguage}`;
     try {
       const { data }: { data: TmdbMovieDto } = await axios.get(url, {
@@ -72,22 +88,18 @@ export class TmdbProvider implements MoviesProvider {
         );
       }
 
-      return {
-        title: data.title,
-        year: data.release_date?.split('-')[0] ?? '',
-        description: data.overview,
-      };
+      return data;
     } catch (error) {
       throw new UnauthorizedException(error);
     }
   }
 
-  async getUpcomingMovies(
+  public async getUpcomingMovies(
     region?: RegionsIso,
     language?: Languages,
     page?: number,
-  ): Promise<Movie[]> {
-    const allMovies: Movie[] = [];
+  ): Promise<TmdbMovieDto[]> {
+    const allMovies: TmdbMovieDto[] = [];
     let totalPages: number = 1;
 
     const url = `${this.tmdbConfiguration.baseUrl}/movie/upcoming`;
@@ -112,12 +124,7 @@ export class TmdbProvider implements MoviesProvider {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { results, total_pages }: UpcomingMoviesInterface = response.data;
 
-        const movie = results.map((m: TmdbMovieDto) => ({
-          title: m.title,
-          year: m.release_date?.split('-')[0] ?? '',
-          description: m.overview,
-        }));
-
+        const movie = results.map((m: TmdbMovieDto) => m);
         allMovies.push(...movie);
         totalPages = total_pages;
         page++;

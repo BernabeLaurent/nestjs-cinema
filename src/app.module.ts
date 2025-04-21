@@ -2,21 +2,37 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TmdbProvider } from './movies/source/providers/tmdb.provider';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import tmdbConfig from './movies/config/tmdb.config';
 import { MoviesModule } from './movies/movies.module';
 import appConfig from './config/app.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MoviesCron } from './movies/crons/movies.cron';
-import { MoviesService } from './movies/movies.service';
 import { getMovieProvider } from './movies/movies.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import databaseConfig from './config/database.config';
 
 @Module({
   imports: [
+    // SETTINGS UP DATABASE CONNECTION
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        autoLoadEntities: configService.get('database.autoLoadEntities'),
+        synchronize: configService.get('database.synchronize'),
+        port: configService.get('database.port'),
+        username: configService.get('database.user'),
+        password: configService.get('database.password'),
+        host: configService.get('database.host'),
+        database: configService.get('database.name'),
+      }),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [tmdbConfig, appConfig],
+      load: [tmdbConfig, appConfig, databaseConfig],
     }),
     MoviesModule,
     ScheduleModule.forRoot(),
@@ -26,7 +42,6 @@ import { getMovieProvider } from './movies/movies.config';
     AppService,
     TmdbProvider,
     getMovieProvider(),
-    MoviesService,
     MoviesCron,
   ],
 })
