@@ -65,13 +65,13 @@ export class CreateMovieDto {
   @IsOptional()
   originalTagline?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  minimumAge: number;
+  minimumAge?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  runtime: number;
+  runtime?: number;
 
   @IsNumber()
   averageRating?: number;

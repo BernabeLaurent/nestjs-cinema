@@ -46,15 +46,15 @@ export class Movie {
 
   @Column({
     type: 'smallint',
-    nullable: false,
+    nullable: true,
   })
-  minimumAge: number;
+  minimumAge?: number;
 
   @Column({
     type: 'smallint',
-    nullable: false,
+    nullable: true,
   })
-  runtime: number;
+  runtime?: number;
 
   @Column({
     type: 'numeric',
