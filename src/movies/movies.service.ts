@@ -34,7 +34,7 @@ export class MoviesService {
     return await this.provider.searchMovies(query);
   }
 
-  public async getDetails(id: string): Promise<TmdbMovieDto> {
+  public async getDetails(id: number): Promise<TmdbMovieDto> {
     return await this.provider.getMovieDetails(id);
   }
 
@@ -95,10 +95,11 @@ export class MoviesService {
     movie.tagline = patchMovieDto.tagline ?? movie.tagline;
     movie.originalTagline =
       patchMovieDto.originalTagline ?? movie.originalTagline;
+    movie.runtime = patchMovieDto.runtime ?? movie.runtime;
 
     // save the post and return it
     try {
-      await this.moviesRepository.save(movie);
+      await this.moviesRepository.update(movie.id, movie);
     } catch (error) {
       throw new RequestTimeoutException('unable to process your request', {
         description: 'error connecting database' + error,

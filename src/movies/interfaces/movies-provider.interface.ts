@@ -2,7 +2,6 @@ import { RegionsIso } from '../../common/enums/regions-iso.enum';
 import { Languages } from '../../common/enums/languages.enum';
 import { TmdbMovieDto } from '../source/dtos/tmdb-movie.dto';
 
-
 export interface MoviesProvider {
   searchMovies(query: string): Promise<TmdbMovieDto[]>;
 
@@ -12,5 +11,5 @@ export interface MoviesProvider {
     page?: number,
   ): Promise<TmdbMovieDto[]>;
 
-  getMovieDetails(id: string): Promise<TmdbMovieDto>;
+  getMovieDetails(id: number): Promise<TmdbMovieDto>;
 }

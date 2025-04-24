@@ -26,7 +26,7 @@ export class MoviesController {
     status: 200,
     description: 'Movie details found successfully',
   })
-  public getDetailsExternal(@Param('id') id: string) {
+  public getDetailsExternal(@Param('id') id: number) {
     return this.moviesService.getDetails(id);
   }
 
@@ -83,8 +83,7 @@ export class MoviesController {
     description: 'The movie has been successfully updated.',
   })
   @Patch()
-  public updateMovie(@Body() patchMovieDto: PatchMovieDto){
+  public updateMovie(@Body() patchMovieDto: PatchMovieDto) {
     return this.moviesService.updateMovie(patchMovieDto);
-
   }
 }

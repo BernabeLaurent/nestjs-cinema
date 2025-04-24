@@ -16,7 +16,7 @@ export class MoviesCron {
     >,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async refreshIncomingMovies() {
     // Vérification si CRON est activé
     if (!this.cronFetchMoviesConfiguration.enableCronFetchMovies) {

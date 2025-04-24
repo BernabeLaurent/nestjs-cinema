@@ -72,7 +72,7 @@ export class TmdbProvider implements MoviesProvider {
     }
   }
 
-  public async getMovieDetails(id: string): Promise<TmdbMovieDto> {
+  public async getMovieDetails(id: number): Promise<TmdbMovieDto> {
     const url = `${this.tmdbConfiguration.baseUrl}/movie/${id}?language=${this.defaultLanguage}`;
     try {
       const { data }: { data: TmdbMovieDto } = await axios.get(url, {
@@ -123,13 +123,19 @@ export class TmdbProvider implements MoviesProvider {
         });
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { results, total_pages }: UpcomingMoviesInterface = response.data;
-
-        const movie = results.map((m: TmdbMovieDto) => m);
+        const movie = await Promise.all(
+          results.map(async (m: TmdbMovieDto) => {
+            try {
+              return await this.getMovieDetails(m.id);
+            } catch (error) {
+              throw new UnauthorizedException(error);
+            }
+          }),
+        );
         allMovies.push(...movie);
         totalPages = total_pages;
         page++;
       } while (page <= totalPages);
-      console.log('data', allMovies);
 
       return allMovies;
     } catch (error) {
