@@ -12,6 +12,7 @@ import { getMovieProvider } from './movies/movies.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import databaseConfig from './config/database.config';
 import cronFetchMoviesConfig from './movies/config/cron.config';
+import { CreateMovieProvider } from './movies/source/providers/create-movie.provider';
 
 @Module({
   imports: [
@@ -39,6 +40,12 @@ import cronFetchMoviesConfig from './movies/config/cron.config';
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService, TmdbProvider, getMovieProvider(), MoviesCron],
+  providers: [
+    AppService,
+    TmdbProvider,
+    getMovieProvider(),
+    MoviesCron,
+    CreateMovieProvider,
+  ],
 })
 export class AppModule {}

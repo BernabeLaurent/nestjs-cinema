@@ -9,6 +9,8 @@ import { Languages } from '../../../common/enums/languages.enum';
 import { RegionsIso } from '../../../common/enums/regions-iso.enum';
 import { UpcomingMoviesInterface } from '../../interfaces/upcoming-movies.interface';
 import { CreateMovieDto } from '../../dtos/create-movie.dto';
+import { CreateMovieProvider } from './create-movie.provider';
+import { Movie } from '../../movie.entity';
 
 @Injectable()
 export class TmdbProvider implements MoviesProvider {
@@ -17,6 +19,7 @@ export class TmdbProvider implements MoviesProvider {
   constructor(
     @Inject(tmdbConfig.KEY)
     private readonly tmdbConfiguration: ConfigType<typeof tmdbConfig>, // Assuming you have a JWT configuration for token generation
+    private readonly createMovieProvider: CreateMovieProvider,
   ) {
     this.defaultLanguage = this.tmdbConfiguration.defaultLanguage as Languages;
   }
@@ -40,30 +43,38 @@ export class TmdbProvider implements MoviesProvider {
     };
   }
 
-  public async searchMovies(query: string): Promise<TmdbMovieDto[]> {
+  public async searchMovies(query: string): Promise<Movie[]> {
     const url = `${this.tmdbConfiguration.baseUrl}/search/movie?language=${this.defaultLanguage}`;
-    const allMovies: TmdbMovieDto[] = [];
+    const allMovies: Movie[] = [];
 
     try {
-      const { data }: { data: { results: TmdbMovieDto[] } } = await axios.get(
-        url,
-        {
-          params: {
-            query: encodeURIComponent(query),
-          },
-          headers: {
-            Authorization: `Bearer ${this.tmdbConfiguration.apiKey}`,
-            'accept-Type': 'application/json',
-          },
+      const response = await axios.get(url, {
+        params: {
+          query: encodeURIComponent(query),
         },
-      );
+        headers: {
+          Authorization: `Bearer ${this.tmdbConfiguration.apiKey}`,
+          'accept-Type': 'application/json',
+        },
+      });
 
-      if (!data) {
+      if (!response) {
         throw new Error(
           "Aucune donnée reçue de TMDB. Vérifiez la connexion ou l'API.",
         );
       }
-      const movie = data.results.map((m: TmdbMovieDto) => m);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { results }: UpcomingMoviesInterface = response.data;
+
+      const movie = await Promise.all(
+        results.map(async (m: TmdbMovieDto) => {
+          try {
+            return await this.createMovieProvider.upsertMovie(m);
+          } catch (error) {
+            throw new UnauthorizedException(error);
+          }
+        }),
+      );
       allMovies.push(...movie);
 
       return allMovies;
@@ -72,7 +83,7 @@ export class TmdbProvider implements MoviesProvider {
     }
   }
 
-  public async getMovieDetails(id: number): Promise<TmdbMovieDto> {
+  public async getMovieDetails(id: number): Promise<Movie> {
     const url = `${this.tmdbConfiguration.baseUrl}/movie/${id}?language=${this.defaultLanguage}`;
     try {
       const { data }: { data: TmdbMovieDto } = await axios.get(url, {
@@ -88,7 +99,7 @@ export class TmdbProvider implements MoviesProvider {
         );
       }
 
-      return data;
+      return await this.createMovieProvider.upsertMovie(data);
     } catch (error) {
       throw new UnauthorizedException(error);
     }
@@ -98,8 +109,8 @@ export class TmdbProvider implements MoviesProvider {
     region?: RegionsIso,
     language?: Languages,
     page?: number,
-  ): Promise<TmdbMovieDto[]> {
-    const allMovies: TmdbMovieDto[] = [];
+  ): Promise<Movie[]> {
+    const allMovies: Movie[] = [];
     let totalPages: number = 1;
 
     const url = `${this.tmdbConfiguration.baseUrl}/movie/upcoming`;
@@ -126,7 +137,7 @@ export class TmdbProvider implements MoviesProvider {
         const movie = await Promise.all(
           results.map(async (m: TmdbMovieDto) => {
             try {
-              return await this.getMovieDetails(m.id);
+              return await this.createMovieProvider.upsertMovie(m);
             } catch (error) {
               throw new UnauthorizedException(error);
             }

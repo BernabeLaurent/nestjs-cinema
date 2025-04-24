@@ -10,6 +10,7 @@ import { MoviesCron } from './crons/movies.cron';
 import { FindOneMovieByExternalIdProvider } from './providers/find-one-movie-by-external-id.provider';
 import { Movie } from './movie.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CreateMovieProvider } from './source/providers/create-movie.provider';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TmdbProvider,
     MoviesCron,
     FindOneMovieByExternalIdProvider,
+    CreateMovieProvider,
   ],
   exports: [MoviesService],
 })

@@ -16,7 +16,6 @@ import { Repository } from 'typeorm';
 import { Movie } from './movie.entity';
 import { FindOneMovieByExternalIdProvider } from './providers/find-one-movie-by-external-id.provider';
 import { PatchMovieDto } from './dtos/patch-movie.dto';
-import { TmdbMovieDto } from './source/dtos/tmdb-movie.dto';
 import { CreateMovieDto } from './dtos/create-movie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -30,11 +29,11 @@ export class MoviesService {
     private readonly findOneMovieByExternalIdProvider: FindOneMovieByExternalIdProvider,
   ) {}
 
-  public async search(query: string): Promise<TmdbMovieDto[]> {
+  public async search(query: string): Promise<Movie[]> {
     return await this.provider.searchMovies(query);
   }
 
-  public async getDetails(id: number): Promise<TmdbMovieDto> {
+  public async getDetails(id: number): Promise<Movie> {
     return await this.provider.getMovieDetails(id);
   }
 
@@ -42,7 +41,7 @@ export class MoviesService {
     region?: RegionsIso,
     language?: Languages,
     page?: number,
-  ): Promise<TmdbMovieDto[]> {
+  ): Promise<Movie[]> {
     return await this.provider.getUpcomingMovies(region, language, page);
   }
 

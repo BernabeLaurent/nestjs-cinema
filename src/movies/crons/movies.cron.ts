@@ -22,21 +22,6 @@ export class MoviesCron {
     if (!this.cronFetchMoviesConfiguration.enableCronFetchMovies) {
       return;
     }
-    const movies = await this.movieService.getUpcomingMovies();
-
-    // Enregistrement ou update si déjà présent
-    for (const movie of movies) {
-      const movieFound = await this.movieService.getMovieByExternalId(movie.id);
-
-      if (movieFound) {
-        movie.id = movieFound.id;
-        await this.movieService.updateMovie(movie);
-      } else {
-        // insert
-        await this.movieService.createMovie(
-          this.tmdbProvider.mapTmdbDtoToMovie(movie),
-        );
-      }
-    }
+    return await this.movieService.getUpcomingMovies();
   }
 }
