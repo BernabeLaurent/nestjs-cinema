@@ -26,6 +26,6 @@ import { CreateMovieProvider } from './source/providers/create-movie.provider';
     FindOneMovieByExternalIdProvider,
     CreateMovieProvider,
   ],
-  exports: [MoviesService],
+  exports: [MoviesService, CreateMovieProvider],
 })
 export class MoviesModule {}

@@ -2,29 +2,22 @@ import { Movie } from '../../movie.entity';
 import { TmdbMovieDto } from '../dtos/tmdb-movie.dto';
 import { TmdbProvider } from './tmdb.provider';
 import { MoviesService } from '../../movies.service';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class CreateMovieProvider {
   constructor(
+    @Inject(forwardRef(() => MoviesService))
     private readonly moviesService: MoviesService,
+    @Inject(forwardRef(() => TmdbProvider))
     private readonly tmdbProvider: TmdbProvider,
   ) {}
 
   public async upsertMovie(movie: TmdbMovieDto): Promise<Movie> {
-    // Pour chaque film recherché, on vérifie son détail
-    // let movieTmdb: TmdbMovieDto | null = null;
-    // try {
-    //   movieTmdb = await this.tmdbProvider.getMovieDetails(movie.id);
-    // } catch (error) {
-    //   throw new UnauthorizedException(error);
-    // }
-    // console.log('ici ', movieTmdb);
-    // if (!movieTmdb) {
-    //   throw new Error('Movie details could not be retrieved.');
-    // }
-    console.log('movie ', movie);
     const movieFound = await this.moviesService.getMovieByExternalId(movie.id);
 
     if (movieFound) {
+      movie.id = movieFound.id;
       return await this.moviesService.updateMovie(movie);
     } else {
       // Sinon on le crée

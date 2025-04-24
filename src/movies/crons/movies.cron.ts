@@ -1,7 +1,6 @@
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MoviesService } from '../movies.service';
 import { Inject, Injectable } from '@nestjs/common';
-import { TmdbProvider } from '../source/providers/tmdb.provider';
 import { ConfigType } from '@nestjs/config';
 import cronFetchMoviesConfig from '../config/cron.config';
 
@@ -9,7 +8,6 @@ import cronFetchMoviesConfig from '../config/cron.config';
 export class MoviesCron {
   constructor(
     private readonly movieService: MoviesService,
-    private readonly tmdbProvider: TmdbProvider,
     @Inject(cronFetchMoviesConfig.KEY)
     private readonly cronFetchMoviesConfiguration: ConfigType<
       typeof cronFetchMoviesConfig

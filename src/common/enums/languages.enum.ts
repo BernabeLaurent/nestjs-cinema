@@ -39,4 +39,5 @@ export enum Languages {
   SWAHILI = 'sw',
 
   WOLOF = 'wo',
+  TAGALOG = 'tl',
 }

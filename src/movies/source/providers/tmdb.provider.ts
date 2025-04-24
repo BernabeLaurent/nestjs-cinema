@@ -69,7 +69,7 @@ export class TmdbProvider implements MoviesProvider {
       const movie = await Promise.all(
         results.map(async (m: TmdbMovieDto) => {
           try {
-            return await this.createMovieProvider.upsertMovie(m);
+            return await this.getMovieDetails(m.id);
           } catch (error) {
             throw new UnauthorizedException(error);
           }
@@ -137,7 +137,7 @@ export class TmdbProvider implements MoviesProvider {
         const movie = await Promise.all(
           results.map(async (m: TmdbMovieDto) => {
             try {
-              return await this.createMovieProvider.upsertMovie(m);
+              return await this.getMovieDetails(m.id);
             } catch (error) {
               throw new UnauthorizedException(error);
             }
