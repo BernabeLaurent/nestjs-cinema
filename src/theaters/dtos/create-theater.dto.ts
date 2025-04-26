@@ -55,15 +55,8 @@ export class CreateTheaterDto {
   zipCode: number;
 
   @ApiProperty({
-    description: 'Telephone Code',
-    example: '33',
-  })
-  @IsNumber()
-  telephoneCode: number;
-
-  @ApiProperty({
     description: 'phoneNumber',
-    example: '0494206308',
+    example: '+330494206308',
   })
   @MaxLength(32)
   @IsString()

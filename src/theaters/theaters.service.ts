@@ -48,8 +48,6 @@ export class TheatersService {
     theater.openingTime = patchTheaterDto.openingTime ?? theater.openingTime;
     theater.closingTime = patchTheaterDto.closingTime ?? theater.closingTime;
     theater.phoneNumber = patchTheaterDto.phoneNumber ?? theater.phoneNumber;
-    theater.telephoneCode =
-      patchTheaterDto.telephoneCode ?? theater.telephoneCode;
 
     // save the post and return it
     try {

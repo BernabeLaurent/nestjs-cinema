@@ -63,12 +63,6 @@ export class Theater {
   })
   phoneNumber: string;
 
-  @Column({
-    type: 'integer',
-    nullable: false,
-  })
-  telephoneCode: number;
-
   @CreateDateColumn()
   createDate: Date;
 
