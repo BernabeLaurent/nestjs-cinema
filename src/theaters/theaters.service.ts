@@ -18,6 +18,30 @@ export class TheatersService {
     private readonly theatersRepository: Repository<Theater>,
   ) {}
 
+  /**
+   * Retrouve un user par son id
+   * @param id L'id du user
+   * @returns L'user
+   */
+  public async findOneById(id: number) {
+    let theater: Theater | null;
+
+    // On recherche si le cinéma existe
+    try {
+      theater = await this.theatersRepository.findOneBy({
+        id: id,
+      });
+    } catch (error) {
+      throw new RequestTimeoutException('unable to process your request', {
+        description: 'error connecting database' + error,
+      });
+    }
+    if (!theater) {
+      throw new BadRequestException('Theater not found WITH THIS ID');
+    }
+    return theater;
+  }
+
   public async create(createTheaterDto: CreateTheaterDto) {
     return await this.createTheaterProvider.create(createTheaterDto);
   }

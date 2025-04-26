@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Delete,
+  Delete, Get, Param,
   ParseIntPipe,
   Patch,
   Post,
@@ -11,11 +11,22 @@ import { CreateTheaterDto } from './dtos/create-theater.dto';
 import { TheatersService } from './theaters.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PatchTheaterDto } from './dtos/patch-theater.dto';
+import { GetTheaterDto } from './dtos/get-theater.dto';
 
 @Controller('theaters')
 @ApiTags('Theaters')
 export class TheatersController {
   constructor(private readonly theatersService: TheatersService) {}
+
+  @Get('{/:id}')
+  @ApiOperation({ summary: 'Get Theater by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'User found successfully',
+  })
+  public getTheater(@Param() getTheaterDto: GetTheaterDto) {
+    return this.theatersService.findOneById(getTheaterDto.id);
+  }
 
   @ApiOperation({ summary: 'Create a new theater' })
   @ApiResponse({

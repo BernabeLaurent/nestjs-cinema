@@ -20,6 +20,30 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
+  /**
+   * Retrouve un user par son id
+   * @param id L'id du user
+   * @returns L'user
+   */
+  public async findOneById(id: number) {
+    let user: User | null;
+
+    // On recherche si l'user existe
+    try {
+      user = await this.usersRepository.findOneBy({
+        id: id,
+      });
+    } catch (error) {
+      throw new RequestTimeoutException('unable to process your request', {
+        description: 'error connecting database' + error,
+      });
+    }
+    if (!user) {
+      throw new BadRequestException('user not found WITH THIS ID');
+    }
+    return user;
+  }
+
   public async create(createUserDto: CreateUserDto) {
     return await this.createUserProvider.create(createUserDto);
   }
