@@ -10,6 +10,10 @@ import { UpdateUserProvider } from './providers/update-user.provider';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
+import { FindOneByGoogleIdProvider } from './providers/find-one-by-google-id.provider';
+import { CreateGoogleUserProvider } from './providers/create-google-user.provider';
+import { GoogleUser } from './interfaces/google-user.interface';
+import { FindOneUserByEmailProvider } from './providers/find-one-user-by-email.provider';
 
 @Injectable()
 export class UsersService {
@@ -18,6 +22,9 @@ export class UsersService {
     private readonly updateUserProvider: UpdateUserProvider,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly findOneByGoogleIdProvider: FindOneByGoogleIdProvider,
+    private readonly createGoogleUserProvider: CreateGoogleUserProvider,
+    private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider,
   ) {}
 
   /**
@@ -81,5 +88,17 @@ export class UsersService {
       deleted: true,
       id,
     };
+  }
+
+  public async findOneByEmail(email: string) {
+    return await this.findOneUserByEmailProvider.findOneByEmail(email);
+  }
+
+  public async findOneByGoogleId(googleId: string) {
+    return await this.findOneByGoogleIdProvider.findOneByGoogleId(googleId);
+  }
+
+  public async createGoogleUser(googleUser: GoogleUser) {
+    return await this.createGoogleUserProvider.createGoogleUser(googleUser);
   }
 }

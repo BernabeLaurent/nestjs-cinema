@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,12 +9,15 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { PatchUserDto } from './dtos/patch-user.dto';
 import { GetUserDto } from './dtos/get-user.dto';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { AuthType } from '../auth/enums/auth-type.enum';
 
 @Controller('users')
 @ApiTags('Users')
@@ -26,6 +30,8 @@ export class UsersController {
     description: 'The user has been successfully created.',
   })
   @Post()
+  @Auth(AuthType.None)
+  @UseInterceptors(ClassSerializerInterceptor)
   public createUser(
     @Body()
     createUserDto: CreateUserDto,
