@@ -46,4 +46,6 @@ async function bootstrap() {
   await app.listen(portNestjs, '0.0.0.0', () => {});
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error("Erreur lors du démarrage de l'application :", error);
+});
