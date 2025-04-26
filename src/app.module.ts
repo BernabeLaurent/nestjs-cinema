@@ -7,6 +7,7 @@ import { MoviesModule } from './movies/movies.module';
 import appConfig from './config/app.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TheatersModule } from './theaters/theaters.module';
 import databaseConfig from './config/database.config';
 import cronFetchMoviesConfig from './movies/config/cron.config';
 
@@ -34,6 +35,7 @@ import cronFetchMoviesConfig from './movies/config/cron.config';
     }),
     MoviesModule,
     ScheduleModule.forRoot(),
+    TheatersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
