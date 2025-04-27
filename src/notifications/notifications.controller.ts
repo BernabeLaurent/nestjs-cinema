@@ -1,0 +1,28 @@
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { NotificationsService } from './notifications.service';
+import { SendEmailDto } from './dtos/send-email.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { AuthType } from '../auth/enums/auth-type.enum';
+
+@Controller('notifications')
+export class NotificationsController {
+  constructor(private readonly notificationsService: NotificationsService) {}
+
+  @Post('send-email')
+  @ApiOperation({ summary: "Permet d'envoyer un email" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Email sent successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  @Auth(AuthType.None)
+  async sendEmail(@Body() sendEmailDto: SendEmailDto) {
+    console.log('sendEmailDto', sendEmailDto);
+    return this.notificationsService.sendEmail(
+      sendEmailDto.email,
+      sendEmailDto.subject,
+      sendEmailDto.text,
+    );
+  }
+}
