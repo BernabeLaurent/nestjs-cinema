@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../config/jwt.config';
 import { User } from 'src/users/user.entity';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
+import { RoleUser } from '../../users/enums/roles-users.enum';
 
 @Injectable()
 export class GenerateTokensProvider {
@@ -13,10 +14,16 @@ export class GenerateTokensProvider {
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>, // Assuming you have a JWT configuration for token generation
   ) {}
 
-  public async signToken<T>(userId: number, expiresIn: number, payload?: T) {
+  public async signToken<T>(
+    userId: number,
+    userRole: RoleUser,
+    expiresIn: number,
+    payload?: T,
+  ) {
     return await this.jwtService.signAsync(
       {
         sub: userId,
+        roleUser: userRole,
         ...payload,
       },
       {
@@ -33,12 +40,17 @@ export class GenerateTokensProvider {
       // generate access token
       this.signToken<Partial<ActiveUserData>>(
         user.id,
+        user.roleUser,
         this.jwtConfiguration.accessTokenTtl,
         {
           email: user.email,
         },
       ), // generate refresh token
-      this.signToken(user.id, this.jwtConfiguration.refreshTokenTtl),
+      this.signToken(
+        user.id,
+        user.roleUser,
+        this.jwtConfiguration.refreshTokenTtl,
+      ),
     ]);
 
     return {
