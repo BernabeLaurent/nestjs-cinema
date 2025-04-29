@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Theater } from '../theaters/theater.entity';
+import { SessionCinema } from '../sessions-cinemas/session-cinema.entity';
 
 @Entity()
 export class MovieTheater {
@@ -29,4 +36,7 @@ export class MovieTheater {
     nullable: false,
   })
   roomNumber: number;
+
+  @OneToMany(() => SessionCinema, (sessionCinema) => sessionCinema.movieTheater)
+  sessionsCinema: SessionCinema[];
 }

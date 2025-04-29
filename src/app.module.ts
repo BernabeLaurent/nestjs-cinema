@@ -25,6 +25,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { MoviesTheatersModule } from './movies-theaters/movies-theaters.module';
+import { SessionsCinemasModule } from './sessions-cinemas/sessions-cinemas.module';
 
 console.log('dirname:', __dirname);
 console.log('joined dir:', join(__dirname, 'notifications', 'templates'));
@@ -82,6 +83,7 @@ console.log('joined dir:', join(__dirname, 'notifications', 'templates'));
     AuthModule,
     NotificationsModule,
     MoviesTheatersModule,
+    SessionsCinemasModule,
   ],
   controllers: [AppController],
   providers: [
