@@ -46,7 +46,9 @@ export class MoviesTheatersController {
     status: HttpStatus.OK,
     description: 'MovieTheater created successfully',
   })
-  public createMovieTheater(createMovieTheaterDto: CreateMovieTheaterDto) {
+  public createMovieTheater(
+    @Body() createMovieTheaterDto: CreateMovieTheaterDto,
+  ) {
     return this.moviesTheaterService.createMovieTheater(createMovieTheaterDto);
   }
 

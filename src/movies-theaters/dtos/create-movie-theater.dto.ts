@@ -7,6 +7,7 @@ export class CreateMovieTheaterDto {
     example: '300',
   })
   @IsNumber()
+  @IsNotEmpty()
   numberSeats: number;
 
   @ApiPropertyOptional({
@@ -22,7 +23,6 @@ export class CreateMovieTheaterDto {
     example: '5',
   })
   @IsNumber()
-  @IsNumber()
   @IsNotEmpty()
   roomNumber: number;
 
@@ -31,5 +31,6 @@ export class CreateMovieTheaterDto {
     example: 1,
   })
   @IsInt()
+  @IsNotEmpty()
   theaterId: number;
 }
