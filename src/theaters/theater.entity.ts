@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { RegionsIso } from '../common/enums/regions-iso.enum';
+import { MovieTheater } from '../movies-theaters/movie-theater.entity';
 
 @Entity()
 export class Theater {
@@ -71,4 +73,7 @@ export class Theater {
 
   @DeleteDateColumn()
   deleteDate: Date;
+
+  @OneToMany(() => MovieTheater, (movieTheater) => movieTheater.theater)
+  moviesTheaters: MovieTheater[];
 }
