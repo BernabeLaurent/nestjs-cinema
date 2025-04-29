@@ -1,9 +1,18 @@
-import { Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MoviesTheatersService } from './movies-theaters.service';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 import { CreateMovieTheaterDto } from './dtos/create-movie-theater.dto';
+import { PatchMovieTheaterDto } from './dtos/patch-movie-theater.dto';
 
 @Controller('movies-theaters')
 export class MoviesTheatersController {
@@ -39,5 +48,17 @@ export class MoviesTheatersController {
   })
   public createMovieTheater(createMovieTheaterDto: CreateMovieTheaterDto) {
     return this.moviesTheaterService.createMovieTheater(createMovieTheaterDto);
+  }
+
+  @ApiOperation({ summary: 'Updates a movie' })
+  @ApiResponse({
+    status: 200,
+    description: 'The movie Theater has been successfully updated.',
+  })
+  @Patch()
+  public updateMovieTheater(
+    @Body() patchMovieTheaterDto: PatchMovieTheaterDto,
+  ) {
+    return this.moviesTheaterService.updateMovieTheater(patchMovieTheaterDto);
   }
 }

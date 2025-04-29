@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MovieTheater } from './movie-theater.entity';
 import { CreateMovieTheaterProvider } from './providers/create-movie-theater.provider';
 import { TheatersModule } from '../theaters/theaters.module';
+import { PatchMovieTheaterProvider } from './providers/patch-movie-theater.provider';
 
 @Module({
   imports: [TypeOrmModule.forFeature([MovieTheater]), TheatersModule],
@@ -13,6 +14,7 @@ import { TheatersModule } from '../theaters/theaters.module';
     MoviesTheatersService,
     FindMoviesTheatersByTheaterIdProvider,
     CreateMovieTheaterProvider,
+    PatchMovieTheaterProvider,
   ],
   controllers: [MoviesTheatersController],
 })

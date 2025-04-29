@@ -1,5 +1,5 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { CreateMovieTheaterDto } from './create-movie-theater.dto';
 
 export class PatchMovieTheaterDto extends PartialType(CreateMovieTheaterDto) {
@@ -10,4 +10,9 @@ export class PatchMovieTheaterDto extends PartialType(CreateMovieTheaterDto) {
   @IsInt()
   @IsNotEmpty()
   id: number;
+
+  @ApiPropertyOptional()
+  @IsInt()
+  @IsOptional()
+  theaterId?: number; // facultatif
 }
