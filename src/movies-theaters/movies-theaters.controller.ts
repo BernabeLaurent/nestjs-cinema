@@ -46,6 +46,7 @@ export class MoviesTheatersController {
     status: HttpStatus.OK,
     description: 'MovieTheater created successfully',
   })
+  @Auth(AuthType.None)
   public createMovieTheater(
     @Body() createMovieTheaterDto: CreateMovieTheaterDto,
   ) {

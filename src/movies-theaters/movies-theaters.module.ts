@@ -17,5 +17,6 @@ import { PatchMovieTheaterProvider } from './providers/patch-movie-theater.provi
     PatchMovieTheaterProvider,
   ],
   controllers: [MoviesTheatersController],
+  exports: [MoviesTheatersService],
 })
 export class MoviesTheatersModule {}

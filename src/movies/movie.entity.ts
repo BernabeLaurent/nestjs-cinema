@@ -1,5 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Languages } from '../common/enums/languages.enum';
+import { SessionCinema } from '../sessions-cinemas/session-cinema.entity';
 
 @Entity()
 export class Movie {
@@ -112,4 +118,7 @@ export class Movie {
     nullable: false,
   })
   originalLanguage: Languages;
+
+  @OneToMany(() => SessionCinema, (sessionCinema) => sessionCinema.movie)
+  sessionsCinemas: SessionCinema[];
 }

@@ -9,6 +9,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TheaterQuality } from './enums/theaters-qualities.enum';
 import { Languages } from '../common/enums/languages.enum';
 import { MovieTheater } from '../movies-theaters/movie-theater.entity';
+import { Movie } from '../movies/movie.entity';
 
 @Entity()
 export class SessionCinema {
@@ -16,23 +17,21 @@ export class SessionCinema {
   id: number;
 
   @ApiProperty({
-    description: 'Heure de début de la séance (HH:mm:ss)',
-    example: '14:30:00',
+    description: 'Date et heure du début de la séance',
+    example: '2025-05-20T20:30:00.000Z',
     type: String,
-    format: 'time',
-    nullable: false,
+    format: 'date-time',
   })
-  @Column({ type: 'time' })
+  @Column({ type: 'timestamp' })
   startTime: Date;
 
   @ApiProperty({
-    description: 'Heure de fin de la séance (HH:mm:ss)',
-    example: '14:30:00',
+    description: 'Date et heure de fin de la séance',
+    example: '2025-05-20T20:30:00.000Z',
     type: String,
-    format: 'time',
-    nullable: false,
+    format: 'date-time',
   })
-  @Column({ type: 'time' })
+  @Column({ type: 'timestamp' })
   endTime: Date;
 
   @ApiProperty({
@@ -65,4 +64,12 @@ export class SessionCinema {
   @JoinColumn({ name: 'movieTheaterId' })
   @ApiProperty({ type: () => MovieTheater })
   movieTheater: MovieTheater;
+
+  @ManyToOne(() => Movie, (movie) => movie.sessionsCinemas, {
+    eager: true,
+  })
+  @ApiProperty({ type: () => Movie })
+  @JoinColumn({ name: 'movieId' })
+  movie: Movie;
+
 }
