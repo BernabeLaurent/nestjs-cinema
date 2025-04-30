@@ -7,6 +7,7 @@ import { CreateSessionCinemaProvider } from './providers/create-session-cinema.p
 import { MoviesTheatersModule } from '../movies-theaters/movies-theaters.module';
 import { PatchSessionCinemaProvider } from './providers/patch-session-cinema.provider';
 import { MoviesModule } from '../movies/movies.module';
+import { GetSessionCinemaProvider } from './providers/get-session-cinema.provider';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MoviesModule } from '../movies/movies.module';
     SessionsCinemasService,
     CreateSessionCinemaProvider,
     PatchSessionCinemaProvider,
+    GetSessionCinemaProvider,
   ],
   controllers: [SessionsCinemasController],
 })

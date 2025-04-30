@@ -65,6 +65,9 @@ export class SessionCinema {
   @ApiProperty({ type: () => MovieTheater })
   movieTheater: MovieTheater;
 
+  @Column()
+  movieTheaterId: number;
+
   @ManyToOne(() => Movie, (movie) => movie.sessionsCinemas, {
     eager: true,
   })
@@ -72,4 +75,6 @@ export class SessionCinema {
   @JoinColumn({ name: 'movieId' })
   movie: Movie;
 
+  @Column()
+  movieId: number;
 }

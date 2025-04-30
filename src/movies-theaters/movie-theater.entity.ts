@@ -18,6 +18,9 @@ export class MovieTheater {
   })
   theater: Theater;
 
+  @Column()
+  theaterId: number;
+
   @Column({
     type: 'smallint',
     nullable: false,

@@ -1,4 +1,12 @@
-import { Body, Controller, HttpStatus, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
@@ -40,5 +48,53 @@ export class SessionsCinemasController {
     return this.sessionsCinemasService.updateSessionCinema(
       patchSessionCinemaDto,
     );
+  }
+
+  @ApiOperation({ summary: "Voir le détail d'une séance de cinéma" })
+  @Get(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Session cinema found successfully',
+  })
+  @Auth(AuthType.None)
+  public getSessionCinema(@Param('id') id: number) {
+    return this.sessionsCinemasService.getSessionCinemaById(id);
+  }
+
+  @ApiOperation({ summary: 'Retourne tous les séance de cinéma pour un film' })
+  @Get('ByMovie/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Sessions cinemas found successfully',
+  })
+  @Auth(AuthType.None)
+  public getSessionsCinemasByMovieId(@Param('id') id: number) {
+    return this.sessionsCinemasService.getSessionsCinemaByMovieId(id);
+  }
+
+  @ApiOperation({
+    summary: 'Retourne tous les séance de cinéma pour une salle cinéma',
+  })
+  @Get('ByMovieTheater/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Sessions cinemas found successfully',
+  })
+  @Auth(AuthType.None)
+  public getSessionsCinemasByMovieTheaterId(@Param('id') id: number) {
+    return this.sessionsCinemasService.getSessionsCinemaByMovieTheaterId(id);
+  }
+
+  @ApiOperation({
+    summary: 'Retourne tous les séance de cinéma pour un cinéma',
+  })
+  @Get('ByMovieTheater/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Sessions cinemas found successfully',
+  })
+  @Auth(AuthType.None)
+  public getSessionsCinemasByTheaterId(@Param('id') id: number) {
+    return this.sessionsCinemasService.getSessionsCinemaByTheaterId(id);
   }
 }
