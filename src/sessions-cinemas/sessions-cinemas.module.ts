@@ -8,10 +8,11 @@ import { MoviesTheatersModule } from '../movies-theaters/movies-theaters.module'
 import { PatchSessionCinemaProvider } from './providers/patch-session-cinema.provider';
 import { MoviesModule } from '../movies/movies.module';
 import { GetSessionCinemaProvider } from './providers/get-session-cinema.provider';
+import { Price } from './prices.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([SessionCinema]),
+    TypeOrmModule.forFeature([SessionCinema, Price]),
     MoviesTheatersModule,
     MoviesModule,
   ],

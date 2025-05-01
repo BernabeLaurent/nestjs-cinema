@@ -6,6 +6,7 @@ import {
 import { SessionCinema } from '../session-cinema.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Price } from '../prices.entity';
 
 @Injectable()
 export class GetSessionCinemaProvider {
@@ -18,7 +19,16 @@ export class GetSessionCinemaProvider {
     let sessionsCinema: SessionCinema[] | [];
 
     try {
-      sessionsCinema = await this.sessionRepository.findBy({ movieId: id });
+      sessionsCinema = await this.sessionRepository
+        .createQueryBuilder('session')
+        .innerJoinAndMapOne(
+          'session.price',
+          Price,
+          'price',
+          `"price"."theaterQuality"::text = "session"."quality"::text`,
+        )
+        .where('session.movieId = :id', { id })
+        .getMany();
     } catch (error) {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment',
@@ -33,9 +43,16 @@ export class GetSessionCinemaProvider {
     let sessionsCinema: SessionCinema[] | [];
 
     try {
-      sessionsCinema = await this.sessionRepository.findBy({
-        movieTheaterId: id,
-      });
+      sessionsCinema = await this.sessionRepository
+        .createQueryBuilder('session')
+        .innerJoinAndMapOne(
+          'session.price',
+          Price,
+          'price',
+          `"price"."theaterQuality"::text = "session"."quality"::text`,
+        )
+        .where('session.movieTheaterId = :id', { id })
+        .getMany();
     } catch (error) {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment',
@@ -50,14 +67,17 @@ export class GetSessionCinemaProvider {
     let sessionsCinema: SessionCinema[] | [];
 
     try {
-      sessionsCinema = await this.sessionRepository.find({
-        where: {
-          movieTheater: {
-            theaterId: id,
-          },
-        },
-        relations: ['movieTheater'],
-      });
+      sessionsCinema = await this.sessionRepository
+        .createQueryBuilder('session')
+        .innerJoinAndSelect('session.movieTheater', 'movieTheater')
+        .innerJoinAndMapOne(
+          'session.price',
+          Price,
+          'price',
+          `"price"."theaterQuality"::text = "session"."quality"::text`,
+        )
+        .where('movieTheater.theaterId = :id', { id })
+        .getMany();
     } catch (error) {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment',
@@ -72,7 +92,16 @@ export class GetSessionCinemaProvider {
     let sessionCinema: SessionCinema | null;
 
     try {
-      sessionCinema = await this.sessionRepository.findOneBy({ id });
+      sessionCinema = await this.sessionRepository
+        .createQueryBuilder('session')
+        .innerJoinAndMapOne(
+          'session.price',
+          Price,
+          'price',
+          `"price"."theaterQuality"::text = "session"."quality"::text`,
+        )
+        .where('session.id = :id', { id })
+        .getOne();
     } catch (error) {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment',
