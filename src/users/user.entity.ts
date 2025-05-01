@@ -11,6 +11,7 @@ import { RoleUser } from './enums/roles-users.enum';
 import { RegionsIso } from '../common/enums/regions-iso.enum';
 import { Exclude } from 'class-transformer';
 import { Notification } from '../notifications/notification.entity';
+import { MovieReview } from '../movies/movie-review.entity';
 
 @Entity()
 export class User {
@@ -86,4 +87,7 @@ export class User {
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
+
+  @OneToMany(() => MovieReview, (review) => review.user)
+  reviews: MovieReview[];
 }

@@ -11,11 +11,15 @@ import { FindOneMovieByExternalIdProvider } from './providers/find-one-movie-by-
 import { Movie } from './movie.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateMovieProvider } from './source/providers/create-movie.provider';
+import { MovieReview } from './movie-review.entity';
+import { CreateMovieReviewProvider } from './providers/create-movie-review.provider';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     ConfigModule.forFeature(tmdbConfig),
-    TypeOrmModule.forFeature([Movie]),
+    TypeOrmModule.forFeature([Movie, MovieReview]),
+    UsersModule,
   ],
   controllers: [MoviesController],
   providers: [
@@ -25,6 +29,7 @@ import { CreateMovieProvider } from './source/providers/create-movie.provider';
     MoviesCron,
     FindOneMovieByExternalIdProvider,
     CreateMovieProvider,
+    CreateMovieReviewProvider,
   ],
   exports: [MoviesService, CreateMovieProvider],
 })

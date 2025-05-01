@@ -1,9 +1,21 @@
-import { Controller, Get, Query, Param, Patch, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Param,
+  Patch,
+  Body,
+  Post,
+  HttpStatus,
+} from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Languages } from '../common/enums/languages.enum';
 import { RegionsIso } from '../common/enums/regions-iso.enum';
 import { PatchMovieDto } from './dtos/patch-movie.dto';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { AuthType } from '../auth/enums/auth-type.enum';
+import { CreateReviewMovieDto } from './dtos/create-review-movie.dto';
 
 @Controller('movies')
 @ApiTags('Movies')
@@ -85,5 +97,16 @@ export class MoviesController {
   @Patch()
   public updateMovie(@Body() patchMovieDto: PatchMovieDto) {
     return this.moviesService.updateMovie(patchMovieDto);
+  }
+
+  @ApiOperation({ summary: 'Créer une note de film' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Movie Review created successfully',
+  })
+  @Auth(AuthType.None)
+  @Post('create-review')
+  public createReviewMovie(@Body() createReviewMovieDto: CreateReviewMovieDto) {
+    return this.moviesService.createMovieReview(createReviewMovieDto);
   }
 }

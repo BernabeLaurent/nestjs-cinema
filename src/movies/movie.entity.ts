@@ -1,11 +1,7 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Languages } from '../common/enums/languages.enum';
 import { SessionCinema } from '../sessions-cinemas/session-cinema.entity';
+import { MovieReview } from './movie-review.entity';
 
 @Entity()
 export class Movie {
@@ -121,4 +117,7 @@ export class Movie {
 
   @OneToMany(() => SessionCinema, (sessionCinema) => sessionCinema.movie)
   sessionsCinemas: SessionCinema[];
+
+  @OneToMany(() => MovieReview, (review) => review.movie)
+  reviews: MovieReview[];
 }

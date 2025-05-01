@@ -18,6 +18,8 @@ import { FindOneMovieByExternalIdProvider } from './providers/find-one-movie-by-
 import { PatchMovieDto } from './dtos/patch-movie.dto';
 import { CreateMovieDto } from './dtos/create-movie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateReviewMovieDto } from './dtos/create-review-movie.dto';
+import { CreateMovieReviewProvider } from './providers/create-movie-review.provider';
 
 @Injectable()
 export class MoviesService {
@@ -27,6 +29,7 @@ export class MoviesService {
     @InjectRepository(Movie)
     private readonly moviesRepository: Repository<Movie>,
     private readonly findOneMovieByExternalIdProvider: FindOneMovieByExternalIdProvider,
+    private readonly createMovieReviewProvider: CreateMovieReviewProvider,
   ) {}
 
   public async search(query: string): Promise<Movie[]> {
@@ -105,5 +108,9 @@ export class MoviesService {
       });
     }
     return movie;
+  }
+
+  public async createMovieReview(createMovieReviewDto: CreateReviewMovieDto) {
+    return await this.createMovieReviewProvider.create(createMovieReviewDto);
   }
 }
