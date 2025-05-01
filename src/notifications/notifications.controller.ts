@@ -18,8 +18,8 @@ export class NotificationsController {
   @HttpCode(HttpStatus.OK)
   @Auth(AuthType.None)
   async sendEmail(@Body() sendEmailDto: SendEmailDto) {
-    console.log('sendEmailDto', sendEmailDto);
     return this.notificationsService.sendEmail(
+      sendEmailDto.userId,
       sendEmailDto.email,
       sendEmailDto.subject,
       sendEmailDto.text,

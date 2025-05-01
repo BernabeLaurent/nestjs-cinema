@@ -3,12 +3,14 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { RoleUser } from './enums/roles-users.enum';
 import { RegionsIso } from '../common/enums/regions-iso.enum';
 import { Exclude } from 'class-transformer';
+import { Notification } from '../notifications/notification.entity';
 
 @Entity()
 export class User {
@@ -81,4 +83,7 @@ export class User {
 
   @DeleteDateColumn()
   deleteDate: Date;
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 }

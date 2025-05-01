@@ -27,9 +27,6 @@ import { join } from 'path';
 import { MoviesTheatersModule } from './movies-theaters/movies-theaters.module';
 import { SessionsCinemasModule } from './sessions-cinemas/sessions-cinemas.module';
 
-console.log('dirname:', __dirname);
-console.log('joined dir:', join(__dirname, 'notifications', 'templates'));
-
 @Module({
   imports: [
     // Pour envoyer des emails

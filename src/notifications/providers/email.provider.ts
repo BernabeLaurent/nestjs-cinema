@@ -1,9 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { NotificationsService } from '../notifications.service';
 
 @Injectable()
 export class EmailProvider {
-  constructor(private mailerService: MailerService) {}
+  constructor(
+    private mailerService: MailerService,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async sendUserConfirmation(to: string, username: string) {
     await this.mailerService.sendMail({
@@ -16,12 +26,24 @@ export class EmailProvider {
     });
   }
 
-  async sendSimpleMail(to: string, subject: string, text: string) {
-    await this.mailerService.sendMail({
-      to,
-      subject,
-      template: './confirmation_inscription',
-      text,
-    });
+  async sendSimpleMail(
+    userId: number,
+    to: string,
+    subject: string,
+    text: string,
+  ) {
+    try {
+      await this.mailerService.sendMail({
+        to,
+        subject,
+        template: './confirmation_inscription',
+        text,
+      });
+    } catch (error) {
+      throw new RequestTimeoutException(error, {
+        description: "Pb d'envoi de mail",
+      });
+    }
+    return await this.notificationsService.addNotification(userId);
   }
 }
