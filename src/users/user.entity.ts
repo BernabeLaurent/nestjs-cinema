@@ -12,6 +12,7 @@ import { RegionsIso } from '../common/enums/regions-iso.enum';
 import { Exclude } from 'class-transformer';
 import { Notification } from '../notifications/notification.entity';
 import { MovieReview } from '../movies/movie-review.entity';
+import { Booking } from '../bookings/booking.entity';
 
 @Entity()
 export class User {
@@ -90,4 +91,7 @@ export class User {
 
   @OneToMany(() => MovieReview, (review) => review.user)
   reviews: MovieReview[];
+
+  @OneToMany(() => Booking, (booking) => booking.user)
+  bookings: Booking[];
 }

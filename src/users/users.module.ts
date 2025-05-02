@@ -11,6 +11,7 @@ import { CreateGoogleUserProvider } from './providers/create-google-user.provide
 import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import profileConfig from './config/profile.config';
+import { BookingsModule } from '../bookings/bookings.module';
 
 @Module({
   providers: [
@@ -27,6 +28,7 @@ import profileConfig from './config/profile.config';
     TypeOrmModule.forFeature([User]),
     forwardRef(() => AuthModule),
     ConfigModule.forFeature(profileConfig),
+    BookingsModule,
   ],
 })
 export class UsersModule {}

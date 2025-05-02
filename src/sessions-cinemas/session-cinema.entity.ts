@@ -3,6 +3,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
@@ -10,6 +11,7 @@ import { TheaterQuality } from './enums/theaters-qualities.enum';
 import { Languages } from '../common/enums/languages.enum';
 import { MovieTheater } from '../movies-theaters/movie-theater.entity';
 import { Movie } from '../movies/movie.entity';
+import { Booking } from '../bookings/booking.entity';
 
 @Entity()
 export class SessionCinema {
@@ -77,4 +79,7 @@ export class SessionCinema {
 
   @Column()
   movieId: number;
+
+  @OneToMany(() => Booking, (booking) => booking.sessionCinema)
+  bookings: Booking[];
 }

@@ -26,6 +26,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { join } from 'path';
 import { MoviesTheatersModule } from './movies-theaters/movies-theaters.module';
 import { SessionsCinemasModule } from './sessions-cinemas/sessions-cinemas.module';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { SessionsCinemasModule } from './sessions-cinemas/sessions-cinemas.modul
     NotificationsModule,
     MoviesTheatersModule,
     SessionsCinemasModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [
