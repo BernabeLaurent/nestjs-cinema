@@ -80,7 +80,7 @@ export class GetBookingProvider {
 
     try {
       return await this.bookingRepository.find({
-        where: { sessionCinema: { id: movieTheaterId } },
+        where: { sessionCinema: { movieTheaterId: movieTheaterId } },
         relations: ['sessionCinema'],
       });
     } catch (error) {
