@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateBookingDto } from './dtos/create-booking.dto';
 import { CreateBookingProvider } from './providers/create-booking.provider';
 import { GetBookingProvider } from './providers/get-booking.provider';
+import { ValidateBookingDetailProvider } from './providers/validate-booking-detail.provider';
 
 @Injectable()
 export class BookingsService {
   constructor(
     private readonly createBookingProvider: CreateBookingProvider,
     private readonly getBookingProvider: GetBookingProvider,
+    private readonly validateBookingDetailProvider: ValidateBookingDetailProvider,
   ) {}
 
   public async createBooking(createBookingDto: CreateBookingDto) {
@@ -36,5 +38,9 @@ export class BookingsService {
 
   public async getBookingsDetailsByBooking(bookingId: number) {
     return await this.getBookingProvider.getBookingsDetailsByBooking(bookingId);
+  }
+
+  public async validateBookingDetail(bookingDetailId: number) {
+    return await this.validateBookingDetailProvider.validate(bookingDetailId);
   }
 }

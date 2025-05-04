@@ -6,13 +6,16 @@ import {
   HttpStatus,
   Param,
   Post,
+  Req,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateBookingDto } from './dtos/create-booking.dto';
 import { BookingsService } from './bookings.service';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
+import { BookingTokenGuard } from '../auth/guards/access-token/booking-token-guard';
 
 @Controller('bookings')
 export class BookingsController {
@@ -110,5 +113,36 @@ export class BookingsController {
   @Auth(AuthType.None)
   public getBookingsDetailsByBooking(@Param('bookingId') bookingId: number) {
     return this.bookingsService.getBookingsDetailsByBooking(bookingId);
+  }
+
+  @ApiOperation({
+    summary: 'Permet de valider un ticket réservé',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Bookings details reserved',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized, invalid or expired token.',
+  })
+  @Get('validate-booking-detail')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Auth(AuthType.None)
+  @UseGuards(BookingTokenGuard)
+  @ApiBearerAuth() // La route attend un Bearer token
+  // Seul un admin peut valider ce ticket
+  // On utilise le token dans le query
+  public validateBookingDetail(
+    @Req() req: { bookingPayload?: { bookingDetailId?: number } },
+  ) {
+    if (
+      !req.bookingPayload ||
+      typeof req.bookingPayload.bookingDetailId !== 'number'
+    ) {
+      throw new Error('Invalid booking detail payload');
+    }
+    const { bookingDetailId } = req.bookingPayload;
+    return this.bookingsService.validateBookingDetail(bookingDetailId);
   }
 }

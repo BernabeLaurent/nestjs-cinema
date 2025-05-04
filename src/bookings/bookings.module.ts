@@ -9,9 +9,21 @@ import { GetBookingProvider } from './providers/get-booking.provider';
 import { UsersModule } from '../users/users.module';
 import { SessionsCinemasModule } from '../sessions-cinemas/sessions-cinemas.module';
 import { MoviesTheatersModule } from '../movies-theaters/movies-theaters.module';
+import { QrCodeService } from './qr-code.service';
+import { AuthModule } from '../auth/auth.module';
+import { ValidateBookingDetailProvider } from './providers/validate-booking-detail.provider';
+import { ConfigModule } from '@nestjs/config';
+import jwtConfig from '../auth/config/jwt.config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  providers: [BookingsService, CreateBookingProvider, GetBookingProvider],
+  providers: [
+    BookingsService,
+    CreateBookingProvider,
+    GetBookingProvider,
+    QrCodeService,
+    ValidateBookingDetailProvider,
+  ],
   controllers: [BookingsController],
   exports: [BookingsModule],
   imports: [
@@ -19,6 +31,9 @@ import { MoviesTheatersModule } from '../movies-theaters/movies-theaters.module'
     forwardRef(() => UsersModule),
     forwardRef(() => SessionsCinemasModule),
     forwardRef(() => MoviesTheatersModule),
+    forwardRef(() => AuthModule),
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
 })
 export class BookingsModule {}

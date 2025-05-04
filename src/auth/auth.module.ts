@@ -12,6 +12,7 @@ import { GenerateTokensProvider } from './providers/generate-tokens.provider';
 import { RefreshTokensProvider } from './providers/refresh-tokens.provider';
 import { GoogleAuthenticationController } from './social/google-authentication.controller';
 import { GoogleAuthenticationService } from './social/providers/google-authentication.service';
+import { GenerateTokenValidationBookingDetailProvider } from './providers/generate-token-validation-booking-detail.provider';
 
 @Module({
   controllers: [AuthController, GoogleAuthenticationController],
@@ -22,12 +23,17 @@ import { GoogleAuthenticationService } from './social/providers/google-authentic
     GenerateTokensProvider,
     RefreshTokensProvider,
     GoogleAuthenticationService,
+    GenerateTokenValidationBookingDetailProvider,
   ],
   imports: [
     forwardRef(() => UsersModule),
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
-  exports: [AuthService, HashingProvider],
+  exports: [
+    AuthService,
+    HashingProvider,
+    GenerateTokenValidationBookingDetailProvider,
+  ],
 })
 export class AuthModule {}

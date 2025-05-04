@@ -9,9 +9,9 @@ import { RoleUser } from '../../users/enums/roles-users.enum';
 @Injectable()
 export class GenerateTokensProvider {
   constructor(
-    private readonly jwtService: JwtService, // Assuming you have a JwtService for JWT token generation
+    private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY)
-    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>, // Assuming you have a JWT configuration for token generation
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
   ) {}
 
   public async signToken<T>(

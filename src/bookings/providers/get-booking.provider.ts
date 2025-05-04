@@ -12,6 +12,7 @@ import { User } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
 import { SessionCinema } from '../../sessions-cinemas/session-cinema.entity';
 import { SessionsCinemasService } from '../../sessions-cinemas/sessions-cinemas.service';
+import { QrCodeService } from '../qr-code.service';
 
 @Injectable()
 export class GetBookingProvider {
@@ -21,6 +22,7 @@ export class GetBookingProvider {
     private readonly moviesTheatersService: MoviesTheatersService,
     private readonly usersService: UsersService,
     private readonly sessionsCinemasService: SessionsCinemasService,
+    private readonly qrCodeService: QrCodeService,
   ) {}
 
   public async getById(id: number): Promise<Booking | null> {
@@ -132,10 +134,23 @@ export class GetBookingProvider {
     }
 
     try {
-      return await this.bookingRepository.find({
+      const bookingDetails = await this.bookingRepository.find({
         where: { id: bookingId },
         relations: ['reservedSeats'],
       });
+
+      return await Promise.all(
+        bookingDetails.map(async (bookingDetail) => {
+          const qrCodeUrl =
+            await this.qrCodeService.generateBookingQrCodeWithUrl(
+              bookingDetail.id,
+            );
+          return {
+            ...bookingDetail,
+            qrCodeUrl, // Ajout du QR Code pour chaque bookingDetail
+          };
+        }),
+      );
     } catch (error) {
       throw new Error('Could not find movietheater with this id', {
         cause: error,

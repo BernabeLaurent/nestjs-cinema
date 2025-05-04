@@ -27,6 +27,7 @@ import { join } from 'path';
 import { MoviesTheatersModule } from './movies-theaters/movies-theaters.module';
 import { SessionsCinemasModule } from './sessions-cinemas/sessions-cinemas.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { BookingTokenGuard } from './auth/guards/access-token/booking-token-guard';
 
 @Module({
   imports: [
@@ -101,6 +102,7 @@ import { BookingsModule } from './bookings/bookings.module';
       useClass: DataResponseInterceptor,
     },
     AccessTokenGuard,
+    BookingTokenGuard,
   ],
 })
 export class AppModule {}

@@ -15,10 +15,9 @@ import { ActiveUserData } from '../interfaces/active-user-data.interface';
 @Injectable()
 export class RefreshTokensProvider {
   constructor(
-    private readonly jwtService: JwtService, // Assuming you have a JwtService for JWT token generation
+    private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY)
-    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>, // Assuming you have a JWT configuration for token generation
-
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly generateTokensProvider: GenerateTokensProvider,
