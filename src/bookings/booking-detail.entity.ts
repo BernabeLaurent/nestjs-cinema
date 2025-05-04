@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Booking } from './booking.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -32,4 +34,10 @@ export class BookingDetail {
   @ManyToOne(() => Booking, (booking) => booking.reservedSeats)
   @JoinColumn({ name: 'bookingId' })
   booking: Booking;
+
+  @CreateDateColumn()
+  createDate: Date;
+
+  @UpdateDateColumn()
+  updateDate: Date;
 }
