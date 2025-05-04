@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SessionsCinemasService } from './sessions-cinemas.service';
 import { SessionsCinemasController } from './sessions-cinemas.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,7 +14,7 @@ import { Price } from './prices.entity';
   imports: [
     TypeOrmModule.forFeature([SessionCinema, Price]),
     MoviesTheatersModule,
-    MoviesModule,
+    forwardRef(() => MoviesModule),
   ],
   providers: [
     SessionsCinemasService,
@@ -23,5 +23,6 @@ import { Price } from './prices.entity';
     GetSessionCinemaProvider,
   ],
   controllers: [SessionsCinemasController],
+  exports: [SessionsCinemasService],
 })
 export class SessionsCinemasModule {}

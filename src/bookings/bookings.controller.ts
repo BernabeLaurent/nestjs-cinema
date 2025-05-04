@@ -1,4 +1,114 @@
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
+import { CreateBookingDto } from './dtos/create-booking.dto';
+import { BookingsService } from './bookings.service';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { AuthType } from '../auth/enums/auth-type.enum';
 
 @Controller('bookings')
-export class BookingsController {}
+export class BookingsController {
+  constructor(private readonly bookingsService: BookingsService) {}
+
+  @ApiOperation({ summary: 'Create a new booking' })
+  @ApiResponse({
+    status: 201,
+    description: 'The booking has been successfully created.',
+  })
+  @Post()
+  @Auth(AuthType.None)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public createBooking(@Body() createBookingDto: CreateBookingDto) {
+    return this.bookingsService.createBooking(createBookingDto);
+  }
+
+  @ApiOperation({ summary: 'Cherche une réservation par son ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Booking found successfully',
+  })
+  @Get('get/:bookingId')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Auth(AuthType.None)
+  public getBooking(@Param('bookingId') bookingId: number) {
+    return this.bookingsService.getBooking(bookingId);
+  }
+
+  @ApiOperation({ summary: 'Retourne toutes les réservations' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Bookings found successfully',
+  })
+  @Get('get-all')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Auth(AuthType.None)
+  public getAllBookings() {
+    return this.bookingsService.getAllBookings();
+  }
+
+  @ApiOperation({ summary: 'Retourne les réservations par son user ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Bookings found successfully',
+  })
+  @Get('get-by-user/:userId')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Auth(AuthType.None)
+  public getBookingsByUser(@Param('userId') userId: number) {
+    return this.bookingsService.getBookingsByUser(userId);
+  }
+
+  @ApiOperation({
+    summary: 'Retourne les réservations par son movie theater ID',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Bookings found successfully',
+  })
+  @Get('get-by-movie-theather/:movieTheatherId')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Auth(AuthType.None)
+  public getBookingsByMovieTheather(
+    @Param('movieTheatherId') movieTheatherId: number,
+  ) {
+    return this.bookingsService.getBookingsByMovieTheather(movieTheatherId);
+  }
+
+  @ApiOperation({
+    summary: 'Retourne les réservations par son session cinema ID',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Bookings found successfully',
+  })
+  @Get('get-by-session-cinema/:sessionCinemaId')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Auth(AuthType.None)
+  public getBookingsBySessionCinema(
+    @Param('sessionCinemaId') sessionCinemaId: number,
+  ) {
+    return this.bookingsService.getBookingsBySessionCinema(sessionCinemaId);
+  }
+
+  @ApiOperation({
+    summary: 'Retourne les places réservés par son booking ID',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Bookings details found successfully',
+  })
+  @Get('get-bookings-details/:bookingId')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Auth(AuthType.None)
+  public getBookingsDetailsByBooking(@Param('bookingId') bookingId: number) {
+    return this.bookingsService.getBookingsDetailsByBooking(bookingId);
+  }
+}
