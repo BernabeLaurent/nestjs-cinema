@@ -16,6 +16,9 @@ import { PatchMovieDto } from './dtos/patch-movie.dto';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 import { CreateReviewMovieDto } from './dtos/create-review-movie.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RoleUser } from '../users/enums/roles-users.enum';
+import { ValidateReviewMovieDto } from './dtos/validate-review-movie.dto';
 
 @Controller('movies')
 @ApiTags('Movies')
@@ -25,7 +28,7 @@ export class MoviesController {
   @ApiOperation({ summary: 'Cherche un film sur le service externe' })
   @Get('search')
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Movies found successfully',
   })
   public searchExternal(@Query('q') q: string) {
@@ -35,7 +38,7 @@ export class MoviesController {
   @ApiOperation({ summary: "Voir le détail d'un film sur le service externe" })
   @Get(':id')
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Movie details found successfully',
   })
   public getDetailsExternal(@Param('id') id: number) {
@@ -67,7 +70,7 @@ export class MoviesController {
     example: RegionsIso.FRANCE,
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Movies found successfully',
   })
   @Get('search/upcoming')
@@ -82,7 +85,7 @@ export class MoviesController {
   @ApiOperation({ summary: 'Cherche un film par son ID' })
   @Get('search/:movieId')
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Movie found successfully',
   })
   public getMovie(@Param('movieId') movieId: number) {
@@ -91,22 +94,69 @@ export class MoviesController {
 
   @ApiOperation({ summary: 'Updates a movie' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'The movie has been successfully updated.',
   })
-  @Patch()
-  public updateMovie(@Body() patchMovieDto: PatchMovieDto) {
-    return this.moviesService.updateMovie(patchMovieDto);
+  @Patch(':movieId')
+  public updateMovie(
+    @Param('movieId') movieId: number,
+    @Body() patchMovieDto: PatchMovieDto,
+  ) {
+    return this.moviesService.updateMovie(movieId, patchMovieDto);
   }
 
   @ApiOperation({ summary: 'Créer une note de film' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     description: 'Movie Review created successfully',
   })
   @Auth(AuthType.None)
   @Post('create-review')
   public createReviewMovie(@Body() createReviewMovieDto: CreateReviewMovieDto) {
     return this.moviesService.createMovieReview(createReviewMovieDto);
+  }
+
+  @ApiOperation({ summary: 'Valide ou invalide une review de film' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The movie review has been successfully validated.',
+  })
+  @Patch('reviews/:reviewId/validate')
+  @Roles([RoleUser.ADMIN])
+  public validateMovieReview(
+    @Param('reviewId') reviewId: number,
+    @Body() validateReviewMovieDto: ValidateReviewMovieDto,
+  ) {
+    return this.moviesService.validateMovieReview(
+      reviewId,
+      validateReviewMovieDto,
+    );
+  }
+
+  @ApiOperation({
+    summary: "Récupère une review spécifique d'un utilisateur pour un film",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The movie review has been successfully retrieved.',
+  })
+  @Get('reviews/:movieId/:userId')
+  public getMovieReview(
+    @Param('movieId') movieId: number,
+    @Param('userId') userId: number,
+  ) {
+    return this.moviesService.getMovieReview(movieId, userId);
+  }
+
+  @ApiOperation({
+    summary: "Récupère toutes les reviews d'un film",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The movie reviews have been successfully retrieved.',
+  })
+  @Get('reviews/:movieId')
+  public getMovieReviews(@Param('movieId') movieId: number) {
+    return this.moviesService.getMovieReviews(movieId);
   }
 }

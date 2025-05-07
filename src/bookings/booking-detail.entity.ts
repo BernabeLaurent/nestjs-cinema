@@ -9,19 +9,23 @@ import {
 } from 'typeorm';
 import { Booking } from './booking.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 @Entity()
+@Exclude()
 export class BookingDetail {
+  @Expose()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Expose()
   @Column({
     type: 'smallint',
     nullable: false,
   })
   seatNumber: number;
 
+  @Expose()
   @Column({
     type: 'boolean',
     nullable: false,
@@ -35,9 +39,11 @@ export class BookingDetail {
   @JoinColumn({ name: 'bookingId' })
   booking: Booking;
 
+  @Expose()
   @CreateDateColumn()
   createDate: Date;
 
+  @Expose()
   @UpdateDateColumn()
   updateDate: Date;
 }

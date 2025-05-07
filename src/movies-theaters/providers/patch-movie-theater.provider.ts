@@ -19,13 +19,14 @@ export class PatchMovieTheaterProvider {
   ) {}
 
   public async update(
+    id: number,
     patchMovieTheaterDto: PatchMovieTheaterDto,
   ): Promise<MovieTheater | null> {
     let movieTheater: MovieTheater | null;
 
     try {
       movieTheater = await this.moviesTheatersRepository.findOneBy({
-        id: patchMovieTheaterDto.id,
+        id: id,
       });
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call

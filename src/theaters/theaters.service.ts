@@ -46,13 +46,13 @@ export class TheatersService {
     return await this.createTheaterProvider.create(createTheaterDto);
   }
 
-  public async update(patchTheaterDto: PatchTheaterDto) {
+  public async update(id: number, patchTheaterDto: PatchTheaterDto) {
     let theater: Theater | null;
 
     // On recherche si le cinéma existe
     try {
       theater = await this.theatersRepository.findOneBy({
-        id: patchTheaterDto.id,
+        id: id,
       });
     } catch (error) {
       throw new RequestTimeoutException('unable to process your request', {

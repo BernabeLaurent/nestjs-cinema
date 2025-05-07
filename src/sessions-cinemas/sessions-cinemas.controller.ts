@@ -37,15 +37,17 @@ export class SessionsCinemasController {
 
   @ApiOperation({ summary: 'Updates a session cinema' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'The session cinema has been successfully updated.',
   })
   @Auth(AuthType.None)
-  @Patch()
+  @Patch(':id')
   public updateSessionCinema(
+    @Param('id') id: number,
     @Body() patchSessionCinemaDto: PatchSessionCinemaDto,
   ) {
     return this.sessionsCinemasService.updateSessionCinema(
+      id,
       patchSessionCinemaDto,
     );
   }
@@ -53,7 +55,7 @@ export class SessionsCinemasController {
   @ApiOperation({ summary: "Voir le détail d'une séance de cinéma" })
   @Get(':id')
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Session cinema found successfully',
   })
   @Auth(AuthType.None)
@@ -64,7 +66,7 @@ export class SessionsCinemasController {
   @ApiOperation({ summary: 'Retourne tous les séance de cinéma pour un film' })
   @Get('ByMovie/:id')
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Sessions cinemas found successfully',
   })
   @Auth(AuthType.None)
@@ -77,7 +79,7 @@ export class SessionsCinemasController {
   })
   @Get('ByMovieTheater/:id')
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Sessions cinemas found successfully',
   })
   @Auth(AuthType.None)
@@ -90,7 +92,7 @@ export class SessionsCinemasController {
   })
   @Get('ByMovieTheater/:id')
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Sessions cinemas found successfully',
   })
   @Auth(AuthType.None)

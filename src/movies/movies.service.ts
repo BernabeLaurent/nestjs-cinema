@@ -1,10 +1,10 @@
 // src/movies/movies.service.ts
 import {
+  BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
-  BadRequestException,
   RequestTimeoutException,
-  ConflictException,
 } from '@nestjs/common';
 
 import { MoviesProviderToken } from './movies.config';
@@ -20,6 +20,9 @@ import { CreateMovieDto } from './dtos/create-movie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateReviewMovieDto } from './dtos/create-review-movie.dto';
 import { CreateMovieReviewProvider } from './providers/create-movie-review.provider';
+import { ValidateMovieReviewProvider } from './providers/validate-movie-review.provider';
+import { ValidateReviewMovieDto } from './dtos/validate-review-movie.dto';
+import { MovieReview } from './movie-review.entity';
 
 @Injectable()
 export class MoviesService {
@@ -30,6 +33,9 @@ export class MoviesService {
     private readonly moviesRepository: Repository<Movie>,
     private readonly findOneMovieByExternalIdProvider: FindOneMovieByExternalIdProvider,
     private readonly createMovieReviewProvider: CreateMovieReviewProvider,
+    private readonly validateMovieReviewProvider: ValidateMovieReviewProvider,
+    @InjectRepository(MovieReview)
+    private readonly movieReviewRepository: Repository<MovieReview>,
   ) {}
 
   public async search(query: string): Promise<Movie[]> {
@@ -50,7 +56,10 @@ export class MoviesService {
 
   public async getMovieById(id: number): Promise<Movie | null> {
     try {
-      return await this.moviesRepository.findOneBy({ id: id });
+      return await this.moviesRepository.findOne({
+        where: { id: id },
+        relations: ['reviews', 'reviews.user'],
+      });
     } catch (error) {
       throw new Error('Could not find user with this googleId', {
         cause: error,
@@ -72,11 +81,11 @@ export class MoviesService {
     }
   }
 
-  public async updateMovie(patchMovieDto: PatchMovieDto) {
+  public async updateMovie(movieId: number, patchMovieDto: PatchMovieDto) {
     let movie: Movie | null;
 
     try {
-      movie = await this.moviesRepository.findOneBy({ id: patchMovieDto.id });
+      movie = await this.moviesRepository.findOneBy({ id: movieId });
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       throw new RequestTimeoutException('unable to process your request', {
@@ -112,5 +121,60 @@ export class MoviesService {
 
   public async createMovieReview(createMovieReviewDto: CreateReviewMovieDto) {
     return await this.createMovieReviewProvider.create(createMovieReviewDto);
+  }
+
+  public validateMovieReview(
+    reviewId: number,
+    validateReviewMovieDto: ValidateReviewMovieDto,
+  ) {
+    return this.validateMovieReviewProvider.validate(
+      reviewId,
+      validateReviewMovieDto,
+    );
+  }
+
+  public async getMovieReview(movieId: number, userId: number) {
+    try {
+      const review = await this.movieReviewRepository.findOne({
+        where: {
+          movie: { id: movieId },
+          user: { id: userId },
+        },
+        relations: ['movie', 'user'],
+      });
+
+      if (!review) {
+        throw new BadRequestException(
+          'Movie review not found for this user and movie',
+        );
+      }
+
+      return review;
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new RequestTimeoutException('unable to process your request', {
+        description: 'error connecting database' + error,
+      });
+    }
+  }
+
+  public async getMovieReviews(movieId: number) {
+    try {
+      return await this.movieReviewRepository.find({
+        where: {
+          movie: { id: movieId },
+        },
+        relations: ['movie', 'user'],
+        order: {
+          createDate: 'DESC',
+        },
+      });
+    } catch (error) {
+      throw new RequestTimeoutException('unable to process your request', {
+        description: 'error connecting database' + error,
+      });
+    }
   }
 }

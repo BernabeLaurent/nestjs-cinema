@@ -45,8 +45,12 @@ export class SessionsCinemasService {
   }
 
   public async updateSessionCinema(
+    id: number,
     patchSessionCinemaDto: PatchSessionCinemaDto,
   ) {
-    return await this.patchSessionCinemaProvider.update(patchSessionCinemaDto);
+    return await this.patchSessionCinemaProvider.update(
+      id,
+      patchSessionCinemaDto,
+    );
   }
 }

@@ -15,13 +15,13 @@ export class UpdateUserProvider {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  public async update(patchUserDto: PatchUserDto) {
+  public async update(id: number, patchUserDto: PatchUserDto) {
     let user: User | null;
 
     // On recherche si l'user existe
     try {
       user = await this.usersRepository.findOneBy({
-        id: patchUserDto.id,
+        id: id,
       });
     } catch (error) {
       throw new RequestTimeoutException('unable to process your request', {

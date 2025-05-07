@@ -41,8 +41,12 @@ export class MoviesTheatersService {
   }
 
   public async updateMovieTheater(
+    id: number,
     patchMovieTheaterDto: PatchMovieTheaterDto,
   ): Promise<MovieTheater | null> {
-    return await this.patchMovieTheaterProvider.update(patchMovieTheaterDto);
+    return await this.patchMovieTheaterProvider.update(
+      id,
+      patchMovieTheaterDto,
+    );
   }
 }

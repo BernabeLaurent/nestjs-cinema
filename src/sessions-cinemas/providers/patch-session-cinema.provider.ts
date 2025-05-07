@@ -22,13 +22,14 @@ export class PatchSessionCinemaProvider {
   ) {}
 
   public async update(
+    id: number,
     patchSessionCinemaDto: PatchSessionCinemaDto,
   ): Promise<SessionCinema | null> {
     let sessionCinema: SessionCinema | null;
 
     try {
       sessionCinema = await this.sessionCinemaRepository.findOneBy({
-        id: patchSessionCinemaDto.id,
+        id: id,
       });
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call

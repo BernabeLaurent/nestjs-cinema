@@ -15,6 +15,9 @@ import { ValidateBookingDetailProvider } from './providers/validate-booking-deta
 import { ConfigModule } from '@nestjs/config';
 import jwtConfig from '../auth/config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
+import { UpdateBookingProvider } from './providers/update-booking.provider';
+import { CancelBookingProvider } from './providers/cancel-booking.provider';
+import { ValidateBookingProvider } from './providers/validate-booking.provider';
 
 @Module({
   providers: [
@@ -23,6 +26,9 @@ import { JwtModule } from '@nestjs/jwt';
     GetBookingProvider,
     QrCodeService,
     ValidateBookingDetailProvider,
+    UpdateBookingProvider,
+    CancelBookingProvider,
+    ValidateBookingProvider,
   ],
   controllers: [BookingsController],
   exports: [BookingsModule],

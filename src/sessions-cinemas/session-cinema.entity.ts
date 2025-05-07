@@ -12,12 +12,16 @@ import { Languages } from '../common/enums/languages.enum';
 import { MovieTheater } from '../movies-theaters/movie-theater.entity';
 import { Movie } from '../movies/movie.entity';
 import { Booking } from '../bookings/booking.entity';
+import { Exclude, Expose } from 'class-transformer';
 
 @Entity()
+@Exclude()
 export class SessionCinema {
+  @Expose()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Expose()
   @ApiProperty({
     description: 'Date et heure du début de la séance',
     example: '2025-05-20T20:30:00.000Z',
@@ -27,6 +31,7 @@ export class SessionCinema {
   @Column({ type: 'timestamp' })
   startTime: Date;
 
+  @Expose()
   @ApiProperty({
     description: 'Date et heure de fin de la séance',
     example: '2025-05-20T20:30:00.000Z',
@@ -36,6 +41,7 @@ export class SessionCinema {
   @Column({ type: 'timestamp' })
   endTime: Date;
 
+  @Expose()
   @ApiProperty({
     enum: TheaterQuality,
     description: 'Qualité de diffusion du film',
@@ -47,6 +53,7 @@ export class SessionCinema {
   })
   quality: TheaterQuality;
 
+  @Expose()
   @ApiProperty({
     enum: Languages,
     description: 'Langue du film',
@@ -58,6 +65,7 @@ export class SessionCinema {
   })
   codeLanguage: Languages;
 
+  @Expose()
   @ManyToOne(
     () => MovieTheater,
     (MovieTheater) => MovieTheater.sessionsCinema,
@@ -67,9 +75,11 @@ export class SessionCinema {
   @ApiProperty({ type: () => MovieTheater })
   movieTheater: MovieTheater;
 
+  @Expose()
   @Column()
   movieTheaterId: number;
 
+  @Expose()
   @ManyToOne(() => Movie, (movie) => movie.sessionsCinemas, {
     eager: true,
   })
@@ -77,9 +87,11 @@ export class SessionCinema {
   @JoinColumn({ name: 'movieId' })
   movie: Movie;
 
+  @Expose()
   @Column()
   movieId: number;
 
+  @Expose()
   @OneToMany(() => Booking, (booking) => booking.sessionCinema)
   bookings: Booking[];
 }

@@ -55,8 +55,8 @@ export class UsersService {
     return await this.createUserProvider.create(createUserDto);
   }
 
-  public async update(patchUserDto: PatchUserDto) {
-    return await this.updateUserProvider.update(patchUserDto);
+  public async update(id: number, patchUserDto: PatchUserDto) {
+    return await this.updateUserProvider.update(id, patchUserDto);
   }
 
   public async delete(id: number) {
@@ -100,5 +100,11 @@ export class UsersService {
 
   public async createGoogleUser(googleUser: GoogleUser) {
     return await this.createGoogleUserProvider.createGoogleUser(googleUser);
+  }
+
+  public async findAll(): Promise<User[]> {
+    return this.usersRepository.find({
+      relations: ['bookings'],
+    });
   }
 }

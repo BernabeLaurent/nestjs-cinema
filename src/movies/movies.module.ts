@@ -14,6 +14,7 @@ import { CreateMovieProvider } from './source/providers/create-movie.provider';
 import { MovieReview } from './movie-review.entity';
 import { CreateMovieReviewProvider } from './providers/create-movie-review.provider';
 import { UsersModule } from '../users/users.module';
+import { ValidateMovieReviewProvider } from './providers/validate-movie-review.provider';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UsersModule } from '../users/users.module';
     FindOneMovieByExternalIdProvider,
     CreateMovieProvider,
     CreateMovieReviewProvider,
+    ValidateMovieReviewProvider,
   ],
   exports: [MoviesService, CreateMovieProvider],
 })

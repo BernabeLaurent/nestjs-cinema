@@ -1,75 +1,82 @@
 import {
-  Body,
-  ClassSerializerInterceptor,
   Controller,
-  Delete,
   Get,
-  Param,
-  ParseIntPipe,
-  Patch,
   Post,
-  Query,
-  UseInterceptors,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { PatchUserDto } from './dtos/patch-user.dto';
-import { GetUserDto } from './dtos/get-user.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleUser } from './enums/roles-users.enum';
 
-@ApiBearerAuth('access-token')
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Create a new user' })
+  @ApiOperation({ summary: 'Créer un utilisateur' })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'The user has been successfully created.',
   })
   @Post()
-  @Auth(AuthType.None)
-  @UseInterceptors(ClassSerializerInterceptor)
-  public createUser(
-    @Body()
-    createUserDto: CreateUserDto,
-  ) {
+  @Auth(AuthType.Bearer)
+  @Roles([RoleUser.ADMIN])
+  public create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  @Patch()
-  public patchUser(@Body() patchUserDto: PatchUserDto) {
-    return this.usersService.update(patchUserDto);
+  @ApiOperation({ summary: 'Récupérer tous les utilisateurs' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Return all users.',
+  })
+  @Get()
+  @Auth(AuthType.Bearer)
+  @Roles([RoleUser.ADMIN])
+  public findAll() {
+    return this.usersService.findAll();
   }
 
-  @ApiOperation({ summary: 'Delete a user' })
+  @ApiOperation({ summary: 'Récupérer un utilisateur' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
+    description: 'Return the user.',
+  })
+  @Get(':id')
+  @Auth(AuthType.Bearer)
+  public findOne(@Param('id') id: number) {
+    return this.usersService.findOneById(id);
+  }
+
+  @ApiOperation({ summary: 'Mettre à jour un utilisateur' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The user has been successfully updated.',
+  })
+  @Patch(':id')
+  @Auth(AuthType.Bearer)
+  public update(@Param('id') id: number, @Body() patchUserDto: PatchUserDto) {
+    return this.usersService.update(id, patchUserDto);
+  }
+
+  @ApiOperation({ summary: 'Supprimer un utilisateur' })
+  @ApiResponse({
+    status: HttpStatus.OK,
     description: 'The user has been successfully deleted.',
   })
-  @Delete()
+  @Delete(':id')
+  @Auth(AuthType.Bearer)
   @Roles([RoleUser.ADMIN])
-  public deleteUser(@Query('id', ParseIntPipe) id: number) {
+  public remove(@Param('id') id: number) {
     return this.usersService.delete(id);
-  }
-
-  @Get('{/:id}')
-  @ApiOperation({ summary: 'Get User by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'User found successfully',
-  })
-  public getUsers(@Param() getUserDto: GetUserDto) {
-    return this.usersService.findOneById(getUserDto.id);
   }
 }

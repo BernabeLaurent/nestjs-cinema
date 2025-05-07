@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
-  Delete, Get, Param,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
   ParseIntPipe,
   Patch,
   Post,
@@ -21,7 +24,7 @@ export class TheatersController {
   @Get('{/:id}')
   @ApiOperation({ summary: 'Get Theater by ID' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'User found successfully',
   })
   public getTheater(@Param() getTheaterDto: GetTheaterDto) {
@@ -30,7 +33,7 @@ export class TheatersController {
 
   @ApiOperation({ summary: 'Create a new theater' })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'The theater has been successfully created.',
   })
   @Post()
@@ -40,17 +43,20 @@ export class TheatersController {
 
   @ApiOperation({ summary: 'Update a theater' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'The theater has been successfully updated.',
   })
-  @Patch()
-  public updateTheater(@Body() patchTheaterDto: PatchTheaterDto) {
-    return this.theatersService.update(patchTheaterDto);
+  @Patch(':id')
+  public updateTheater(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() patchTheaterDto: PatchTheaterDto,
+  ) {
+    return this.theatersService.update(id, patchTheaterDto);
   }
 
   @ApiOperation({ summary: 'Delete a theater' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'The theater has been successfully deleted.',
   })
   @Delete()

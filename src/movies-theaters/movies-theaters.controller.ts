@@ -43,7 +43,7 @@ export class MoviesTheatersController {
   @Post('create')
   @ApiOperation({ summary: 'Créer une salle de cinéma' })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     description: 'MovieTheater created successfully',
   })
   @Auth(AuthType.None)
@@ -53,15 +53,19 @@ export class MoviesTheatersController {
     return this.moviesTheaterService.createMovieTheater(createMovieTheaterDto);
   }
 
-  @ApiOperation({ summary: 'Updates a movie' })
+  @ApiOperation({ summary: 'Updates a movie theater' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'The movie Theater has been successfully updated.',
   })
-  @Patch()
+  @Patch(':id')
   public updateMovieTheater(
+    @Param('id') id: number,
     @Body() patchMovieTheaterDto: PatchMovieTheaterDto,
   ) {
-    return this.moviesTheaterService.updateMovieTheater(patchMovieTheaterDto);
+    return this.moviesTheaterService.updateMovieTheater(
+      id,
+      patchMovieTheaterDto,
+    );
   }
 }
