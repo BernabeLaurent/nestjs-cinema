@@ -28,6 +28,7 @@ import { MoviesTheatersModule } from './movies-theaters/movies-theaters.module';
 import { SessionsCinemasModule } from './sessions-cinemas/sessions-cinemas.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { BookingTokenGuard } from './auth/guards/access-token/booking-token-guard';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -84,6 +85,15 @@ import { BookingTokenGuard } from './auth/guards/access-token/booking-token-guar
     MoviesTheatersModule,
     SessionsCinemasModule,
     BookingsModule,
+    ThrottlerModule.forRoot({
+      // Permet de se protéger contre les attaques brutes force
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
   ],
   controllers: [AppController],
   providers: [
@@ -104,6 +114,10 @@ import { BookingTokenGuard } from './auth/guards/access-token/booking-token-guar
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor, // Pour le rendre global
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
     AccessTokenGuard,
     BookingTokenGuard,
