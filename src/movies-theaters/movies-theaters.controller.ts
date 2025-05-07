@@ -13,8 +13,11 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 import { CreateMovieTheaterDto } from './dtos/create-movie-theater.dto';
 import { PatchMovieTheaterDto } from './dtos/patch-movie-theater.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RoleUser } from '../users/enums/roles-users.enum';
 
 @Controller('movies-theaters')
+@Auth(AuthType.Bearer)
 export class MoviesTheatersController {
   constructor(private readonly moviesTheaterService: MoviesTheatersService) {}
 
@@ -46,7 +49,7 @@ export class MoviesTheatersController {
     status: HttpStatus.CREATED,
     description: 'MovieTheater created successfully',
   })
-  @Auth(AuthType.None)
+  @Roles([RoleUser.ADMIN])
   public createMovieTheater(
     @Body() createMovieTheaterDto: CreateMovieTheaterDto,
   ) {
@@ -59,6 +62,7 @@ export class MoviesTheatersController {
     description: 'The movie Theater has been successfully updated.',
   })
   @Patch(':id')
+  @Roles([RoleUser.ADMIN])
   public updateMovieTheater(
     @Param('id') id: number,
     @Body() patchMovieTheaterDto: PatchMovieTheaterDto,

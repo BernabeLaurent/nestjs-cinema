@@ -19,6 +19,7 @@ import { RoleUser } from './enums/roles-users.enum';
 
 @Controller('users')
 @ApiTags('Users')
+@Auth(AuthType.Bearer)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -28,7 +29,6 @@ export class UsersController {
     description: 'The user has been successfully created.',
   })
   @Post()
-  @Auth(AuthType.Bearer)
   @Roles([RoleUser.ADMIN])
   public create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -40,7 +40,6 @@ export class UsersController {
     description: 'Return all users.',
   })
   @Get()
-  @Auth(AuthType.Bearer)
   @Roles([RoleUser.ADMIN])
   public findAll() {
     return this.usersService.findAll();
@@ -52,9 +51,8 @@ export class UsersController {
     description: 'Return the user.',
   })
   @Get(':id')
-  @Auth(AuthType.Bearer)
-  public findOne(@Param('id') id: number) {
-    return this.usersService.findOneById(id);
+  public findOne(@Param('id') id: string) {
+    return this.usersService.findOneById(+id);
   }
 
   @ApiOperation({ summary: 'Mettre à jour un utilisateur' })
@@ -63,9 +61,8 @@ export class UsersController {
     description: 'The user has been successfully updated.',
   })
   @Patch(':id')
-  @Auth(AuthType.Bearer)
-  public update(@Param('id') id: number, @Body() patchUserDto: PatchUserDto) {
-    return this.usersService.update(id, patchUserDto);
+  public update(@Param('id') id: string, @Body() patchUserDto: PatchUserDto) {
+    return this.usersService.update(+id, patchUserDto);
   }
 
   @ApiOperation({ summary: 'Supprimer un utilisateur' })
@@ -74,9 +71,19 @@ export class UsersController {
     description: 'The user has been successfully deleted.',
   })
   @Delete(':id')
-  @Auth(AuthType.Bearer)
   @Roles([RoleUser.ADMIN])
-  public remove(@Param('id') id: number) {
-    return this.usersService.delete(id);
+  public remove(@Param('id') id: string) {
+    return this.usersService.delete(+id);
+  }
+
+  @ApiOperation({ summary: 'Vérifier si un email est disponible' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Check if email is available.',
+  })
+  @Get('check-email/:email')
+  @Auth(AuthType.None)
+  public checkEmail(@Param('email') email: string) {
+    return this.usersService.findOneByEmail(email);
   }
 }

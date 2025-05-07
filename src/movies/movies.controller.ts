@@ -22,6 +22,7 @@ import { ValidateReviewMovieDto } from './dtos/validate-review-movie.dto';
 
 @Controller('movies')
 @ApiTags('Movies')
+@Auth(AuthType.Bearer)
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
@@ -31,6 +32,7 @@ export class MoviesController {
     status: HttpStatus.OK,
     description: 'Movies found successfully',
   })
+  @Roles([RoleUser.ADMIN])
   public searchExternal(@Query('q') q: string) {
     return this.moviesService.search(q);
   }
@@ -41,6 +43,7 @@ export class MoviesController {
     status: HttpStatus.OK,
     description: 'Movie details found successfully',
   })
+  @Roles([RoleUser.ADMIN])
   public getDetailsExternal(@Param('id') id: number) {
     return this.moviesService.getDetails(id);
   }
@@ -74,6 +77,7 @@ export class MoviesController {
     description: 'Movies found successfully',
   })
   @Get('search/upcoming')
+  @Roles([RoleUser.ADMIN])
   public getUpcomingMoviesExternal(
     @Query('region') region?: RegionsIso,
     @Query('language') language?: Languages,
@@ -88,6 +92,7 @@ export class MoviesController {
     status: HttpStatus.OK,
     description: 'Movie found successfully',
   })
+  @Auth(AuthType.None)
   public getMovie(@Param('movieId') movieId: number) {
     return this.moviesService.getMovieById(movieId);
   }
@@ -98,6 +103,7 @@ export class MoviesController {
     description: 'The movie has been successfully updated.',
   })
   @Patch(':movieId')
+  @Roles([RoleUser.ADMIN])
   public updateMovie(
     @Param('movieId') movieId: number,
     @Body() patchMovieDto: PatchMovieDto,
@@ -110,7 +116,6 @@ export class MoviesController {
     status: HttpStatus.CREATED,
     description: 'Movie Review created successfully',
   })
-  @Auth(AuthType.None)
   @Post('create-review')
   public createReviewMovie(@Body() createReviewMovieDto: CreateReviewMovieDto) {
     return this.moviesService.createMovieReview(createReviewMovieDto);
@@ -155,6 +160,7 @@ export class MoviesController {
     status: HttpStatus.OK,
     description: 'The movie reviews have been successfully retrieved.',
   })
+  @Auth(AuthType.None)
   @Get('reviews/:movieId')
   public getMovieReviews(@Param('movieId') movieId: number) {
     return this.moviesService.getMovieReviews(movieId);

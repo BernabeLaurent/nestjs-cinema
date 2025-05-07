@@ -13,8 +13,11 @@ import { AuthType } from '../auth/enums/auth-type.enum';
 import { SessionsCinemasService } from './sessions-cinemas.service';
 import { CreateSessionCinemaDto } from './dtos/create-session-cinema.dto';
 import { PatchSessionCinemaDto } from './dtos/patch-session-cinema.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RoleUser } from '../users/enums/roles-users.enum';
 
 @Controller('sessions-cinemas')
+@Auth(AuthType.Bearer)
 export class SessionsCinemasController {
   constructor(
     private readonly sessionsCinemasService: SessionsCinemasService,
@@ -26,7 +29,7 @@ export class SessionsCinemasController {
     status: HttpStatus.OK,
     description: 'Session Cinema created successfully',
   })
-  @Auth(AuthType.None)
+  @Roles([RoleUser.ADMIN])
   public createSessionCinema(
     @Body() createSessionCinemaDto: CreateSessionCinemaDto,
   ) {
@@ -40,8 +43,8 @@ export class SessionsCinemasController {
     status: HttpStatus.OK,
     description: 'The session cinema has been successfully updated.',
   })
-  @Auth(AuthType.None)
   @Patch(':id')
+  @Roles([RoleUser.ADMIN])
   public updateSessionCinema(
     @Param('id') id: number,
     @Body() patchSessionCinemaDto: PatchSessionCinemaDto,

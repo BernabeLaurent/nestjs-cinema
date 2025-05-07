@@ -6,6 +6,7 @@ import { AuthType } from './enums/auth-type.enum';
 import { RefreshTokenDto } from './dtos/refresh-token.dto';
 import { ApiOperation } from '@nestjs/swagger';
 
+@Auth(AuthType.Bearer)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

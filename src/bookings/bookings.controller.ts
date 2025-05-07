@@ -28,6 +28,7 @@ import { BookingTokenGuard } from 'src/auth/guards/access-token/booking-token-gu
 
 @Controller('bookings')
 @ApiTags('Bookings')
+@Auth(AuthType.Bearer)
 export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
@@ -37,7 +38,6 @@ export class BookingsController {
     description: 'The booking has been successfully created.',
   })
   @Post()
-  @Auth(AuthType.Bearer)
   public create(@Body() createBookingDto: CreateBookingDto) {
     return this.bookingsService.create(createBookingDto);
   }
@@ -59,7 +59,6 @@ export class BookingsController {
     description: 'Return the booking.',
   })
   @Get(':id')
-  @Auth(AuthType.Bearer)
   public findOne(@Param('id') id: number) {
     return this.bookingsService.getBooking(id);
   }
@@ -70,7 +69,6 @@ export class BookingsController {
     description: 'The booking has been successfully updated.',
   })
   @Patch(':id')
-  @Auth(AuthType.Bearer)
   public update(
     @Param('id') id: number,
     @Body() updateBookingDto: UpdateBookingDto,
@@ -84,7 +82,6 @@ export class BookingsController {
     description: 'The booking has been successfully deleted.',
   })
   @Delete(':id')
-  @Auth(AuthType.Bearer)
   public remove(@Param('id') id: number) {
     return this.bookingsService.remove(+id);
   }
@@ -106,7 +103,6 @@ export class BookingsController {
     description: 'The booking has been successfully cancelled.',
   })
   @Patch(':id/cancel')
-  @Auth(AuthType.Bearer)
   public cancel(@Param('id') id: number) {
     return this.bookingsService.cancel(+id);
   }
@@ -117,7 +113,6 @@ export class BookingsController {
     description: 'Return all bookings for a user.',
   })
   @Get('user/:userId')
-  @Auth(AuthType.Bearer)
   public findByUser(@Param('userId') userId: number) {
     return this.bookingsService.getBookingsByUser(userId);
   }
@@ -130,7 +125,6 @@ export class BookingsController {
     description: 'Bookings found successfully',
   })
   @Get('get-by-movie-theather/:movieTheatherId')
-  @Auth(AuthType.None)
   public getBookingsByMovieTheather(
     @Param('movieTheatherId') movieTheatherId: number,
   ) {
@@ -145,7 +139,6 @@ export class BookingsController {
     description: 'Bookings found successfully',
   })
   @Get('get-by-session-cinema/:sessionCinemaId')
-  @Auth(AuthType.None)
   public getBookingsBySessionCinema(
     @Param('sessionCinemaId') sessionCinemaId: number,
   ) {
@@ -160,7 +153,6 @@ export class BookingsController {
     description: 'Bookings details found successfully',
   })
   @Get('get-bookings-details/:bookingId')
-  @Auth(AuthType.None)
   public getBookingsDetailsByBooking(@Param('bookingId') bookingId: number) {
     return this.bookingsService.getBookingsDetailsByBooking(bookingId);
   }
@@ -177,7 +169,6 @@ export class BookingsController {
     description: 'Unauthorized, invalid or expired token.',
   })
   @Get('validate-booking-detail')
-  @Auth(AuthType.Bearer)
   @Roles([RoleUser.ADMIN])
   @UseGuards(BookingTokenGuard)
   @ApiBearerAuth() // La route attend un Bearer token

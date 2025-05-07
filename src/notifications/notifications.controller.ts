@@ -6,6 +6,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 
 @Controller('notifications')
+@Auth(AuthType.Bearer)
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
@@ -16,7 +17,6 @@ export class NotificationsController {
     description: 'Email sent successfully',
   })
   @HttpCode(HttpStatus.OK)
-  @Auth(AuthType.None)
   async sendEmail(@Body() sendEmailDto: SendEmailDto) {
     return this.notificationsService.sendEmail(
       sendEmailDto.userId,
