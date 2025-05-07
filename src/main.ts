@@ -51,7 +51,14 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   //enable cors
-  app.enableCors();
+  app.enableCors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+      'http://localhost:' + portNestjs,
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   app.use(compression());
 
