@@ -136,6 +136,7 @@ export class MoviesService {
     // save the post and return it
     try {
       await this.moviesRepository.update(movie.id, movie);
+      await this.cacheManager.del(`movie_${movie.id}`); // Invalidate le cache
     } catch (error) {
       throw new RequestTimeoutException('unable to process your request', {
         description: 'error connecting database' + error,
@@ -190,8 +191,18 @@ export class MoviesService {
 
   public async getMovieReviews(movieId: number) {
     this.logger.log('getMovieReviews');
+    const cacheKey = `movies_reviews_${movieId}`;
+    const cachedMovieReviews =
+      await this.cacheManager.get<MovieReview[]>(cacheKey);
+
+    if (cachedMovieReviews) {
+      return cachedMovieReviews;
+    }
+
+    let movieReviews: MovieReview[] | null;
+
     try {
-      return await this.movieReviewRepository.find({
+      movieReviews = await this.movieReviewRepository.find({
         where: {
           movie: { id: movieId },
         },
@@ -205,5 +216,8 @@ export class MoviesService {
         description: 'error connecting database' + error,
       });
     }
+    await this.cacheManager.set(cacheKey, movieReviews, 3600000); // Cache for 1 hour
+
+    return movieReviews;
   }
 }
