@@ -90,8 +90,8 @@ import { CacheModule } from '@nestjs/cache-manager';
       // Permet de se protéger contre les attaques brutes force
       throttlers: [
         {
-          ttl: 60000,
-          limit: 10,
+          ttl: 60,
+          limit: 10, // 10 requêtes par minute
         },
       ],
     }),
