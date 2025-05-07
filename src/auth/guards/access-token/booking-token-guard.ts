@@ -12,21 +12,15 @@ export class BookingTokenGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest<{
-      headers: { authorization?: string };
+      query: { token?: string };
       bookingPayload?: unknown;
     }>();
-    // On récupère le token Bearer dans les en-têtes HTTP
-    const authHeader = req.headers.authorization;
+    
+    // On récupère le token depuis le query string
+    const token = req.query.token;
 
-    if (!authHeader) {
+    if (!token) {
       throw new UnauthorizedException('Token manquant ou invalide');
-    }
-
-    // Vérifier que le token commence par "Bearer "
-    const [bearer, token] = authHeader.split(' ');
-
-    if (bearer !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Token mal formé');
     }
     
     try {

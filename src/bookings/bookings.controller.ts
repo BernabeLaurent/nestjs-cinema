@@ -9,13 +9,16 @@ import {
   Req,
   UseGuards,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { CreateBookingDto } from './dtos/create-booking.dto';
 import { BookingsService } from './bookings.service';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 import { BookingTokenGuard } from '../auth/guards/access-token/booking-token-guard';
+import { RoleUser } from 'src/users/enums/roles-users.enum';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('bookings')
 export class BookingsController {
@@ -128,11 +131,15 @@ export class BookingsController {
   })
   @Get('validate-booking-detail')
   @UseInterceptors(ClassSerializerInterceptor)
-  @Auth(AuthType.None)
+  @Auth(AuthType.Bearer)
+  @Roles([RoleUser.ADMIN])
   @UseGuards(BookingTokenGuard)
   @ApiBearerAuth() // La route attend un Bearer token
-  // Seul un admin peut valider ce ticket
-  // On utilise le token dans le query
+  @ApiQuery({
+    name: 'token',
+    required: true,
+    description: 'JWT spécial pour la validation du ticket',
+  })
   public validateBookingDetail(
     @Req() req: { bookingPayload?: { bookingDetailId?: number } },
   ) {
