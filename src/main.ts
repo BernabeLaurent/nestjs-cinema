@@ -6,6 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import { TimeoutInterceptor } from './common/interceptors/timeout/timeout.interceptor';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -56,6 +57,18 @@ async function bootstrap() {
 
   // ⏱️ Timeout global en millisecondes
   app.useGlobalInterceptors(new TimeoutInterceptor());
+
+  // Protection contre les attaques XSS et autres
+  app.use(helmet());
+
+  // Protection contre le clickjacking
+  app.use(helmet.frameguard({ action: 'deny' }));
+
+  // Protection contre le MIME type sniffing
+  app.use(helmet.noSniff());
+
+  // Protection contre XSS
+  app.use(helmet.xssFilter());
 
   await app.listen(portNestjs, '0.0.0.0', () => {});
 }
