@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
+import { TimeoutInterceptor } from './common/interceptors/timeout/timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -52,6 +53,9 @@ async function bootstrap() {
   app.enableCors();
 
   app.use(compression());
+
+  // ⏱️ Timeout global en millisecondes
+  app.useGlobalInterceptors(new TimeoutInterceptor());
 
   await app.listen(portNestjs, '0.0.0.0', () => {});
 }
