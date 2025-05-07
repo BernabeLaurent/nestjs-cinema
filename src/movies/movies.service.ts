@@ -3,7 +3,7 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable,
+  Injectable, Logger,
   RequestTimeoutException,
 } from '@nestjs/common';
 
@@ -38,11 +38,17 @@ export class MoviesService {
     private readonly movieReviewRepository: Repository<MovieReview>,
   ) {}
 
+  private readonly logger = new Logger(MoviesService.name, {
+    timestamp: true,
+  });
+
   public async search(query: string): Promise<Movie[]> {
+    this.logger.log('search');
     return await this.provider.searchMovies(query);
   }
 
   public async getDetails(id: number): Promise<Movie> {
+    this.logger.log('getDetails');
     return await this.provider.getMovieDetails(id);
   }
 
@@ -51,10 +57,12 @@ export class MoviesService {
     language?: Languages,
     page?: number,
   ): Promise<Movie[]> {
+    this.logger.log('validateBooking');
     return await this.provider.getUpcomingMovies(region, language, page);
   }
 
   public async getMovieById(id: number): Promise<Movie | null> {
+    this.logger.log('getMovieById');
     try {
       return await this.moviesRepository.findOne({
         where: { id: id },
@@ -68,10 +76,12 @@ export class MoviesService {
   }
 
   public async getMovieByExternalId(id: number): Promise<Movie | null> {
+    this.logger.log('getMovieByExternalId');
     return await this.findOneMovieByExternalIdProvider.findOneByExternalId(id);
   }
 
   public async createMovie(createMovieDto: Partial<CreateMovieDto>) {
+    this.logger.log('createMovie');
     const movie = this.moviesRepository.create(createMovieDto);
     try {
       // return the post
@@ -82,6 +92,7 @@ export class MoviesService {
   }
 
   public async updateMovie(movieId: number, patchMovieDto: PatchMovieDto) {
+    this.logger.log('updateMovie');
     let movie: Movie | null;
 
     try {
@@ -120,6 +131,7 @@ export class MoviesService {
   }
 
   public async createMovieReview(createMovieReviewDto: CreateReviewMovieDto) {
+    this.logger.log('createMovieReview');
     return await this.createMovieReviewProvider.create(createMovieReviewDto);
   }
 
@@ -127,6 +139,7 @@ export class MoviesService {
     reviewId: number,
     validateReviewMovieDto: ValidateReviewMovieDto,
   ) {
+    this.logger.log('validateMovieReview');
     return this.validateMovieReviewProvider.validate(
       reviewId,
       validateReviewMovieDto,
@@ -134,6 +147,7 @@ export class MoviesService {
   }
 
   public async getMovieReview(movieId: number, userId: number) {
+    this.logger.log('getMovieReview');
     try {
       const review = await this.movieReviewRepository.findOne({
         where: {
@@ -161,6 +175,7 @@ export class MoviesService {
   }
 
   public async getMovieReviews(movieId: number) {
+    this.logger.log('getMovieReviews');
     try {
       return await this.movieReviewRepository.find({
         where: {

@@ -51,8 +51,8 @@ export class UsersController {
     description: 'Return the user.',
   })
   @Get(':id')
-  public findOne(@Param('id') id: string) {
-    return this.usersService.findOneById(+id);
+  public findOne(@Param('id') id: number) {
+    return this.usersService.findOneById(id);
   }
 
   @ApiOperation({ summary: 'Mettre à jour un utilisateur' })
@@ -61,8 +61,8 @@ export class UsersController {
     description: 'The user has been successfully updated.',
   })
   @Patch(':id')
-  public update(@Param('id') id: string, @Body() patchUserDto: PatchUserDto) {
-    return this.usersService.update(+id, patchUserDto);
+  public update(@Param('id') id: number, @Body() patchUserDto: PatchUserDto) {
+    return this.usersService.update(id, patchUserDto);
   }
 
   @ApiOperation({ summary: 'Supprimer un utilisateur' })
@@ -72,8 +72,8 @@ export class UsersController {
   })
   @Delete(':id')
   @Roles([RoleUser.ADMIN])
-  public remove(@Param('id') id: string) {
-    return this.usersService.delete(+id);
+  public remove(@Param('id') id: number) {
+    return this.usersService.delete(id);
   }
 
   @ApiOperation({ summary: 'Vérifier si un email est disponible' })

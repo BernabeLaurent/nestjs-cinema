@@ -83,7 +83,7 @@ export class BookingsController {
   })
   @Delete(':id')
   public remove(@Param('id') id: number) {
-    return this.bookingsService.remove(+id);
+    return this.bookingsService.remove(id);
   }
 
   @ApiOperation({ summary: 'Valider une réservation' })
@@ -91,10 +91,10 @@ export class BookingsController {
     status: HttpStatus.OK,
     description: 'The booking has been successfully validated.',
   })
-  @Patch(':id/validate')
+  @Patch(':id/validateBooking')
   @Roles([RoleUser.ADMIN])
-  public validate(@Param('id') id: number) {
-    return this.bookingsService.validateBookingDetail(+id);
+  public validateBooking(@Param('id') id: number) {
+    return this.bookingsService.validate(id);
   }
 
   @ApiOperation({ summary: 'Annuler une réservation' })
@@ -104,7 +104,7 @@ export class BookingsController {
   })
   @Patch(':id/cancel')
   public cancel(@Param('id') id: number) {
-    return this.bookingsService.cancel(+id);
+    return this.bookingsService.cancel(id);
   }
 
   @ApiOperation({ summary: "Récupérer les réservations d'un utilisateur" })

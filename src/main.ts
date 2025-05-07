@@ -7,7 +7,9 @@ import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'fatal', 'debug', 'log'],
+  });
   const configService = app.get(ConfigService);
 
   app.useGlobalPipes(
