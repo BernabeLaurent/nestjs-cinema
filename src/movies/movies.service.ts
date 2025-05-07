@@ -3,7 +3,9 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable, Logger,
+  Injectable,
+  Logger,
+  NotFoundException,
   RequestTimeoutException,
 } from '@nestjs/common';
 
@@ -23,6 +25,8 @@ import { CreateMovieReviewProvider } from './providers/create-movie-review.provi
 import { ValidateMovieReviewProvider } from './providers/validate-movie-review.provider';
 import { ValidateReviewMovieDto } from './dtos/validate-review-movie.dto';
 import { MovieReview } from './movie-review.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class MoviesService {
@@ -36,6 +40,7 @@ export class MoviesService {
     private readonly validateMovieReviewProvider: ValidateMovieReviewProvider,
     @InjectRepository(MovieReview)
     private readonly movieReviewRepository: Repository<MovieReview>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   private readonly logger = new Logger(MoviesService.name, {
@@ -61,18 +66,27 @@ export class MoviesService {
     return await this.provider.getUpcomingMovies(region, language, page);
   }
 
-  public async getMovieById(id: number): Promise<Movie | null> {
+  public async getMovieById(id: number): Promise<Movie> {
     this.logger.log('getMovieById');
-    try {
-      return await this.moviesRepository.findOne({
-        where: { id: id },
-        relations: ['reviews', 'reviews.user'],
-      });
-    } catch (error) {
-      throw new Error('Could not find user with this googleId', {
-        cause: error,
-      });
+
+    const cacheKey = `movie_${id}`;
+    const cachedMovie = await this.cacheManager.get<Movie>(cacheKey);
+
+    if (cachedMovie) {
+      return cachedMovie;
     }
+
+    const movie = await this.moviesRepository.findOne({
+      where: { id },
+      relations: ['reviews'],
+    });
+
+    if (!movie) {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
+    }
+
+    await this.cacheManager.set(cacheKey, movie, 3600000); // Cache for 1 hour
+    return movie;
   }
 
   public async getMovieByExternalId(id: number): Promise<Movie | null> {

@@ -29,6 +29,7 @@ import { SessionsCinemasModule } from './sessions-cinemas/sessions-cinemas.modul
 import { BookingsModule } from './bookings/bookings.module';
 import { BookingTokenGuard } from './auth/guards/access-token/booking-token-guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -93,6 +94,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
           limit: 10,
         },
       ],
+    }),
+    //Pour charger le cache
+    CacheModule.register({
+      isGlobal: true, // Globalement
     }),
   ],
   controllers: [AppController],
