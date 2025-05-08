@@ -30,29 +30,33 @@ import { BookingsModule } from './bookings/bookings.module';
 import { BookingTokenGuard } from './auth/guards/access-token/booking-token-guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
+import emailConfig from './notifications/config/email.config';
 
 @Module({
   imports: [
     // Pour envoyer des emails
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.gmail.com', // ou smtp.gmail.com
-        port: 587,
-        auth: {
-          user: 'bernabe.laurent@gmail.com',
-          pass: 'MerguezParty83!!',
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          service: 'gmail',
+          auth: {
+            user: configService.get<string>('email.user'),
+            pass: configService.get<string>('email.password'), // App Password de Google
+          },
         },
-      },
-      defaults: {
-        from: '"No Reply" <no-reply@example.com>',
-      },
-      template: {
-        dir: join(__dirname, 'notifications', 'templates'),
-        adapter: new HandlebarsAdapter(), // si tu veux faire des templates HTML
-        options: {
-          strict: true,
+        defaults: {
+          from: `"${configService.get('email.fromName')}" <${configService.get('email.fromAdress')}>`,
         },
-      },
+        template: {
+          dir: join(__dirname, 'notifications', 'templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
     }),
     // SETTINGS UP DATABASE CONNECTION
     TypeOrmModule.forRootAsync({
@@ -72,11 +76,21 @@ import { CacheModule } from '@nestjs/cache-manager';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [tmdbConfig, appConfig, databaseConfig, cronFetchMoviesConfig],
+      load: [
+        tmdbConfig,
+        appConfig,
+        databaseConfig,
+        cronFetchMoviesConfig,
+        emailConfig,
+      ],
     }),
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
-
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60000, // 1 minute par défaut
+      max: 100, // nombre maximum d'éléments en cache
+    }),
     MoviesModule,
     ScheduleModule.forRoot(),
     TheatersModule,

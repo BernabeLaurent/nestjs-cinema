@@ -16,6 +16,7 @@ export class NotificationsController {
     status: HttpStatus.OK,
     description: 'Email sent successfully',
   })
+  @Auth(AuthType.None)
   @HttpCode(HttpStatus.OK)
   async sendEmail(@Body() sendEmailDto: SendEmailDto) {
     return this.notificationsService.sendEmail(
