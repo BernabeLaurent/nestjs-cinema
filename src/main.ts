@@ -66,16 +66,24 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TimeoutInterceptor());
 
   // Protection contre les attaques XSS et autres
-  app.use(helmet());
-
-  // Protection contre le clickjacking
-  app.use(helmet.frameguard({ action: 'deny' }));
-
-  // Protection contre le MIME type sniffing
-  app.use(helmet.noSniff());
-
-  // Protection contre XSS
-  app.use(helmet.xssFilter());
+  app.use(
+    helmet({
+      contentSecurityPolicy: true,
+      crossOriginEmbedderPolicy: true,
+      crossOriginOpenerPolicy: true,
+      crossOriginResourcePolicy: true,
+      dnsPrefetchControl: true,
+      frameguard: { action: 'deny' }, // Protection contre le clickjacking
+      hidePoweredBy: true,
+      hsts: true,
+      ieNoOpen: true,
+      noSniff: true, // Protection contre le MIME type sniffing
+      originAgentCluster: true,
+      permittedCrossDomainPolicies: true,
+      referrerPolicy: true,
+      xssFilter: true, // Protection contre XSS
+    }),
+  );
 
   await app.listen(portNestjs, '0.0.0.0', () => {});
 }
