@@ -71,6 +71,17 @@ import emailConfig from './notifications/config/email.config';
         password: configService.get('database.password'),
         host: configService.get('database.host'),
         database: configService.get('database.name'),
+        // Optimisations de performance
+        maxQueryExecutionTime: 1000, // Log les requêtes qui prennent plus d'1 seconde
+        logging: ['error', 'warn', 'migration'],
+        poolSize: 20, // Nombre de connexions dans le pool
+        extra: {
+          // Options supplémentaires pour le pool de connexions
+          max: 20,
+          min: 5,
+          idleTimeoutMillis: 30000,
+          connectionTimeoutMillis: 2000,
+        },
       }),
     }),
     ConfigModule.forRoot({
@@ -90,6 +101,7 @@ import emailConfig from './notifications/config/email.config';
       isGlobal: true,
       ttl: 60000, // 1 minute par défaut
       max: 100, // nombre maximum d'éléments en cache
+      store: 'memory', // stockage en mémoire
     }),
     MoviesModule,
     ScheduleModule.forRoot(),
@@ -111,7 +123,10 @@ import emailConfig from './notifications/config/email.config';
     }),
     //Pour charger le cache
     CacheModule.register({
-      isGlobal: true, // Globalement
+      isGlobal: true,
+      ttl: 600000, // 1 minute par défaut
+      max: 100, // nombre maximum d'éléments en cache
+      store: 'memory', // stockage en mémoire
     }),
   ],
   controllers: [AppController],
