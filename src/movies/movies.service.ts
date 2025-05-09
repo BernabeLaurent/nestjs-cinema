@@ -181,7 +181,7 @@ export class MoviesService {
     // save the post and return it
     try {
       this.logger.debug('Saving updated movie to database');
-      await this.moviesRepository.update(movie.id, movie);
+      await this.moviesRepository.save(movie);
       this.logger.debug('Invalidating cache');
       await this.cacheManager.del(`movie_${movie.id}`); // Invalidate le cache
     } catch (error) {
