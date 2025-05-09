@@ -11,6 +11,9 @@ import { UpcomingMoviesInterface } from '../../interfaces/upcoming-movies.interf
 import { CreateMovieDto } from '../../dtos/create-movie.dto';
 import { CreateMovieProvider } from './create-movie.provider';
 import { Movie } from '../../movie.entity';
+import { CastDto } from '../dtos/cast.dto';
+import { Cast } from '../../cast.entity';
+import { CreateCastProvider } from './create-cast.provider';
 
 @Injectable()
 export class TmdbProvider implements MoviesProvider {
@@ -20,6 +23,7 @@ export class TmdbProvider implements MoviesProvider {
     @Inject(tmdbConfig.KEY)
     private readonly tmdbConfiguration: ConfigType<typeof tmdbConfig>, // Assuming you have a JWT configuration for token generation
     private readonly createMovieProvider: CreateMovieProvider,
+    private readonly createCastProvider: CreateCastProvider,
   ) {
     this.defaultLanguage = this.tmdbConfiguration.defaultLanguage as Languages;
   }
@@ -43,6 +47,69 @@ export class TmdbProvider implements MoviesProvider {
       backdropPath: dto.backdrop_path,
       posterPath: dto.poster_path,
     };
+  }
+
+  public mapTmdbCastDtoToCast(dto: CastDto): Partial<Cast> {
+    return {
+      character: dto.character,
+      name: dto.name,
+      originalName: dto.original_name,
+      profilePath: dto.profile_path,
+      adult: dto.adult,
+      gender: dto.gender,
+      order: dto.order,
+      movieId: dto.movieId,
+      castId: dto.cast_id,
+    };
+  }
+
+  public async getCastMovie(
+    movieExternalId: number,
+    movieId?: number,
+  ): Promise<Cast[]> {
+    // Si pas de movieId, on récupére le film sur tmdb
+    if (!movieId) {
+      const movie = await this.getMovieDetails(movieExternalId);
+      movieId = movie.id;
+    }
+
+    const url = `${this.tmdbConfiguration.baseUrl}/movie/${movieExternalId}/credits`;
+    try {
+      const { data }: { data: CastDto[] } = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${this.tmdbConfiguration.apiKey}`,
+          'accept-Type': 'application/json',
+        },
+      });
+
+      if (!data) {
+        throw new Error(
+          "Aucune donnée reçue de TMDB. Vérifiez la connexion ou l'API.",
+        );
+      }
+
+      const castList: CastDto[] = (data['cast'] as CastDto[]).map(
+        (m: CastDto) => {
+          m.movieId = movieId;
+          if (m.profile_path) {
+            m.profile_path = `${this.tmdbConfiguration.imageUrl}${m.profile_path}`;
+          }
+          return m;
+        },
+      );
+
+      const casting: Cast[] = [];
+
+      // Pour chaque cast, on l'ajoute à la base de données
+      for (const cast of castList) {
+        const createdCast = await this.createCastProvider.upsertCast(cast);
+        casting.push(createdCast);
+      }
+
+      return casting;
+    } catch (error) {
+      throw new UnauthorizedException(error);
+    }
   }
 
   public async searchMovies(query: string): Promise<Movie[]> {

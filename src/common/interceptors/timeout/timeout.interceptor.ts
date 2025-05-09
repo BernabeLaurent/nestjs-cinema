@@ -17,12 +17,15 @@ import {
 export class TimeoutInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      timeout(5000), // ⏱️ Timeout global en millisecondes
+      timeout(30000), // ⏱️ Timeout global en millisecondes 30 secondes
       catchError((err) => {
         if (err instanceof TimeoutError) {
-          return throwError(() => new RequestTimeoutException());
+          return throwError(
+            () => new RequestTimeoutException('Request timed out'),
+          );
         }
-        return throwError(() => new Error('An unexpected error occurred'));
+        // Ne masque pas l’erreur originale
+        return throwError(() => err);
       }),
     );
   }

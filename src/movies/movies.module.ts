@@ -15,11 +15,13 @@ import { MovieReview } from './movie-review.entity';
 import { CreateMovieReviewProvider } from './providers/create-movie-review.provider';
 import { UsersModule } from '../users/users.module';
 import { ValidateMovieReviewProvider } from './providers/validate-movie-review.provider';
+import { Cast } from './cast.entity';
+import { CreateCastProvider } from './source/providers/create-cast.provider';
 
 @Module({
   imports: [
     ConfigModule.forFeature(tmdbConfig),
-    TypeOrmModule.forFeature([Movie, MovieReview]),
+    TypeOrmModule.forFeature([Movie, MovieReview, Cast]),
     UsersModule,
   ],
   controllers: [MoviesController],
@@ -32,6 +34,7 @@ import { ValidateMovieReviewProvider } from './providers/validate-movie-review.p
     CreateMovieProvider,
     CreateMovieReviewProvider,
     ValidateMovieReviewProvider,
+    CreateCastProvider,
   ],
   exports: [MoviesService, CreateMovieProvider],
 })

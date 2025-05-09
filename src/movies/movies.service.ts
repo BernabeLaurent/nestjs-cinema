@@ -27,6 +27,7 @@ import { ValidateReviewMovieDto } from './dtos/validate-review-movie.dto';
 import { MovieReview } from './movie-review.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { Cast } from './cast.entity';
 
 @Injectable()
 export class MoviesService {
@@ -41,6 +42,8 @@ export class MoviesService {
     @InjectRepository(MovieReview)
     private readonly movieReviewRepository: Repository<MovieReview>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @InjectRepository(Cast)
+    private readonly castsRepository: Repository<Cast>,
   ) {}
 
   private readonly logger = new Logger(MoviesService.name, {
@@ -50,6 +53,14 @@ export class MoviesService {
   public async search(query: string): Promise<Movie[]> {
     this.logger.log('search');
     return await this.provider.searchMovies(query);
+  }
+
+  public async getCast(
+    movieExternalId: number,
+    movieId?: number,
+  ): Promise<Cast[]> {
+    this.logger.log('getCast');
+    return await this.provider.getCastMovie(movieExternalId, movieId);
   }
 
   public async getDetails(id: number): Promise<Movie> {
@@ -76,13 +87,23 @@ export class MoviesService {
       return cachedMovie;
     }
 
-    const movie = await this.moviesRepository.findOne({
-      where: { id },
-      relations: ['reviews'],
-    });
+    let movie: Movie | null;
 
-    if (!movie) {
-      throw new NotFoundException(`Movie with ID ${id} not found`);
+    try {
+      movie = await this.moviesRepository
+        .createQueryBuilder('movie')
+        .leftJoinAndSelect('movie.reviews', 'reviews')
+        .leftJoinAndSelect('movie.cast', 'cast')
+        .where('movie.id = :id', { id })
+        .getOne();
+
+      if (!movie) {
+        throw new NotFoundException(`Movie with ID ${id} not found`);
+      }
+    } catch (error) {
+      throw new RequestTimeoutException('unable to process your request', {
+        description: 'error connecting database' + error,
+      });
     }
 
     await this.cacheManager.set(cacheKey, movie, 3600000); // Cache for 1 hour
@@ -105,20 +126,37 @@ export class MoviesService {
     }
   }
 
+  public async createCast(createCastDto: Partial<Cast>): Promise<Cast> {
+    this.logger.log('createCast');
+    const cast = this.castsRepository.create(createCastDto);
+    try {
+      // return the cast
+      return await this.castsRepository.save(cast);
+    } catch (error) {
+      throw new ConflictException(error);
+    }
+  }
+
   public async updateMovie(movieId: number, patchMovieDto: PatchMovieDto) {
-    this.logger.log('updateMovie');
+    this.logger.log(`Starting updateMovie for movieId: ${movieId}`);
     let movie: Movie | null;
 
     try {
-      movie = await this.moviesRepository.findOneBy({ id: movieId });
+      this.logger.debug('Fetching movie from database');
+      movie = await this.moviesRepository
+        .createQueryBuilder('movie')
+        .leftJoinAndSelect('movie.reviews', 'reviews')
+        .leftJoinAndSelect('movie.cast', 'cast')
+        .where('movie.id = :id', { id: movieId })
+        .getOne();
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       throw new RequestTimeoutException('unable to process your request', {
         description: 'error connecting database' + error,
       });
     }
 
     if (!movie) {
+      this.logger.error(`Movie not found with ID: ${movieId}`);
       throw new BadRequestException('Movie not found WITH THIS ID');
     }
 
@@ -133,19 +171,25 @@ export class MoviesService {
       patchMovieDto.originalTagline ?? movie.originalTagline;
     movie.runtime = patchMovieDto.runtime ?? movie.runtime;
     movie.backdropPath = patchMovieDto.backdropPath ?? movie.backdropPath;
-    movie.posterPath = patchMovieDto.posterPath ?? movie.posterPath;
-    movie.isAdult = patchMovieDto.isAdult ?? movie.isAdult;
-    movie.movieExterneId = patchMovieDto.movieExterneId ?? movie.movieExterneId;
+    movie.posterPath =
+      patchMovieDto.posterPath !== undefined
+        ? patchMovieDto.posterPath
+        : movie.posterPath;
+
+    this.logger.debug(`Updated movie data: ${JSON.stringify(movie)}`);
 
     // save the post and return it
     try {
+      this.logger.debug('Saving updated movie to database');
       await this.moviesRepository.update(movie.id, movie);
+      this.logger.debug('Invalidating cache');
       await this.cacheManager.del(`movie_${movie.id}`); // Invalidate le cache
     } catch (error) {
       throw new RequestTimeoutException('unable to process your request', {
         description: 'error connecting database' + error,
       });
     }
+    this.logger.log(`Successfully updated movie with ID: ${movieId}`);
     return movie;
   }
 

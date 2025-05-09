@@ -71,6 +71,7 @@ import emailConfig from './notifications/config/email.config';
         password: configService.get('database.password'),
         host: configService.get('database.host'),
         database: configService.get('database.name'),
+        cache: false,
         // Optimisations de performance
         maxQueryExecutionTime: 1000, // Log les requêtes qui prennent plus d'1 seconde
         logging: ['error', 'warn', 'migration'],

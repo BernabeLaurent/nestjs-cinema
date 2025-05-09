@@ -1,6 +1,7 @@
 import { RegionsIso } from '../../common/enums/regions-iso.enum';
 import { Languages } from '../../common/enums/languages.enum';
 import { Movie } from '../movie.entity';
+import { Cast } from '../cast.entity';
 
 export interface MoviesProvider {
   searchMovies(query: string): Promise<Movie[]>;
@@ -12,4 +13,6 @@ export interface MoviesProvider {
   ): Promise<Movie[]>;
 
   getMovieDetails(id: number): Promise<Movie>;
+
+  getCastMovie(movieExternalId: number, movieId?: number): Promise<Cast[]>;
 }

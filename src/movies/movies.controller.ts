@@ -37,6 +37,19 @@ export class MoviesController {
     return this.moviesService.search(q);
   }
 
+  @ApiOperation({
+    summary: 'Cherche le casting du film sur le service externe',
+  })
+  @Get('getCast/:id')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Cast found successfully',
+  })
+  @Roles([RoleUser.ADMIN])
+  public searchExternalCast(@Param('id') movieExternalId: number) {
+    return this.moviesService.getCast(movieExternalId);
+  }
+
   @ApiOperation({ summary: "Voir le détail d'un film sur le service externe" })
   @Get(':id')
   @ApiResponse({
@@ -77,7 +90,8 @@ export class MoviesController {
     description: 'Movies found successfully',
   })
   @Get('search/upcoming')
-  @Roles([RoleUser.ADMIN])
+  // @Roles([RoleUser.ADMIN])
+  @Auth(AuthType.None)
   public getUpcomingMoviesExternal(
     @Query('region') region?: RegionsIso,
     @Query('language') language?: Languages,

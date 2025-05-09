@@ -3,6 +3,7 @@ import { Languages } from '../common/enums/languages.enum';
 import { SessionCinema } from '../sessions-cinemas/session-cinema.entity';
 import { MovieReview } from './movie-review.entity';
 import { Exclude, Expose } from 'class-transformer';
+import { Cast } from './cast.entity';
 
 @Entity()
 @Exclude()
@@ -156,4 +157,8 @@ export class Movie {
     nullable: true,
   })
   posterPath: string;
+
+  @Expose()
+  @OneToMany(() => Cast, (cast) => cast.movie, { cascade: true })
+  cast: Cast[];
 }
