@@ -142,4 +142,18 @@ export class Movie {
   @Expose()
   @OneToMany(() => MovieReview, (review) => review.movie)
   reviews: MovieReview[];
+
+  @Expose()
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  backdropPath: string;
+
+  @Expose()
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  posterPath: string;
 }

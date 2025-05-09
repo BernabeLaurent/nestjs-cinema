@@ -34,4 +34,12 @@ export class CreateMovieFromTmdbDto {
 
   @IsNumber()
   runtime: number;
+
+  @IsNotEmpty()
+  @IsString()
+  backdrop_path: string;
+
+  @IsNotEmpty()
+  @IsString()
+  poster_path: string;
 }

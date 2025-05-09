@@ -104,9 +104,17 @@ export class CreateMovieDto {
   @ApiProperty({
     enum: Languages,
     description: 'Langue Type',
-    example: Languages.FRANCE,
+    example: Languages.FRENCH,
   })
   @IsEnum(Languages)
   @IsNotEmpty()
   originalLanguage: Languages;
+
+  @IsNotEmpty()
+  @IsString()
+  backdropPath: string;
+
+  @IsNotEmpty()
+  @IsString()
+  posterPath: string;
 }

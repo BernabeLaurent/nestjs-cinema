@@ -132,6 +132,10 @@ export class MoviesService {
     movie.originalTagline =
       patchMovieDto.originalTagline ?? movie.originalTagline;
     movie.runtime = patchMovieDto.runtime ?? movie.runtime;
+    movie.backdropPath = patchMovieDto.backdropPath ?? movie.backdropPath;
+    movie.posterPath = patchMovieDto.posterPath ?? movie.posterPath;
+    movie.isAdult = patchMovieDto.isAdult ?? movie.isAdult;
+    movie.movieExterneId = patchMovieDto.movieExterneId ?? movie.movieExterneId;
 
     // save the post and return it
     try {

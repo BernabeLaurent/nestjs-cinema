@@ -32,7 +32,7 @@ export class CreateSessionCinemaDto {
   @ApiProperty({
     enum: Languages,
     description: 'Langue du film',
-    example: Languages.FRANCE,
+    example: Languages.FRENCH,
   })
   @IsEnum(Languages)
   @IsNotEmpty()

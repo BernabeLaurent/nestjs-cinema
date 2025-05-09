@@ -57,7 +57,7 @@ export class SessionCinema {
   @ApiProperty({
     enum: Languages,
     description: 'Langue du film',
-    example: Languages.FRANCE,
+    example: Languages.FRENCH,
   })
   @Column({
     type: 'enum',

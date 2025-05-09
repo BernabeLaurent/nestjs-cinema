@@ -63,7 +63,7 @@ export class MoviesController {
     enum: Languages,
     required: false,
     description: 'Langue sélectionnée',
-    example: Languages.FRANCE,
+    example: Languages.FRENCH,
   })
   @ApiQuery({
     name: 'region',

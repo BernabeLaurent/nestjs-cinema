@@ -40,6 +40,8 @@ export class TmdbProvider implements MoviesProvider {
       endDate: new Date(dto.release_date),
       runtime: dto.runtime,
       originalLanguage: dto.original_language as Languages,
+      backdropPath: dto.backdrop_path,
+      posterPath: dto.poster_path,
     };
   }
 
@@ -97,6 +99,14 @@ export class TmdbProvider implements MoviesProvider {
         throw new Error(
           "Aucune donnée reçue de TMDB. Vérifiez la connexion ou l'API.",
         );
+      }
+
+      // On construit l'url des images
+      if (data.backdrop_path) {
+        data.backdrop_path = `${this.tmdbConfiguration.imageUrl}${data.backdrop_path}`;
+      }
+      if (data.poster_path) {
+        data.poster_path = `${this.tmdbConfiguration.imageUrl}${data.poster_path}`;
       }
 
       return await this.createMovieProvider.upsertMovie(data);

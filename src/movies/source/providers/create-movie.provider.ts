@@ -18,7 +18,10 @@ export class CreateMovieProvider {
 
     if (movieFound) {
       movie.id = movieFound.id;
-      return await this.moviesService.updateMovie(movie.id, movie);
+      return await this.moviesService.updateMovie(
+        movie.id,
+        this.tmdbProvider.mapTmdbDtoToMovie(movie),
+      );
     } else {
       // Sinon on le crée
       return await this.moviesService.createMovie(
