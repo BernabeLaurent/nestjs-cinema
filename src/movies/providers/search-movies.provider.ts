@@ -47,15 +47,23 @@ export class SearchMoviesProvider {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Réinitialiser l'heure pour une comparaison de dates uniquement
 
+    // Pour avoir le délai entre aujourd'hui et une semaine
+    const oneWeekFromToday = new Date();
+    oneWeekFromToday.setDate(today.getDate() + 8);
+    oneWeekFromToday.setHours(0, 0, 0, 0); // Inclure la fin de la journée
+
     const queryBuilder = this.movieRepository
       .createQueryBuilder('movie')
       .leftJoinAndSelect('movie.sessionsCinemas', 'session')
       .leftJoinAndSelect('session.movieTheater', 'movieTheater')
       .leftJoinAndSelect('movieTheater.theater', 'theater')
       .where('movie.title LIKE :name', { name: `%${name}%` })
-      .andWhere('movie.startDate <= :today', { today })
+      .andWhere('movie.startDate <= :weekEnd', { weekEnd: oneWeekFromToday })
       .andWhere('movie.endDate >= :today', { today })
-      .andWhere('session.startTime >= :now', { now: today }) // On filtre les sessions après ou aujourd'hui
+      .andWhere('session.startTime BETWEEN :today AND :weekEnd', {
+        today,
+        weekEnd: oneWeekFromToday,
+      })
       .orderBy('theater.name', 'ASC')
       .addOrderBy('session.startTime', 'ASC');
 
