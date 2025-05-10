@@ -112,7 +112,7 @@ export class TmdbProvider implements MoviesProvider {
     }
   }
 
-  public async searchMovies(query: string): Promise<Movie[]> {
+  public async searchExternalMovies(query: string): Promise<Movie[]> {
     const url = `${this.tmdbConfiguration.baseUrl}/search/movie?language=${this.defaultLanguage}`;
     const allMovies: Movie[] = [];
 

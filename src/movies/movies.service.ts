@@ -28,6 +28,10 @@ import { MovieReview } from './movie-review.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Cast } from './cast.entity';
+import { SearchMoviesProvider } from './providers/search-movies.provider';
+import { SearchMoviesDto } from './source/dtos/search-movies.dto';
+import { Theater } from '../theaters/theater.entity';
+import { SessionCinema } from '../sessions-cinemas/session-cinema.entity';
 
 @Injectable()
 export class MoviesService {
@@ -44,15 +48,26 @@ export class MoviesService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectRepository(Cast)
     private readonly castsRepository: Repository<Cast>,
+    private readonly searchMoviesProvider: SearchMoviesProvider,
   ) {}
 
   private readonly logger = new Logger(MoviesService.name, {
     timestamp: true,
   });
 
-  public async search(query: string): Promise<Movie[]> {
+  public async searchExternal(query: string): Promise<Movie[]> {
+    this.logger.log('searchExternal');
+    return await this.provider.searchExternalMovies(query);
+  }
+
+  public async search(searchMoviesDto: SearchMoviesDto): Promise<
+    {
+      theater: Theater;
+      sessions: { date: string; sessions: SessionCinema[] }[];
+    }[]
+  > {
     this.logger.log('search');
-    return await this.provider.searchMovies(query);
+    return await this.searchMoviesProvider.search(searchMoviesDto);
   }
 
   public async getCast(

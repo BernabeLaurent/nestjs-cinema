@@ -7,6 +7,7 @@ import {
   Body,
   Post,
   HttpStatus,
+  ValidationPipe,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -19,6 +20,7 @@ import { CreateReviewMovieDto } from './dtos/create-review-movie.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleUser } from '../users/enums/roles-users.enum';
 import { ValidateReviewMovieDto } from './dtos/validate-review-movie.dto';
+import { SearchMoviesDto } from './source/dtos/search-movies.dto';
 
 @Controller('movies')
 @ApiTags('Movies')
@@ -27,20 +29,20 @@ export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
   @ApiOperation({ summary: 'Cherche un film sur le service externe' })
-  @Get('search')
+  @Get('external/search')
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Movies found successfully',
   })
   @Roles([RoleUser.ADMIN])
   public searchExternal(@Query('q') q: string) {
-    return this.moviesService.search(q);
+    return this.moviesService.searchExternal(q);
   }
 
   @ApiOperation({
     summary: 'Cherche le casting du film sur le service externe',
   })
-  @Get('getCast/:id')
+  @Get('external/getCast/:id')
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Cast found successfully',
@@ -51,7 +53,7 @@ export class MoviesController {
   }
 
   @ApiOperation({ summary: "Voir le détail d'un film sur le service externe" })
-  @Get(':id')
+  @Get('external/:id')
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Movie details found successfully',
@@ -89,15 +91,25 @@ export class MoviesController {
     status: HttpStatus.OK,
     description: 'Movies found successfully',
   })
-  @Get('search/upcoming')
-  // @Roles([RoleUser.ADMIN])
-  @Auth(AuthType.None)
+  @Get('external/search/upcoming')
+  @Roles([RoleUser.ADMIN])
   public getUpcomingMoviesExternal(
     @Query('region') region?: RegionsIso,
     @Query('language') language?: Languages,
     @Query('page') page?: number,
   ) {
     return this.moviesService.getUpcomingMovies(region, language, page);
+  }
+
+  @ApiOperation({ summary: 'Cherche un film' })
+  @Get('search')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Movies found successfully',
+  })
+  @Auth(AuthType.None)
+  public search(@Query(new ValidationPipe()) searchMoviesDto: SearchMoviesDto) {
+    return this.moviesService.search(searchMoviesDto);
   }
 
   @ApiOperation({ summary: 'Cherche un film par son ID' })

@@ -4,7 +4,7 @@ import { Movie } from '../movie.entity';
 import { Cast } from '../cast.entity';
 
 export interface MoviesProvider {
-  searchMovies(query: string): Promise<Movie[]>;
+  searchExternalMovies(query: string): Promise<Movie[]>;
 
   getUpcomingMovies(
     region?: RegionsIso,

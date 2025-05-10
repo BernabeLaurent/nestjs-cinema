@@ -20,8 +20,6 @@ export class CreateMovieProvider {
 
   public async upsertMovie(movie: TmdbMovieDto): Promise<Movie> {
     const movieFound = await this.moviesService.getMovieByExternalId(movie.id);
-    console.log('movieFound', movieFound);
-    console.log('movie', movie);
 
     if (movieFound) {
       movie.id = movieFound.movieExterneId;
