@@ -24,6 +24,16 @@ import jwtConfig from '../auth/config/jwt.config';
           ttl: 60,
           limit: 10,
         },
+        {
+          ttl: 60,
+          limit: 5,
+          name: 'auth',
+        },
+        {
+          ttl: 60,
+          limit: 20,
+          name: 'public',
+        },
       ],
     }),
   ],

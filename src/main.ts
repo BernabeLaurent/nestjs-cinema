@@ -22,6 +22,11 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true, // Transforme les valeurs des paramètres en fonction de leur type défini dans le dto
       },
+      forbidUnknownValues: true,
+      validationError: {
+        target: false,
+        value: false,
+      },
     }),
   );
 
@@ -57,7 +62,9 @@ async function bootstrap() {
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 3600, // Cache les préférences CORS pendant 1 heure
   });
 
   app.use(compression());
@@ -71,16 +78,20 @@ async function bootstrap() {
       contentSecurityPolicy: true,
       crossOriginEmbedderPolicy: true,
       crossOriginOpenerPolicy: true,
-      crossOriginResourcePolicy: true,
+      crossOriginResourcePolicy: { policy: 'same-site' },
       dnsPrefetchControl: true,
       frameguard: { action: 'deny' }, // Protection contre le clickjacking
       hidePoweredBy: true,
-      hsts: true,
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
       ieNoOpen: true,
       noSniff: true, // Protection contre le MIME type sniffing
       originAgentCluster: true,
-      permittedCrossDomainPolicies: true,
-      referrerPolicy: true,
+      permittedCrossDomainPolicies: { permittedPolicies: 'none' },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
       xssFilter: true, // Protection contre XSS
     }),
   );
