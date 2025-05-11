@@ -30,7 +30,9 @@ import { BookingsModule } from './bookings/bookings.module';
 import { BookingTokenGuard } from './auth/guards/access-token/booking-token-guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ImagesModule } from './common/images/images.module';
 import emailConfig from './notifications/config/email.config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -128,6 +130,12 @@ import emailConfig from './notifications/config/email.config';
       ttl: 600000, // 1 minute par défaut
       max: 100, // nombre maximum d'éléments en cache
       store: 'memory', // stockage en mémoire
+    }),
+    ImagesModule,
+    // Pour rendre accessible les fichiers statiques comme les images
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'), // dossier local à exposer
+      serveRoot: '/uploads',
     }),
   ],
   controllers: [AppController],

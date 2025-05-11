@@ -10,6 +10,7 @@ services:
       - mongodb
     volumes:
       - .:/app
+      - uploads:/app/uploads  # Montée du volume Docker pour les fichiers téléchargés
     restart: unless-stopped
 
   postgres:
@@ -35,3 +36,5 @@ services:
 volumes:
   pgdata:
   mongodata:
+  uploads:
+    driver: local  # Volume Docker persistant pour le dossier uploads

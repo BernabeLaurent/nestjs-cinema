@@ -14,6 +14,8 @@ import { Movie } from '../../movie.entity';
 import { CastDto } from '../dtos/cast.dto';
 import { Cast } from '../../cast.entity';
 import { CreateCastProvider } from './create-cast.provider';
+import { ImagesService } from '../../../common/images/images.service';
+import { ImageType } from '../../../common/enums/images-types.enum';
 
 @Injectable()
 export class TmdbProvider implements MoviesProvider {
@@ -24,6 +26,7 @@ export class TmdbProvider implements MoviesProvider {
     private readonly tmdbConfiguration: ConfigType<typeof tmdbConfig>, // Assuming you have a JWT configuration for token generation
     private readonly createMovieProvider: CreateMovieProvider,
     private readonly createCastProvider: CreateCastProvider,
+    private readonly imagesServices: ImagesService,
   ) {
     this.defaultLanguage = this.tmdbConfiguration.defaultLanguage as Languages;
   }
@@ -88,14 +91,19 @@ export class TmdbProvider implements MoviesProvider {
         );
       }
 
-      const castList: CastDto[] = (data['cast'] as CastDto[]).map(
-        (m: CastDto) => {
+      const castList: CastDto[] = await Promise.all(
+        (data['cast'] as CastDto[]).map(async (m: CastDto) => {
           m.movieId = movieId;
           if (m.profile_path) {
-            m.profile_path = `${this.tmdbConfiguration.imageUrl}${m.profile_path}`;
+            m.profile_path =
+              await this.imagesServices.asyncDownloadImageFromUrl(
+                ImageType.ACTOR,
+                `${this.tmdbConfiguration.imageUrl}${m.profile_path}`,
+                m.profile_path,
+              );
           }
           return m;
-        },
+        }),
       );
 
       const casting: Cast[] = [];
@@ -170,10 +178,19 @@ export class TmdbProvider implements MoviesProvider {
 
       // On construit l'url des images
       if (data.backdrop_path) {
-        data.backdrop_path = `${this.tmdbConfiguration.imageUrl}${data.backdrop_path}`;
+        data.backdrop_path =
+          await this.imagesServices.asyncDownloadImageFromUrl(
+            ImageType.BACKDROP,
+            `${this.tmdbConfiguration.imageUrl}${data.backdrop_path}`,
+            data.backdrop_path,
+          );
       }
       if (data.poster_path) {
-        data.poster_path = `${this.tmdbConfiguration.imageUrl}${data.poster_path}`;
+        data.poster_path = await this.imagesServices.asyncDownloadImageFromUrl(
+          ImageType.POSTER,
+          `${this.tmdbConfiguration.imageUrl}${data.poster_path}`,
+          data.poster_path,
+        );
       }
 
       return await this.createMovieProvider.upsertMovie(data);

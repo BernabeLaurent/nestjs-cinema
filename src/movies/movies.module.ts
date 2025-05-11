@@ -19,12 +19,14 @@ import { Cast } from './cast.entity';
 import { CreateCastProvider } from './source/providers/create-cast.provider';
 import { SearchMoviesProvider } from './providers/search-movies.provider';
 import { Theater } from '../theaters/theater.entity';
+import { ImagesModule } from '../common/images/images.module';
 
 @Module({
   imports: [
     ConfigModule.forFeature(tmdbConfig),
     TypeOrmModule.forFeature([Movie, MovieReview, Cast, Theater]),
     UsersModule,
+    ImagesModule,
   ],
   controllers: [MoviesController],
   providers: [
