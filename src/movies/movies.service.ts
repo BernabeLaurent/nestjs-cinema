@@ -62,8 +62,14 @@ export class MoviesService {
 
   public async search(searchMoviesDto: SearchMoviesDto): Promise<
     {
-      theater: Theater;
-      sessions: { date: string; sessions: SessionCinema[] }[];
+      movie: Movie;
+      theaters: {
+        theater: Theater;
+        sessions: {
+          date: string;
+          sessions: SessionCinema[];
+        }[];
+      }[];
     }[]
   > {
     this.logger.log('search');

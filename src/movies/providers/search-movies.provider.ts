@@ -23,8 +23,14 @@ export class SearchMoviesProvider {
     theaterId?: number;
   }): Promise<
     {
-      theater: Theater;
-      sessions: { date: string; sessions: SessionCinema[] }[];
+      movie: Movie;
+      theaters: {
+        theater: Theater;
+        sessions: {
+          date: string;
+          sessions: SessionCinema[];
+        }[];
+      }[];
     }[]
   > {
     const { name, theaterId } = searchMoviesDto;
@@ -78,40 +84,60 @@ export class SearchMoviesProvider {
       return [];
     }
 
+    // Pour simplifier, on veut pour chaque film, son cinéma et ses sessions
     const results: {
-      [theaterId: number]: {
-        theater: Theater;
-        sessionsByDate: { [date: string]: SessionCinema[] };
+      [movieId: number]: {
+        movie: Movie;
+        theaters: {
+          [theaterId: number]: {
+            theater: Theater;
+            sessionsByDate: { [date: string]: SessionCinema[] };
+          };
+        };
       };
     } = {};
 
     for (const movie of moviesWithSessions) {
+      if (!results[movie.id]) {
+        results[movie.id] = {
+          movie,
+          theaters: {},
+        };
+      }
+
       for (const session of movie.sessionsCinemas) {
         const theater = session.movieTheater.theater;
-        const sessionId = theater.id;
         const sessionDate = new Date(session.startTime).toLocaleDateString();
 
-        if (!results[sessionId]) {
-          results[sessionId] = {
-            theater: theater,
+        if (!results[movie.id].theaters[theater.id]) {
+          results[movie.id].theaters[theater.id] = {
+            theater,
             sessionsByDate: {},
           };
         }
 
-        if (!results[sessionId].sessionsByDate[sessionDate]) {
-          results[sessionId].sessionsByDate[sessionDate] = [];
+        if (
+          !results[movie.id].theaters[theater.id].sessionsByDate[sessionDate]
+        ) {
+          results[movie.id].theaters[theater.id].sessionsByDate[sessionDate] =
+            [];
         }
 
-        results[sessionId].sessionsByDate[sessionDate].push(session);
+        results[movie.id].theaters[theater.id].sessionsByDate[sessionDate].push(
+          session,
+        );
       }
     }
 
     // On fait un tableau par cinéma, on met les sessions par jour, dans l'ordre chronologique
-    return Object.values(results).map((theaterData) => ({
-      theater: theaterData.theater,
-      sessions: Object.entries(theaterData.sessionsByDate)
-        .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
-        .map(([date, sessions]) => ({ date, sessions })),
+    return Object.values(results).map((movieGroup) => ({
+      movie: movieGroup.movie,
+      theaters: Object.values(movieGroup.theaters).map((theaterData) => ({
+        theater: theaterData.theater,
+        sessions: Object.entries(theaterData.sessionsByDate)
+          .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
+          .map(([date, sessions]) => ({ date, sessions })),
+      })),
     }));
   }
 }

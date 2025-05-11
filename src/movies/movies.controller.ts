@@ -21,6 +21,9 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleUser } from '../users/enums/roles-users.enum';
 import { ValidateReviewMovieDto } from './dtos/validate-review-movie.dto';
 import { SearchMoviesDto } from './source/dtos/search-movies.dto';
+import { SessionCinema } from '../sessions-cinemas/session-cinema.entity';
+import { Theater } from '../theaters/theater.entity';
+import { Movie } from './movie.entity';
 
 @Controller('movies')
 @ApiTags('Movies')
@@ -108,7 +111,20 @@ export class MoviesController {
     description: 'Movies found successfully',
   })
   @Auth(AuthType.None)
-  public search(@Query(new ValidationPipe()) searchMoviesDto: SearchMoviesDto) {
+  public search(
+    @Query(new ValidationPipe()) searchMoviesDto: SearchMoviesDto,
+  ): Promise<
+    {
+      movie: Movie;
+      theaters: {
+        theater: Theater;
+        sessions: {
+          date: string;
+          sessions: SessionCinema[];
+        }[];
+      }[];
+    }[]
+  > {
     return this.moviesService.search(searchMoviesDto);
   }
 
