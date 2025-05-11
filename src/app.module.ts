@@ -1,12 +1,11 @@
 import { Module, ClassSerializerInterceptor } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import tmdbConfig from './movies/config/tmdb.config';
 import { MoviesModule } from './movies/movies.module';
 import appConfig from './config/app.config';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { TheatersModule } from './theaters/theaters.module';
 import { UsersModule } from './users/users.module';
 import databaseConfig from './config/database.config';
@@ -17,76 +16,27 @@ import { AuthenticationGuard } from './auth/guards/authentication/authentication
 import { DataResponseInterceptor } from './common/interceptors/data-response/data-response.interceptor';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
-import jwtConfig from './auth/config/jwt.config';
-import { JwtModule } from '@nestjs/jwt';
 import { RolesGuard } from './auth/guards/access-token/roles.guard';
 import { NotificationsModule } from './notifications/notifications.module';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { join } from 'path';
 import { MoviesTheatersModule } from './movies-theaters/movies-theaters.module';
 import { SessionsCinemasModule } from './sessions-cinemas/sessions-cinemas.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { BookingTokenGuard } from './auth/guards/access-token/booking-token-guard';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { CacheModule } from '@nestjs/cache-manager';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { ImagesModule } from './common/images/images.module';
 import emailConfig from './notifications/config/email.config';
-import { ServeStaticModule } from '@nestjs/serve-static';
+import jwtConfig from './auth/config/jwt.config';
+
+// Ajout de modules de configuration pour rendre le fichier plus lisible
+import { DatabaseModule } from './config/database.module';
+import { EmailModule } from './config/email.module';
+import { AppCacheModule } from './config/cache.module';
+import { SecurityModule } from './config/security.module';
+import { StaticModule } from './config/static.module';
 
 @Module({
   imports: [
-    // Pour envoyer des emails
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        transport: {
-          service: 'gmail',
-          auth: {
-            user: configService.get<string>('email.user'),
-            pass: configService.get<string>('email.password'), // App Password de Google
-          },
-        },
-        defaults: {
-          from: `"${configService.get('email.fromName')}" <${configService.get('email.fromAdress')}>`,
-        },
-        template: {
-          dir: join(__dirname, 'notifications', 'templates'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
-    }),
-    // SETTINGS UP DATABASE CONNECTION
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        autoLoadEntities: configService.get('database.autoLoadEntities'),
-        synchronize: configService.get('database.synchronize'),
-        port: configService.get('database.port'),
-        username: configService.get('database.user'),
-        password: configService.get('database.password'),
-        host: configService.get('database.host'),
-        database: configService.get('database.name'),
-        cache: false,
-        // Optimisations de performance
-        maxQueryExecutionTime: 1000, // Log les requêtes qui prennent plus d'1 seconde
-        logging: ['error', 'warn', 'migration'],
-        poolSize: 20, // Nombre de connexions dans le pool
-        extra: {
-          // Options supplémentaires pour le pool de connexions
-          max: 20,
-          min: 5,
-          idleTimeoutMillis: 30000,
-          connectionTimeoutMillis: 2000,
-        },
-      }),
-    }),
+    // Configuration globale
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -96,18 +46,20 @@ import { ServeStaticModule } from '@nestjs/serve-static';
         databaseConfig,
         cronFetchMoviesConfig,
         emailConfig,
+        jwtConfig,
       ],
     }),
-    ConfigModule.forFeature(jwtConfig),
-    JwtModule.registerAsync(jwtConfig.asProvider()),
-    CacheModule.register({
-      isGlobal: true,
-      ttl: 60000, // 1 minute par défaut
-      max: 100, // nombre maximum d'éléments en cache
-      store: 'memory', // stockage en mémoire
-    }),
-    MoviesModule,
+
+    // Modules de configuration
+    DatabaseModule,
+    EmailModule,
+    AppCacheModule,
+    SecurityModule,
+    StaticModule,
+
+    // Modules fonctionnels
     ScheduleModule.forRoot(),
+    MoviesModule,
     TheatersModule,
     UsersModule,
     AuthModule,
@@ -115,28 +67,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     MoviesTheatersModule,
     SessionsCinemasModule,
     BookingsModule,
-    ThrottlerModule.forRoot({
-      // Permet de se protéger contre les attaques brutes force
-      throttlers: [
-        {
-          ttl: 60,
-          limit: 10, // 10 requêtes par minute
-        },
-      ],
-    }),
-    //Pour charger le cache
-    CacheModule.register({
-      isGlobal: true,
-      ttl: 600000, // 1 minute par défaut
-      max: 100, // nombre maximum d'éléments en cache
-      store: 'memory', // stockage en mémoire
-    }),
     ImagesModule,
-    // Pour rendre accessible les fichiers statiques comme les images
-    ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'uploads'), // dossier local à exposer
-      serveRoot: '/uploads',
-    }),
   ],
   controllers: [AppController],
   providers: [
