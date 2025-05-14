@@ -15,6 +15,9 @@ FROM node:23-alpine
 
 WORKDIR /app
 
+# Installer bash
+RUN apk add --no-cache bash
+
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 
