@@ -2,7 +2,7 @@ name: CI Build, Test & Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -24,35 +24,26 @@ jobs:
           - 27017:27017
 
     steps:
+      # Checkout du code source
       - uses: actions/checkout@v3
 
+      # Configurer Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '23'
 
+      # Installer les dépendances
       - name: Install dependencies
         run: npm install
 
-      #      - name: Lint
-      #        run: npm run lint
-      #
-      #      - name: Test
-      #        run: npm run test
+      # Étape de débogage pour vérifier que le secret est bien chargé
+      - name: Check GitHub Secret GITHUBACTIONS
+        run: |
+          echo "Checking if GITHUBACTIONS secret is loaded:"
+          echo "${{ secrets.GITHUBACTIONS }}" # Cela ne doit pas afficher la clé en entier pour des raisons de sécurité, mais vérifie que le secret est chargé
 
-      - name: Build Docker image
-        run: |
-          docker build -t nestjs-app .
-
-      - name: Debug SSH Key
-        run: |
-          echo "SSH key content:"
-          head -n 5 ~/.ssh/github-actions
-          echo "Permissions:"
-          ls -l ~/.ssh/github-actions
-      - name: Validate SSH key format
-        run: |
-          ssh-keygen -y -f ~/.ssh/github-actions
+      # Configuration de la clé SSH
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -60,6 +51,17 @@ jobs:
           chmod 600 ~/.ssh/github-actions
           ssh-keyscan -H 159.89.20.85 >> ~/.ssh/known_hosts
 
+      # Étapes de débogage pour vérifier si la clé SSH a bien été stockée et a les bonnes permissions
+      - name: Debug SSH Key
+        run: |
+          echo "Listing files in ~/.ssh"
+          ls -l ~/.ssh
+          echo "Permissions of the SSH key:"
+          ls -l ~/.ssh/github-actions
+          echo "SSH key content (first 5 lines):"
+          head -n 5 ~/.ssh/github-actions
+
+      # Déployer l'application sur le Droplet
       - name: Deploy to Droplet
         run: |
           ssh -i ~/.ssh/github-actions root@159.89.20.85 << 'EOF'
