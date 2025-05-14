@@ -65,7 +65,7 @@ jobs:
       - name: Deploy to Droplet
         run: |
           ssh -i ~/.ssh/github-actions root@159.89.20.85 << 'EOF'
-            cd /var/www/nestjs-app
+            cd /var/www/nestjs-cinema
             git pull origin main
             docker-compose down
             docker-compose build
