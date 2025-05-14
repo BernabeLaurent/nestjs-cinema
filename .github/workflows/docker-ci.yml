@@ -1,4 +1,4 @@
-name: CI Build & Test
+name: CI Build, Test & Deploy
 
 on:
   push:
@@ -39,3 +39,24 @@ jobs:
 
       - name: Test
         run: npm run test
+
+      - name: Build Docker image
+        run: |
+          docker build -t nestjs-app .
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/github-actions
+          chmod 600 ~/.ssh/github-actions
+          ssh-keyscan -H 159.89.20.85 >> ~/.ssh/known_hosts
+
+      - name: Deploy to Droplet
+        run: |
+          ssh -i ~/.ssh/github-actions root@159.89.20.85 << 'EOF'
+            cd /var/www/nestjs-app
+            git pull origin main
+            docker-compose down
+            docker-compose build
+            docker-compose up -d
+          EOF
