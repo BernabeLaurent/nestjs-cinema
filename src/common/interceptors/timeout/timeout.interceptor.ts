@@ -25,7 +25,7 @@ export class TimeoutInterceptor implements NestInterceptor {
           );
         }
         // Ne masque pas l’erreur originale
-        return throwError(() => err);
+        return throwError(() => new Error(String(err)));
       }),
     );
   }
