@@ -2,7 +2,7 @@ name: CI Build, Test & Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   build:
@@ -34,16 +34,25 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-#      - name: Lint
-#        run: npm run lint
-#
-#      - name: Test
-#        run: npm run test
+      #      - name: Lint
+      #        run: npm run lint
+      #
+      #      - name: Test
+      #        run: npm run test
 
       - name: Build Docker image
         run: |
           docker build -t nestjs-app .
 
+      - name: Debug SSH Key
+        run: |
+          echo "SSH key content:"
+          head -n 5 ~/.ssh/github-actions
+          echo "Permissions:"
+          ls -l ~/.ssh/github-actions
+      - name: Validate SSH key format
+        run: |
+          ssh-keygen -y -f ~/.ssh/github-actions
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
