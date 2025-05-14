@@ -61,6 +61,11 @@ jobs:
           echo "SSH key content (first 5 lines):"
           head -n 5 ~/.ssh/github-actions
 
+      # Copier le fichier .env.docker sur le droplet et le renommer en .env
+      - name: Copy .env.docker to Droplet and Rename to .env
+        run: |
+          scp -i ~/.ssh/github-actions .env.docker root@159.89.20.85:/var/www/nestjs-cinema/.env
+
       # Déployer l'application sur le Droplet
       - name: Deploy to Droplet
         run: |
