@@ -34,6 +34,7 @@ import { GenerateTokenValidationBookingDetailProvider } from './providers/genera
     AuthService,
     HashingProvider,
     GenerateTokenValidationBookingDetailProvider,
+    GenerateTokensProvider,
   ],
 })
 export class AuthModule {}

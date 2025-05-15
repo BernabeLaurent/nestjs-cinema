@@ -13,6 +13,7 @@ import { User } from '../user.entity';
 import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { HashingProvider } from '../../auth/providers/hashing.provider';
+import { GenerateTokensProvider } from '../../auth/providers/generate-tokens.provider';
 
 @Injectable()
 export class CreateUserProvider {
@@ -21,6 +22,7 @@ export class CreateUserProvider {
     private readonly usersRepository: Repository<User>,
     @Inject(forwardRef(() => HashingProvider))
     private readonly hashingProvider: HashingProvider,
+    private readonly generateTokensProvider: GenerateTokensProvider,
   ) {}
 
   public async create(createUserDto: CreateUserDto) {
@@ -71,7 +73,13 @@ export class CreateUserProvider {
           createUserDto.password,
         ),
       });
-      return await this.usersRepository.save(newUser);
+      const user = await this.usersRepository.save(newUser);
+      const token = await this.generateTokensProvider.generateTokens(user);
+
+      return {
+        ...user,
+        token,
+      };
     } catch (error) {
       throw new ConflictException(error);
     }
