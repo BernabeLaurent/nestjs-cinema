@@ -2,6 +2,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   RequestTimeoutException,
 } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -14,6 +15,10 @@ export class EmailProvider {
     @Inject(forwardRef(() => NotificationsService))
     private readonly notificationsService: NotificationsService,
   ) {}
+
+  private readonly logger = new Logger(EmailProvider.name, {
+    timestamp: true,
+  });
 
   async sendUserConfirmation(to: string, username: string) {
     await this.mailerService.sendMail({
@@ -32,6 +37,7 @@ export class EmailProvider {
     subject: string,
     text: string,
   ) {
+    this.logger.log('sendSimpleMail');
     try {
       await this.mailerService.sendMail({
         to,
