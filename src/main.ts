@@ -34,6 +34,7 @@ async function bootstrap() {
 
   const apiUrl =
     configService.get<string>('API_URL') || 'http://localhost:' + portNestjs;
+  const apiVersion = configService.get<string>('API_VERSION') || '1.0.0';
 
   // Swagger config
   const config = new DocumentBuilder()
@@ -44,7 +45,7 @@ async function bootstrap() {
       'MIT Licence',
       'https://github.com/BernabeLaurent/nestjs-cinema',
     )
-    .setVersion('1.0')
+    .setVersion(apiVersion)
     .addServer(apiUrl)
     .addBearerAuth(
       {
