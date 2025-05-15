@@ -25,6 +25,7 @@ set_env_var() {
 set_env_var "DATABASE_URL" "postgres://user:password@localhost:5432/dbname"
 set_env_var "ANOTHER_VAR" "another_value"
 set_env_var "ALLOWED_ORIGINS" "http://bernabe.codes,http://www.bernabe.codes,http://api.bernabe.codes,http://www.api.bernabe.codes"
+set_env_var "API_URL" "http://api.bernabe.codes"
 
 # Lancer l'application
 exec "$@"

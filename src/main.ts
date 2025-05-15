@@ -42,7 +42,7 @@ async function bootstrap() {
       'https://github.com/BernabeLaurent/nestjs-cinema',
     )
     .setVersion('1.0')
-    .addServer('http://localhost:' + portNestjs)
+    .addServer(process.env.API_URL || 'http://localhost:' + portNestjs)
     .addBearerAuth(
       {
         type: 'http',
