@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import { TimeoutInterceptor } from './common/interceptors/timeout/timeout.interceptor';
 import helmet from 'helmet';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -32,9 +33,10 @@ async function bootstrap() {
 
   const portNestjs: number = configService.get('appConfig.nestjsPort') || 3000;
 
-  const apiUrl =
-    configService.get<string>('API_URL') || 'http://localhost:' + portNestjs;
+  const apiUrl: string =
+    configService.get('appConfig.apiUrl') || 'http://localhost:' + portNestjs;
   const apiVersion = configService.get<string>('API_VERSION') || '1.0.0';
+  Logger.log(`API URL: ${apiUrl}`);
 
   // Swagger config
   const config = new DocumentBuilder()
@@ -62,6 +64,7 @@ async function bootstrap() {
   //enable cors
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+      apiUrl,
       'http://localhost:' + portNestjs,
       'http://localhost:4200', // Pour angular
     ],

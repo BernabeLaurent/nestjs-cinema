@@ -20,8 +20,10 @@ export class QrCodeService {
     if (!portNestjs) {
       throw new Error('NestJS port configuration is missing');
     }
+    const apiUrl = this.configService.get<string>('appConfig.apiUrl');
+
     // Je génére l'url de validation du ticket avec le token
-    const url = `http://localhost:${portNestjs}/booking/validate-booking-detail?token=${String(accessToken)}`;
+    const url = `${apiUrl}/booking/validate-booking-detail?token=${String(accessToken)}`;
     let qrCodeDataUrl: string;
 
     try {
