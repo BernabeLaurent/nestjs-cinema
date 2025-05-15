@@ -1,5 +1,4 @@
 import { Module, ClassSerializerInterceptor } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import tmdbConfig from './movies/config/tmdb.config';
@@ -69,7 +68,6 @@ import { StaticModule } from './config/static.module';
     BookingsModule,
     ImagesModule,
   ],
-  controllers: [AppController],
   providers: [
     AppService,
     PaginationProvider,
