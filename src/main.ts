@@ -59,6 +59,7 @@ async function bootstrap() {
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || [
       'http://localhost:' + portNestjs,
+      'http://localhost:4200', // Pour angular
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,

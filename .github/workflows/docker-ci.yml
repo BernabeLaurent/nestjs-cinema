@@ -62,7 +62,12 @@ jobs:
           head -n 5 ~/.ssh/github-actions
 
       # Copier le fichier .env.docker sur le droplet et le renommer en .env
-      - name: Copy .env.docker to Droplet and Rename to .env
+      - name: Copy .env.docker to Droplet only if .env does not exist
+        run: |
+          ssh -i ~/.ssh/github-actions root@159.89.20.85 'if [ ! -f /var/www/nestjs-cinema/.env ]; then exit 1; fi'
+        continue-on-error: true
+      - name: Upload .env.docker only if .env does not exist
+        if: failure()
         run: |
           scp -i ~/.ssh/github-actions .env.docker root@159.89.20.85:/var/www/nestjs-cinema/.env
 
