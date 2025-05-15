@@ -7,6 +7,7 @@ import {
   forwardRef,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user.entity';
@@ -25,7 +26,13 @@ export class CreateUserProvider {
     private readonly generateTokensProvider: GenerateTokensProvider,
   ) {}
 
+  private readonly logger = new Logger(CreateUserProvider.name, {
+    timestamp: true,
+  });
+
   public async create(createUserDto: CreateUserDto) {
+    this.logger.log('create' + JSON.stringify(createUserDto));
+
     let existingUser: User | null = null;
     // check user email exists
     try {
@@ -41,6 +48,7 @@ export class CreateUserProvider {
         { description: 'error connecting database' + error },
       );
     }
+    this.logger.log('existingUser' + JSON.stringify(existingUser));
 
     // Exception if user exists
     if (existingUser) {
@@ -54,6 +62,8 @@ export class CreateUserProvider {
       where: { email: createUserDto.email },
       withDeleted: true,
     });
+
+    this.logger.log('deletedUser' + JSON.stringify(deletedUser));
 
     if (deletedUser) {
       throw new HttpException(
@@ -73,6 +83,8 @@ export class CreateUserProvider {
           createUserDto.password,
         ),
       });
+      this.logger.log('newUser' + JSON.stringify(newUser));
+
       const user = await this.usersRepository.save(newUser);
       const token = await this.generateTokensProvider.generateTokens(user);
 
