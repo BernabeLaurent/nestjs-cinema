@@ -35,21 +35,23 @@ export class SearchMoviesProvider {
   > {
     const { name, theaterId } = searchMoviesDto;
 
-    // On vérifie que le cinéma existe
-    let theater: Theater | null;
-    try {
-      theater = await this.theatersRepository.findOneBy({
-        id: theaterId,
-      });
-    } catch (error) {
-      throw new RequestTimeoutException('unable to process your request', {
-        description: 'error connecting database' + error,
-      });
+    // On vérifie que le cinéma existe s'il est présent
+    if (theaterId) {
+      let theater: Theater | null;
+      try {
+        theater = await this.theatersRepository.findOneBy({
+          id: theaterId,
+        });
+      } catch (error) {
+        throw new RequestTimeoutException('unable to process your request', {
+          description: 'error connecting database' + error,
+        });
+      }
+      if (!theater) {
+        throw new BadRequestException('Theater not found WITH THIS ID');
+      }
     }
-    if (!theater) {
-      throw new BadRequestException('Theater not found WITH THIS ID');
-    }
-
+    
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Réinitialiser l'heure pour une comparaison de dates uniquement
 
