@@ -29,7 +29,7 @@ export class UsersController {
     description: 'The user has been successfully created.',
   })
   @Post()
-  @Roles([RoleUser.ADMIN])
+  @Auth(AuthType.None)
   public create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
@@ -83,7 +83,12 @@ export class UsersController {
   })
   @Get('check-email/:email')
   @Auth(AuthType.None)
-  public checkEmail(@Param('email') email: string) {
-    return this.usersService.findOneByEmail(email);
+  public async checkEmail(@Param('email') email: string) {
+    try {
+      await this.usersService.findOneByEmail(email);
+      return { available: false };
+    } catch {
+      return { available: true };
+    }
   }
 }

@@ -5,10 +5,12 @@ import {
   BadRequestException,
   Inject,
   forwardRef,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { HashingProvider } from '../../auth/providers/hashing.provider';
 
@@ -26,7 +28,10 @@ export class CreateUserProvider {
     // check user email exists
     try {
       existingUser = await this.usersRepository.findOne({
-        where: { email: createUserDto.email },
+        where: {
+          email: createUserDto.email,
+          deleteDate: IsNull(), // vérifier que l'utilisateur n'est pas soft-deleted
+        },
       });
     } catch (error) {
       throw new RequestTimeoutException(
@@ -39,6 +44,23 @@ export class CreateUserProvider {
     if (existingUser) {
       throw new BadRequestException(
         'User already exists, please check your email',
+      );
+    }
+
+    // Vérifie s'il existe un utilisateur supprimé
+    const deletedUser = await this.usersRepository.findOne({
+      where: { email: createUserDto.email },
+      withDeleted: true,
+    });
+
+    if (deletedUser) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.CONFLICT,
+          message: `user deleted found WITH THIS email: ${createUserDto.email}`,
+          error: 'Bad Request',
+        },
+        HttpStatus.CONFLICT,
       );
     }
 

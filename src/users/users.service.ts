@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   RequestTimeoutException,
 } from '@nestjs/common';
@@ -46,7 +48,14 @@ export class UsersService {
       });
     }
     if (!user) {
-      throw new BadRequestException('user not found WITH THIS ID');
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: `user not found WITH THIS ID: ${id}`,
+          error: 'Bad Request',
+        },
+        HttpStatus.NOT_FOUND,
+      );
     }
     return user;
   }
