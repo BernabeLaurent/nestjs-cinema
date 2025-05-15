@@ -32,6 +32,9 @@ async function bootstrap() {
 
   const portNestjs: number = configService.get('appConfig.nestjsPort') || 3000;
 
+  const apiUrl =
+    configService.get<string>('API_URL') || 'http://localhost:' + portNestjs;
+
   // Swagger config
   const config = new DocumentBuilder()
     .setTitle('API documentation')
@@ -42,7 +45,7 @@ async function bootstrap() {
       'https://github.com/BernabeLaurent/nestjs-cinema',
     )
     .setVersion('1.0')
-    .addServer(process.env.API_URL || 'http://localhost:' + portNestjs)
+    .addServer(apiUrl)
     .addBearerAuth(
       {
         type: 'http',
