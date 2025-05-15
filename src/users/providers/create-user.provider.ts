@@ -77,11 +77,13 @@ export class CreateUserProvider {
     }
 
     try {
+      const hashedPassword = await this.hashingProvider.hashPassword(
+        createUserDto.password,
+      );
+      this.logger.log('hashedPassword: ' + hashedPassword);
       const newUser = this.usersRepository.create({
         ...createUserDto,
-        password: await this.hashingProvider.hashPassword(
-          createUserDto.password,
-        ),
+        password: hashedPassword,
       });
       this.logger.log('newUser' + JSON.stringify(newUser));
 
