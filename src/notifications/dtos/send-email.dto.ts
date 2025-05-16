@@ -1,4 +1,11 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsJSON,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SendEmailDto {
@@ -18,12 +25,12 @@ export class SendEmailDto {
   subject: string;
 
   @ApiProperty({
-    description: 'Texte du mail',
-    example: 'Bonjour, votre inscription a été validée ...',
+    description: 'Nom du template',
+    example: 'confirmation_inscription',
   })
   @IsString()
   @IsNotEmpty()
-  text: string;
+  template: string;
 
   @ApiProperty({
     description: 'UserId',
@@ -32,4 +39,16 @@ export class SendEmailDto {
   @IsNumber()
   @IsNotEmpty()
   userId: number;
+
+  @ApiProperty({
+    description: 'Pour remplacer des variables dans le mail',
+    example: {
+      name: 'toto',
+      age: 25,
+      info: 'test',
+    },
+  })
+  @IsOptional()
+  @IsJSON()
+  context?: JSON;
 }

@@ -12,13 +12,20 @@ export class NotificationsService {
     private readonly notificationsRepository: Repository<Notification>,
   ) {}
 
-  public async sendEmail(
+  public async sendTemplatedEmail(
     userId: number,
     email: string,
     subject: string,
-    text: string,
+    templateName: string,
+    context?: JSON,
   ) {
-    return this.emailProvider.sendSimpleMail(userId, email, subject, text);
+    return this.emailProvider.sendTemplatedEmail(
+      userId,
+      email,
+      subject,
+      templateName,
+      context,
+    );
   }
 
   public addNotification(userID: number) {

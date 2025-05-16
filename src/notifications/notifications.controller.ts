@@ -19,11 +19,12 @@ export class NotificationsController {
   @Auth(AuthType.None)
   @HttpCode(HttpStatus.OK)
   async sendEmail(@Body() sendEmailDto: SendEmailDto) {
-    return this.notificationsService.sendEmail(
+    return this.notificationsService.sendTemplatedEmail(
       sendEmailDto.userId,
       sendEmailDto.email,
       sendEmailDto.subject,
-      sendEmailDto.text,
+      sendEmailDto.template,
+      sendEmailDto.context,
     );
   }
 }
