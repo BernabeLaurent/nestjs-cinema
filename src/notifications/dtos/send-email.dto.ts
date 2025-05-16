@@ -41,11 +41,13 @@ export class SendEmailDto {
   userId: number;
 
   @ApiProperty({
-    description: 'Pour remplacer des variables dans le mail',
+    description: 'Pour remplacer des variables dans le template du mail',
     example: {
       name: 'toto',
       age: 25,
+      year: 2025,
       info: 'test',
+      appName: 'test',
     },
   })
   @IsOptional()

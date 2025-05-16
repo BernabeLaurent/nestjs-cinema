@@ -51,7 +51,7 @@ export class SearchMoviesProvider {
         throw new BadRequestException('Theater not found WITH THIS ID');
       }
     }
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Réinitialiser l'heure pour une comparaison de dates uniquement
 

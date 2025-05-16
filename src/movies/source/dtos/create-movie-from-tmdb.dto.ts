@@ -1,4 +1,10 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateMovieFromTmdbDto {
   @IsNumber()
@@ -24,9 +30,9 @@ export class CreateMovieFromTmdbDto {
   @IsNumber()
   vote_average?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  release_date: string;
+  release_date?: string;
 
   @IsNotEmpty()
   @IsString()

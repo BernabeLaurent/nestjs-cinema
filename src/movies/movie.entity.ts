@@ -102,9 +102,9 @@ export class Movie {
   @Expose()
   @Column({
     type: 'timestamp',
-    nullable: false,
+    nullable: true,
   })
-  releaseDate: Date;
+  releaseDate?: Date;
 
   @Expose()
   @Column({
@@ -117,16 +117,16 @@ export class Movie {
   @Expose()
   @Column({
     type: 'timestamp',
-    nullable: false,
+    nullable: true,
   })
-  startDate: Date;
+  startDate?: Date;
 
   @Expose()
   @Column({
     type: 'timestamp',
-    nullable: false,
+    nullable: true,
   })
-  endDate: Date;
+  endDate?: Date;
 
   @Expose()
   @Column({

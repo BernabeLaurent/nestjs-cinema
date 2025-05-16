@@ -129,7 +129,8 @@ export class TmdbMovieDto {
   production_countries: ProductionCountryDto[];
 
   @IsDateString()
-  release_date: string;
+  @IsOptional()
+  release_date?: string;
 
   @IsNumber()
   revenue: number;

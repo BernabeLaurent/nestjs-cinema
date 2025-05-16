@@ -87,8 +87,8 @@ export class CreateMovieDto {
   averageRatingExterne?: number;
 
   @IsDate()
-  @IsNotEmpty()
-  releaseDate: Date;
+  @IsOptional()
+  releaseDate?: Date;
 
   @IsBoolean()
   isAdult?: boolean;

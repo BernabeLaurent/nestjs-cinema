@@ -4,7 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateReviewMovieDto {
   @ApiProperty({
     description: 'Note',
-    example: 8.4,
+    example: 8,
+    type: 'integer',
   })
   @IsNumber()
   @IsNotEmpty()

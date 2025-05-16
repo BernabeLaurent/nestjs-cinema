@@ -42,9 +42,18 @@ export class TmdbProvider implements MoviesProvider {
       originalTagline: dto.tagline,
       isAdult: dto.adult,
       averageRatingExterne: dto.vote_average,
-      releaseDate: new Date(dto.release_date),
-      startDate: new Date(dto.release_date),
-      endDate: new Date(dto.release_date),
+      releaseDate:
+        dto.release_date && !isNaN(Date.parse(dto.release_date))
+          ? new Date(dto.release_date)
+          : undefined,
+      startDate:
+        dto.release_date && !isNaN(Date.parse(dto.release_date))
+          ? new Date(dto.release_date)
+          : undefined,
+      endDate:
+        dto.release_date && !isNaN(Date.parse(dto.release_date))
+          ? new Date(dto.release_date)
+          : undefined,
       runtime: dto.runtime,
       originalLanguage: dto.original_language as Languages,
       backdropPath: dto.backdrop_path,
@@ -153,7 +162,6 @@ export class TmdbProvider implements MoviesProvider {
         }),
       );
       allMovies.push(...movie);
-
       return allMovies;
     } catch (error) {
       throw new UnauthorizedException(error);
