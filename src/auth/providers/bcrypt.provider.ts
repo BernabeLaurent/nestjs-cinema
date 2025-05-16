@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HashingProvider } from './hashing.provider';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class BcryptProvider implements HashingProvider {
@@ -9,10 +9,7 @@ export class BcryptProvider implements HashingProvider {
   public async hashPassword(data: string | Buffer): Promise<string> {
     try {
       this.logger.debug('Début du hachage du mot de passe');
-      const salt = await bcrypt.genSalt(5);
-      this.logger.debug('Sel généré avec succès');
-
-      const hashedPassword = await bcrypt.hash(data, salt);
+      const hashedPassword = await bcrypt.hash(data.toString(), 5);
       this.logger.debug('Mot de passe haché avec succès');
 
       return hashedPassword;
@@ -35,7 +32,7 @@ export class BcryptProvider implements HashingProvider {
   ): Promise<boolean> {
     try {
       this.logger.debug('Début de la comparaison des mots de passe');
-      const result = await bcrypt.compare(data, encrypted);
+      const result = await bcrypt.compare(data.toString(), encrypted);
       this.logger.debug('Comparaison des mots de passe terminée');
       return result;
     } catch (error) {
