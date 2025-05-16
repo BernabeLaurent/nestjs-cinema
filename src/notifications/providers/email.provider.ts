@@ -24,6 +24,7 @@ export class EmailProvider {
     private readonly emailConfiguration: ConfigType<typeof emailConfig>, // Import de la config email
     @Inject(forwardRef(() => NotificationsService))
     private readonly notificationsService: NotificationsService,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
 

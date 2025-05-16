@@ -1,2 +1,67 @@
-<h1>Bienvenue !</h1>
-<p>Merci de t'être inscrit. Confirme ton adresse email 🎉.</p>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmation d'inscription</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      padding: 0;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .content {
+      padding: 30px;
+    }
+    .content h1 {
+      font-size: 24px;
+      margin-top: 0;
+    }
+    /*.btn {*/
+    /*  display: inline-block;*/
+    /*  background-color: #4CAF50;*/
+    /*  color: white;*/
+    /*  padding: 12px 20px;*/
+    /*  margin-top: 20px;*/
+    /*  text-decoration: none;*/
+    /*  border-radius: 5px;*/
+    /*}*/
+    .footer {
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h2>Bienvenue, {{firstName}} !</h2>
+  </div>
+  <div class="content">
+    <h1>Votre inscription est confirmée 🎉</h1>
+    <p>Merci de vous être inscrit sur <strong>{{appName}}</strong>. Nous sommes ravis de vous compter parmi nous !</p>
+  </div>
+  <div class="footer">
+    <p>Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet email.</p>
+    <p>&copy; {{year}} {{appName}}. Tous droits réservés.</p>
+  </div>
+</div>
+</body>
+</html>

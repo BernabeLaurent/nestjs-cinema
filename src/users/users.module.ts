@@ -12,6 +12,7 @@ import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import profileConfig from './config/profile.config';
 import { BookingsModule } from '../bookings/bookings.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   providers: [
@@ -29,6 +30,7 @@ import { BookingsModule } from '../bookings/bookings.module';
     forwardRef(() => AuthModule),
     ConfigModule.forFeature(profileConfig),
     BookingsModule,
+    forwardRef(() => NotificationsModule),
   ],
 })
 export class UsersModule {}

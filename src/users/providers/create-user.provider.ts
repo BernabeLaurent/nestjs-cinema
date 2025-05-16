@@ -15,6 +15,7 @@ import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { HashingProvider } from '../../auth/providers/hashing.provider';
 import { GenerateTokensProvider } from '../../auth/providers/generate-tokens.provider';
+import { NotificationsService } from '../../notifications/notifications.service';
 
 @Injectable()
 export class CreateUserProvider {
@@ -24,6 +25,8 @@ export class CreateUserProvider {
     @Inject(forwardRef(() => HashingProvider))
     private readonly hashingProvider: HashingProvider,
     private readonly generateTokensProvider: GenerateTokensProvider,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   private readonly logger = new Logger(CreateUserProvider.name, {
@@ -89,6 +92,23 @@ export class CreateUserProvider {
 
       const user = await this.usersRepository.save(newUser);
       const token = await this.generateTokensProvider.generateTokens(user);
+
+      try {
+        await this.notificationsService.sendTemplatedEmail(
+          user.id,
+          user.email,
+          'Inscription confirmée',
+          'confirmation_inscription',
+          {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            appName: 'MyApp',
+            year: new Date().getFullYear(),
+          },
+        );
+      } catch (error) {
+        throw new ConflictException(error);
+      }
 
       return {
         ...user,
