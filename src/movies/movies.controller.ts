@@ -10,7 +10,13 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Languages } from '../common/enums/languages.enum';
 import { RegionsIso } from '../common/enums/regions-iso.enum';
 import { PatchMovieDto } from './dtos/patch-movie.dto';
@@ -28,6 +34,7 @@ import { Movie } from './movie.entity';
 @Controller('movies')
 @ApiTags('Movies')
 @Auth(AuthType.Bearer)
+@ApiBearerAuth('access-token') // La route attend un Bearer token
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 

@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { CreateTheaterDto } from './dtos/create-theater.dto';
 import { TheatersService } from './theaters.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PatchTheaterDto } from './dtos/patch-theater.dto';
 import { GetTheaterDto } from './dtos/get-theater.dto';
 import { Auth } from '../auth/decorators/auth.decorator';
@@ -23,6 +23,7 @@ import { RoleUser } from '../users/enums/roles-users.enum';
 @Controller('theaters')
 @ApiTags('Theaters')
 @Auth(AuthType.Bearer)
+@ApiBearerAuth('access-token') // La route attend un Bearer token
 export class TheatersController {
   constructor(private readonly theatersService: TheatersService) {}
 

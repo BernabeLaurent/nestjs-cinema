@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MoviesTheatersService } from './movies-theaters.service';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
@@ -18,6 +18,7 @@ import { RoleUser } from '../users/enums/roles-users.enum';
 
 @Controller('movies-theaters')
 @Auth(AuthType.Bearer)
+@ApiBearerAuth('access-token') // La route attend un Bearer token
 export class MoviesTheatersController {
   constructor(private readonly moviesTheaterService: MoviesTheatersService) {}
 

@@ -11,7 +11,12 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { PatchUserDto } from './dtos/patch-user.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -20,6 +25,7 @@ import { RoleUser } from './enums/roles-users.enum';
 @Controller('users')
 @ApiTags('Users')
 @Auth(AuthType.Bearer)
+@ApiBearerAuth('access-token') // La route attend un Bearer token
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

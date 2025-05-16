@@ -29,6 +29,7 @@ import { BookingTokenGuard } from 'src/auth/guards/access-token/booking-token-gu
 @Controller('bookings')
 @ApiTags('Bookings')
 @Auth(AuthType.Bearer)
+@ApiBearerAuth('access-token') // La route attend un Bearer token
 export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
