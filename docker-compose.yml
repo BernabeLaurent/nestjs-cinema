@@ -9,8 +9,7 @@ services:
       - postgres
       - mongodb
     volumes:
-#      - .:/app
-      - ./src:/app/src                     # si tu veux développer en live
+      - .:/app
       - ./uploads:/app/uploads  # Montée du volume Docker pour les fichiers téléchargés
     restart: unless-stopped
     entrypoint: ["sh", "./scripts/entrypoint.sh", "node", "dist/main"]
