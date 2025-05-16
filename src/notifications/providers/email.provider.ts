@@ -11,7 +11,7 @@ import { UsersService } from '../../users/users.service';
 import emailConfig from '../config/email.config';
 import { ConfigType } from '@nestjs/config';
 import axios from 'axios';
-import qs from 'qs';
+import * as qs from 'qs';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as Handlebars from 'handlebars';
@@ -32,12 +32,7 @@ export class EmailProvider {
   });
 
   // Pour récupérer là où on stocke les templates de mail
-  private readonly TEMPLATE_DIR = path.join(
-    __dirname,
-    '..',
-    'notifications',
-    'templates',
-  );
+  private readonly TEMPLATE_DIR = path.join(__dirname, '..', 'templates');
 
   async sendTemplatedEmail(
     userId: number,

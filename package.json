@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "kill-port": "PORT=${NESTJS_PORT:-3000} && fuser -k $PORT/tcp || true",
-    "build": "nest build",
+    "build": "nest build && npm run copy:templates",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "dockerUp": "docker compose up -d",
     "dockerDown": "docker compose down --remove-orphans",
@@ -21,7 +21,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "copy:templates": "cp -r src/notifications/templates dist/notifications/"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
