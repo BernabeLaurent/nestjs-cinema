@@ -17,7 +17,7 @@ export class NotificationsService {
     email: string,
     subject: string,
     templateName: string,
-    context?: JSON,
+    context?: Record<string, any>,
   ) {
     return this.emailProvider.sendTemplatedEmail(
       userId,

@@ -1,8 +1,8 @@
 import {
   IsEmail,
-  IsJSON,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -49,6 +49,6 @@ export class SendEmailDto {
     },
   })
   @IsOptional()
-  @IsJSON()
+  @IsObject()
   context?: JSON;
 }

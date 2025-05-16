@@ -44,7 +44,7 @@ export class EmailProvider {
     to: string,
     subject: string,
     templateName: string,
-    context?: JSON,
+    context?: Record<string, any>,
   ) {
     this.logger.log('sendTemplatedEmail');
     // On vérifie que l'utilisateur existe
@@ -115,7 +115,7 @@ export class EmailProvider {
 
   private async compileTemplate(
     templateName: string,
-    context: JSON | undefined,
+    context: Record<string, any> = {},
   ): Promise<string> {
     const filePath = path.join(this.TEMPLATE_DIR, `${templateName}.hbs`);
     let source: string;
