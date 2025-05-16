@@ -9,7 +9,7 @@ export class BcryptProvider implements HashingProvider {
   public async hashPassword(data: string | Buffer): Promise<string> {
     try {
       this.logger.debug('Début du hachage du mot de passe');
-      const salt = await bcrypt.genSalt(8);
+      const salt = await bcrypt.genSalt(5);
       this.logger.debug('Sel généré avec succès');
 
       const hashedPassword = await bcrypt.hash(data, salt);
