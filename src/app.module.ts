@@ -32,6 +32,7 @@ import { EmailModule } from './config/email.module';
 import { AppCacheModule } from './config/cache.module';
 import { SecurityModule } from './config/security.module';
 import { StaticModule } from './config/static.module';
+import { LogsModule } from './common/logs/logs.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { StaticModule } from './config/static.module';
     SessionsCinemasModule,
     BookingsModule,
     ImagesModule,
+    LogsModule,
   ],
   providers: [
     AppService,

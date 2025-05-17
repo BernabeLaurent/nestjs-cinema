@@ -8,6 +8,8 @@ import * as compression from 'compression';
 import { TimeoutInterceptor } from './common/interceptors/timeout/timeout.interceptor';
 import helmet from 'helmet';
 import { Logger } from '@nestjs/common';
+import { LogsService } from './common/logs/logs.service';
+import { MongoLogger } from './common/logs/mongo-logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -103,6 +105,12 @@ async function bootstrap() {
       xssFilter: true, // Protection contre XSS
     }),
   );
+
+  // Pour charger ma surcharge de Logger avec mongodb
+  const logService = app.get(LogsService);
+  const mongoLogger = new MongoLogger(logService);
+
+  app.useLogger(mongoLogger);
 
   await app.listen(portNestjs, '0.0.0.0', () => {});
 }
