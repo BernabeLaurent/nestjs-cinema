@@ -1,6 +1,7 @@
 services:
-  app:
+  nestjs-backend:
     build: .
+    container_name: nestjs-cinema-app
     ports:
       - "${NESTJS_PORT}:3000"
     env_file:
@@ -12,7 +13,23 @@ services:
       - .:/app
       - ./uploads:/app/uploads  # Montée du volume Docker pour les fichiers téléchargés
     restart: unless-stopped
-    entrypoint: ["sh", "./scripts/entrypoint.sh", "node", "dist/main"]
+    entrypoint: [ "sh", "./scripts/entrypoint.sh", "node", "dist/main" ]
+    networks:
+      - cinema-net
+
+  angular-frontend:
+    build:
+      context: ../angular-cinema   # chemin vers le projet Angular
+    container_name: angular-cinema-app
+    ports:
+      - "80:80"
+    environment:
+      - API_URL=http://nestjs-backend:3000
+    depends_on:
+      - nestjs-backend
+    restart: unless-stopped
+    networks:
+      - cinema-net
 
   postgres:
     image: postgres:16
@@ -39,3 +56,7 @@ volumes:
   mongodata:
   uploads:
     driver: local  # Volume Docker persistant pour le dossier uploads
+
+networks:
+  cinema-net:
+    driver: bridge
