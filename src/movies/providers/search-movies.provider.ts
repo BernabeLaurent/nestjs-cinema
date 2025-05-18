@@ -4,7 +4,7 @@ import {
   RequestTimeoutException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Brackets } from 'typeorm';
 import { Movie } from '../movie.entity';
 import { SessionCinema } from '../../sessions-cinemas/session-cinema.entity';
 import { Theater } from '../../theaters/theater.entity';
@@ -66,8 +66,23 @@ export class SearchMoviesProvider {
       .leftJoinAndSelect('session.movieTheater', 'movieTheater')
       .leftJoinAndSelect('movieTheater.theater', 'theater')
       .where('movie.title LIKE :name', { name: `%${name}%` })
-      .andWhere('movie.startDate <= :weekEnd', { weekEnd: oneWeekFromToday })
-      .andWhere('movie.endDate >= :today', { today })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            new Brackets((qb2) => {
+              qb2
+                .where('movie.startDate <= :weekEnd')
+                .andWhere('movie.endDate >= :today');
+            }),
+          ).orWhere(
+            new Brackets((qb2) => {
+              qb2
+                .where('movie.releaseDate <= :weekEnd')
+                .andWhere('movie.releaseDate >= :today');
+            }),
+          );
+        }),
+      )
       .andWhere('session.startTime BETWEEN :today AND :weekEnd', {
         today,
         weekEnd: oneWeekFromToday,
