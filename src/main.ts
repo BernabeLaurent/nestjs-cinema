@@ -11,7 +11,9 @@ import helmet from 'helmet';
 import { Logger } from '@nestjs/common';
 import { LogsService } from './common/logs/logs.service';
 import { MongoLogger } from './common/logs/mongo-logger';
-import { join } from 'path'; // Ajout nécessaire pour useStaticAssets
+import { join } from 'path';
+import { NextFunction, Request, Response } from 'express';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -80,9 +82,22 @@ async function bootstrap() {
   });
 
   // Pour que la doc COMPODOC soit accessible
-  app.useStaticAssets(join(__dirname, '..', 'documentation'), {
-    prefix: '/documentation',
-  });
+  app.use(
+    '/documentation',
+    express.static(join(__dirname, '..', 'documentation')),
+  );
+
+  // Middleware pour rediriger documentation vers /documentation/index.html si nécessaire
+  app.use(
+    '/documentation',
+    (req: Request, res: Response, next: NextFunction) => {
+      if (req.path === '/' || req.path === '') {
+        res.redirect('/documentation/index.html');
+      } else {
+        next();
+      }
+    },
+  );
 
   app.use(compression());
 
