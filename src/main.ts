@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
@@ -10,9 +11,10 @@ import helmet from 'helmet';
 import { Logger } from '@nestjs/common';
 import { LogsService } from './common/logs/logs.service';
 import { MongoLogger } from './common/logs/mongo-logger';
+import { join } from 'path'; // Ajout nécessaire pour useStaticAssets
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['error', 'warn', 'fatal', 'debug', 'log'],
   });
   const configService = app.get(ConfigService);
@@ -75,6 +77,11 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
     maxAge: 3600, // Cache les préférences CORS pendant 1 heure
+  });
+
+  // Pour que la doc COMPODOC soit accessible
+  app.useStaticAssets(join(__dirname, '..', 'documentation'), {
+    prefix: '/documentation',
   });
 
   app.use(compression());
