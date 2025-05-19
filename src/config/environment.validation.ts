@@ -5,6 +5,7 @@ export default Joi.object({
     .valid('dev', 'production', 'test', 'staging')
     .default('dev'),
   NESTJS_PORT: Joi.number().port().default(3000),
+  ANGULAR_PORT: Joi.number().port().default(4200),
   DATABASE_PORT: Joi.number().port().default(5432),
   DATABASE_PASSWORD: Joi.string().required(),
   DATABASE_HOST: Joi.string().required(),

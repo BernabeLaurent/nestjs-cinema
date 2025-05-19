@@ -6,6 +6,9 @@ export default registerAs('appConfig', () => ({
   nestjsPort: process.env.NESTJS_PORT
     ? parseInt(process.env.NESTJS_PORT)
     : 3000,
+  angularPort: process.env.ANGULAR_PORT
+    ? parseInt(process.env.ANGULAR_PORT)
+    : 4200,
   apiUrl:
     process.env.API_URL ||
     `http://localhost:${process.env.NESTJS_PORT ? parseInt(process.env.NESTJS_PORT) : 3000}`,

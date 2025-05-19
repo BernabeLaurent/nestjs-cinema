@@ -38,6 +38,8 @@ async function bootstrap() {
   );
 
   const portNestjs: number = configService.get('appConfig.nestjsPort') || 3000;
+  const portAngular: number =
+    configService.get('appConfig.angularPort') || 4200;
 
   const apiUrl: string =
     configService.get('appConfig.apiUrl') || 'http://localhost:' + portNestjs;
@@ -72,7 +74,7 @@ async function bootstrap() {
     origin: process.env.ALLOWED_ORIGINS?.split(',') || [
       apiUrl,
       'http://localhost:' + portNestjs,
-      'http://localhost:4200', // Pour angular
+      'http://localhost:' + portAngular, // Pour angular
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
