@@ -724,6 +724,244 @@ src/
 - `GET /bookings/:id` - Détails d'une réservation
 - `DELETE /bookings/:id` - Annuler une réservation
 
+## Manuel d'Utilisation de l'API
+
+### Introduction
+
+Ce manuel détaille l'utilisation de l'API du système de gestion de cinéma. L'API est RESTful et utilise JSON comme format d'échange de données.
+
+### Authentification
+
+#### Obtention d'un Token
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "utilisateur@example.com",
+  "password": "motdepasse"
+}
+```
+
+Réponse :
+```json
+{
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIs..."
+  },
+  "apiVersion": "1.0.0",
+  "timestamp": "2024-03-20T10:30:00Z"
+}
+```
+
+#### Utilisation du Token
+Ajoutez le token dans le header de vos requêtes :
+```http
+Authorization: Bearer <votre_token>
+```
+
+### Gestion des Films
+
+#### Lister les Films
+```http
+GET /movies
+```
+
+Paramètres de requête :
+- `page` : Numéro de page (défaut: 1)
+- `limit` : Nombre d'éléments par page (défaut: 10)
+- `sort` : Champ de tri (ex: "releaseDate")
+- `order` : Ordre de tri ("asc" ou "desc")
+
+#### Obtenir les Détails d'un Film
+```http
+GET /movies/:id
+```
+
+#### Rechercher des Films
+```http
+GET /movies/search
+```
+
+Paramètres de requête :
+- `query` : Terme de recherche
+- `year` : Année de sortie
+- `genre` : ID du genre
+- `language` : Code de langue
+
+### Gestion des Salles
+
+#### Lister les Salles
+```http
+GET /theaters
+```
+
+#### Obtenir les Détails d'une Salle
+```http
+GET /theaters/:id
+```
+
+#### Vérifier la Disponibilité
+```http
+GET /theaters/:id/availability
+```
+
+Paramètres de requête :
+- `date` : Date de la séance (YYYY-MM-DD)
+- `time` : Heure de la séance (HH:mm)
+
+### Gestion des Séances
+
+#### Lister les Séances
+```http
+GET /sessions
+```
+
+Paramètres de requête :
+- `movieId` : ID du film
+- `theaterId` : ID de la salle
+- `date` : Date de la séance
+- `status` : Statut de la séance
+
+#### Créer une Séance
+```http
+POST /sessions
+Content-Type: application/json
+
+{
+  "movieId": "123",
+  "theaterId": "456",
+  "startTime": "2024-03-20T20:00:00Z",
+  "price": 12.50
+}
+```
+
+### Gestion des Réservations
+
+#### Créer une Réservation
+```http
+POST /bookings
+Content-Type: application/json
+
+{
+  "sessionId": "789",
+  "seats": ["A1", "A2"],
+  "userId": "123"
+}
+```
+
+#### Annuler une Réservation
+```http
+DELETE /bookings/:id
+```
+
+### Gestion des Utilisateurs
+
+#### Créer un Compte
+```http
+POST /users/register
+Content-Type: application/json
+
+{
+  "email": "nouveau@example.com",
+  "password": "motdepasse",
+  "firstName": "Prénom",
+  "lastName": "Nom"
+}
+```
+
+#### Mettre à Jour le Profil
+```http
+PUT /users/profile
+Content-Type: application/json
+
+{
+  "firstName": "Nouveau Prénom",
+  "lastName": "Nouveau Nom",
+  "phone": "+33123456789"
+}
+```
+
+### Gestion des Erreurs
+
+L'API utilise des codes HTTP standard et renvoie des messages d'erreur au format suivant :
+
+```json
+{
+  "statusCode": 400,
+  "message": "Message d'erreur détaillé",
+  "error": "Bad Request",
+  "timestamp": "2024-03-20T10:30:00Z"
+}
+```
+
+Codes d'erreur courants :
+- `400` : Requête invalide
+- `401` : Non authentifié
+- `403` : Non autorisé
+- `404` : Ressource non trouvée
+- `409` : Conflit
+- `500` : Erreur serveur
+
+### Bonnes Pratiques
+
+1. **Gestion des Tokens**
+   - Stockez le token de manière sécurisée
+   - Utilisez le refresh token pour obtenir un nouveau token
+   - Ne partagez jamais vos tokens
+
+2. **Rate Limiting**
+   - Maximum 100 requêtes par minute
+   - Maximum 1000 requêtes par heure
+
+3. **Cache**
+   - Utilisez les en-têtes de cache fournis
+   - Respectez les durées de cache indiquées
+
+4. **Pagination**
+   - Utilisez toujours la pagination pour les listes
+   - Limitez le nombre d'éléments par page
+
+### Exemples d'Utilisation
+
+#### Exemple de Flux de Réservation
+1. Rechercher un film
+2. Vérifier les séances disponibles
+3. Vérifier la disponibilité des places
+4. Créer la réservation
+5. Confirmer la réservation
+
+#### Exemple de Code (JavaScript)
+```javascript
+async function createBooking(sessionId, seats) {
+  const response = await fetch('/api/bookings', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      sessionId,
+      seats
+    })
+  });
+  
+  if (!response.ok) {
+    throw new Error('Erreur lors de la création de la réservation');
+  }
+  
+  return response.json();
+}
+```
+
+### Support
+
+Pour toute question ou problème :
+- Consultez la documentation Swagger : `http://localhost:3000/api`
+- Consultez les logs d'erreur dans MongoDB
+- Consultez les logs d'erreur dans la console nestjs
+
 ## Tests
 
 Le projet inclut une suite complète de tests :
