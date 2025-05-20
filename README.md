@@ -25,6 +25,141 @@
 
 Ce projet est un système de gestion de cinéma développé avec [Nest](https://github.com/nestjs/nest), un framework TypeScript pour Node.js. Il permet de gérer l'ensemble des opérations d'un cinéma, de la programmation des films à la gestion des réservations.
 
+## Architecture Logicielle
+
+### Choix Technologiques
+
+#### Backend : NestJS
+- **Pourquoi NestJS ?**
+  - Architecture modulaire et évolutive
+  - Support natif de TypeScript
+  - Injection de dépendances intégrée
+  - Décorateurs similaires à Angular
+  - Documentation complète et communauté active
+  - Support natif des WebSockets
+  - Tests unitaires et e2e facilités
+
+#### Base de Données : PostgreSQL
+- **Avantages**
+  - Transactions ACID
+  - Support des relations complexes
+  - Performances élevées
+  - Fiabilité et stabilité
+  - Support des types JSON
+  - Indexation avancée
+
+#### Cache : NestJS Cache Manager
+- **Fonctionnalités**
+  - Mise en cache des réponses API
+  - Invalidation automatique
+  - Configuration flexible
+  - Performance optimisée
+
+#### Frontend : Angular
+- **Raison du choix**
+  - Cohérence avec NestJS
+  - Architecture similaire
+  - TypeScript natif
+  - RxJS pour la gestion des flux
+  - Material Design intégré
+  - Tests unitaires et e2e
+
+### Architecture Globale
+
+#### Modules Principaux
+1. **Module d'Authentification**
+   - JWT pour les tokens
+   - OAuth2 pour Google
+   - Gestion des sessions
+   - Sécurité renforcée
+
+2. **Module de Gestion des Films**
+   - Intégration TMDB
+   - Cache des données
+   - Gestion des médias
+   - Synchronisation automatique
+
+3. **Module de Réservation**
+   - Transactions atomiques
+   - Gestion des places
+   - Notifications en temps réel
+   - Historique des réservations
+
+4. **Module de Notification**
+   - WebSockets
+   - Emails
+   - Logs MongoDB
+   - Alertes système
+
+### Réflexions Initiales
+
+#### Analyse des Besoins
+1. **Fonctionnels**
+   - Gestion des films et séances
+   - Système de réservation
+   - Authentification utilisateurs
+   - Notifications en temps réel
+
+2. **Non-Fonctionnels**
+   - Performance
+   - Scalabilité
+   - Sécurité
+   - Maintenabilité
+
+#### Choix d'Architecture
+1. **Microservices vs Monolithe**
+   - Choix du monolithe modulaire
+   - Facilité de déploiement
+   - Maintenance simplifiée
+   - Évolution possible vers microservices
+
+2. **Base de Données**
+   - PostgreSQL pour les données transactionnelles
+   - MongoDB pour les logs
+   - Cache pour les performances
+
+3. **API Design**
+   - REST pour la majorité des endpoints
+   - WebSocket pour le temps réel (dans l'idéal)
+   - GraphQL pour les requêtes complexes (futur)
+
+#### Considérations Techniques
+1. **Performance**
+   - Cache à plusieurs niveaux
+   - Indexation optimisée
+   - Pagination des résultats
+   - Compression des réponses
+
+2. **Sécurité**
+   - Validation des entrées
+   - Protection CSRF
+   - Rate limiting
+   - Headers de sécurité
+
+3. **Maintenabilité**
+   - Tests automatisés
+   - Documentation Swagger
+   - Logs structurés
+   - CI/CD avec GitHub Actions
+
+### Évolution Future
+
+#### Améliorations Planifiées
+1. **Court Terme**
+   - Optimisation des requêtes
+   - Amélioration du cache
+   - Tests de performance
+
+2. **Moyen Terme**
+   - Migration vers microservices
+   - Ajout de GraphQL
+   - Intégration de nouveaux fournisseurs
+
+3. **Long Terme**
+   - Architecture distribuée
+   - Support multi-langues
+   - Analytics avancés
+
 ### Pourquoi NestJS ?
 
 NestJS a été choisi pour ce projet car il offre une architecture similaire à Angular, permettant ainsi un développement full-stack cohérent. Les deux frameworks partagent :
@@ -428,8 +563,20 @@ PROFILE_API_KEY=votre_cle_api_tmdb
 - Les valeurs ci-dessus sont des exemples, à adapter selon votre environnement
 - En production, utilisez des secrets plus complexes et des URLs sécurisées
 
-## Documentation Technique
+## Documentation
 
+### Documentation du Projet
+La documentation complète du projet, incluant la gestion de projet, les spécifications et le suivi, est disponible sur Notion :
+[Documentation du Projet Cinéma](https://www.notion.so/Projet-Cin-ma-17e3897d217e80249e6eefc9fa1e88d6?pvs=4)
+
+Cette documentation inclut :
+- Gestion du projet
+- Spécifications techniques
+- Planning et suivi
+- Documentation utilisateur
+- Guides de contribution
+
+### Documentation Technique
 La documentation technique complète du projet est disponible de deux manières :
 
 ### Documentation Locale
@@ -962,9 +1109,10 @@ Pour toute question ou problème :
 - Consultez les logs d'erreur dans MongoDB
 - Consultez les logs d'erreur dans la console nestjs
 
-## Tests
+## Tests et Qualité
 
-Le projet inclut une suite complète de tests :
+### Suite de Tests
+Le projet inclut une suite complète de tests automatisés :
 
 ```bash
 # Tests unitaires
@@ -977,77 +1125,150 @@ npm run test:e2e
 npm run test:cov
 ```
 
-## Contribution
+### Qualité du Code
+- Tests unitaires pour chaque service
+- Tests e2e pour les flux critiques
+- Couverture de code minimale de 80%
+- Linting avec ESLint
+- Formatage avec Prettier
 
-Les contributions sont les bienvenues ! Consultez notre guide de contribution pour plus de détails.
+## Documentation
 
-## Configuration du projet
+### Documentation Technique
+La documentation technique est disponible de deux manières :
 
+1. **Documentation Locale**
 ```bash
-$ npm install
+# Générer la documentation
+npm run compodoc
+
+# Accès : http://localhost:8080/documentation
 ```
 
-## Compilation et exécution du projet
+2. **Documentation en Ligne**
+- URL : [api.bernabe.codes/documentation](https://api.bernabe.codes/documentation)
+- Inclut :
+  - Structure du code
+  - Diagrammes de classes
+  - Documentation des modules
+  - Interfaces et types
+  - Décorateurs et guards
+  - Services et contrôleurs
+  - Entités
 
-```bash
-# développement
-$ npm run start
-
-# mode watch
-$ npm run start:dev
-
-# mode production
-$ npm run start:prod
-```
-
-## Exécution des tests
-
-```bash
-# tests unitaires
-$ npm run test
-
-# tests e2e
-$ npm run test:e2e
-
-# couverture des tests
-$ npm run test:cov
-```
+### Documentation API (Swagger)
+- URL : `http://localhost:3000/api`
+- Authentification requise
+- Exemples de requêtes
+- Schémas de réponses
+- Tests interactifs
 
 ## Déploiement
 
-Lorsque vous êtes prêt à déployer votre application NestJS en production, il y a plusieurs étapes clés à suivre pour assurer son bon fonctionnement. Consultez la [documentation de déploiement](https://docs.nestjs.com/deployment) pour plus d'informations.
+### Prérequis
+- Node.js (version 22 ou supérieure)
+- PostgreSQL (version 16 ou supérieure)
+- Docker (optionnel)
 
-Si vous recherchez une plateforme cloud pour déployer votre application NestJS, découvrez [Mau](https://mau.nestjs.com), notre plateforme officielle pour le déploiement d'applications NestJS sur AWS. Mau simplifie et accélère le déploiement en quelques étapes simples :
-
+### Configuration
+1. **Variables d'Environnement**
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Copier le fichier de configuration
+cp .env.docker .env
+
+# Configurer les variables requises
+# - DATABASE_URL
+# - JWT_SECRET
+# - SMTP_CONFIG
 ```
 
-Avec Mau, vous pouvez déployer votre application en quelques clics, vous permettant de vous concentrer sur le développement des fonctionnalités plutôt que sur la gestion de l'infrastructure.
+2. **Installation**
+```bash
+# Installer les dépendances
+npm install
 
-## Ressources
+# Compiler le projet
+npm run build
+```
 
-Voici quelques ressources utiles pour travailler avec NestJS :
+### Déploiement Local
+```bash
+# Mode développement
+npm run start:dev
 
-- Consultez la [Documentation NestJS](https://docs.nestjs.com) pour en apprendre davantage sur le framework.
-- Pour les questions et le support, visitez notre [canal Discord](https://discord.gg/G7Qnnhy).
-- Pour approfondir et obtenir plus d'expérience pratique, découvrez nos [cours vidéo](https://courses.nestjs.com/) officiels.
-- Déployez votre application sur AWS avec l'aide de [NestJS Mau](https://mau.nestjs.com) en quelques clics.
-- Visualisez le graphe de votre application et interagissez avec l'application NestJS en temps réel en utilisant [NestJS Devtools](https://devtools.nestjs.com).
-- Besoin d'aide pour votre projet (à temps partiel ou plein temps) ? Consultez notre [support entreprise](https://enterprise.nestjs.com) officiel.
-- Pour rester informé et recevoir des mises à jour, suivez-nous sur [X](https://x.com/nestframework) et [LinkedIn](https://linkedin.com/company/nestjs).
-- Vous cherchez un emploi ou vous avez une offre d'emploi ? Consultez notre [plateforme d'emplois](https://jobs.nestjs.com) officielle.
+# Mode production
+npm run start:prod
+```
 
-## Support
+### Déploiement avec Docker
+```bash
+# Lancer les services
+docker-compose up -d
 
-Nest est un projet open source sous licence MIT. Il peut se développer grâce aux sponsors et au soutien de nos incroyables contributeurs. Si vous souhaitez les rejoindre, [lisez-en plus ici](https://docs.nestjs.com/support).
+# Services disponibles sur :
+# - Backend : http://localhost:3000
+# - Frontend : http://localhost:4200
+# - Documentation : http://localhost:3000/api
+```
 
-## Restez en contact
+### Déploiement Automatisé (GitHub Actions)
 
-- Auteur - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Site web - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### Workflow
+1. **Déclencheurs**
+   - Push sur `main`
+   - Création de tag
+   - Pull Request sur `main`
+
+2. **Environnements**
+   - Développement (`develop`)
+   - Staging (`staging`)
+   - Production (`main`)
+
+3. **Sécurité**
+   - Secrets GitHub
+   - Vérification des signatures
+   - Protection des branches
+   - Validation des PR
+
+4. **Monitoring**
+   - Logs de déploiement
+   - Statut des builds
+   - Métriques de performance
+
+5. **Rollback**
+   - Détection automatique
+   - Restauration de version
+   - Notification d'équipe
+   - Logs d'erreur
+
+### Déploiement Cloud (Optionnel)
+Pour un déploiement sur AWS, utilisez [NestJS Mau](https://mau.nestjs.com) :
+
+```bash
+# Installation
+npm install -g @nestjs/mau
+
+# Déploiement
+mau deploy
+```
+
+## Support et Ressources
+
+### Support Technique
+- Documentation : [docs.nestjs.com](https://docs.nestjs.com)
+- Discord : [discord.gg/G7Qnnhy](https://discord.gg/G7Qnnhy)
+- Cours : [courses.nestjs.com](https://courses.nestjs.com)
+- Entreprise : [enterprise.nestjs.com](https://enterprise.nestjs.com)
+
+### Ressources Utiles
+- [NestJS Devtools](https://devtools.nestjs.com)
+- [NestJS Jobs](https://jobs.nestjs.com)
+- [@nestframework sur X](https://x.com/nestframework)
+- [NestJS sur LinkedIn](https://linkedin.com/company/nestjs)
+
+## Contribution
+
+Les contributions sont les bienvenues ! Consultez notre guide de contribution pour plus de détails.
 
 ## Licence
 
