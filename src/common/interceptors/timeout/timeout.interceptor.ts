@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
   RequestTimeoutException,
+  HttpException,
 } from '@nestjs/common';
 import {
   Observable,
@@ -24,7 +25,11 @@ export class TimeoutInterceptor implements NestInterceptor {
             () => new RequestTimeoutException('Request timed out'),
           );
         }
-        // Ne masque pas l’erreur originale
+
+        if (err instanceof HttpException) {
+          return throwError(() => err);
+        }
+
         return throwError(() => new Error(String(err)));
       }),
     );
