@@ -100,7 +100,7 @@ export class CreateUserDto {
   })
   @IsEnum(RegionsIso)
   @IsOptional()
-  codeCountry: RegionsIso;
+  codeCountry?: RegionsIso;
 
   @ApiProperty({
     description: 'phoneNumber',
