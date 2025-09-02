@@ -1,4 +1,5 @@
 import { validate } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 import { SignInDto } from './signing.dto';
 
 describe('SignInDto', () => {
@@ -162,23 +163,25 @@ describe('SignInDto', () => {
     }
   });
 
-  it('should handle whitespace in email validation', async () => {
+  it('should fail validation with whitespace around email', async () => {
     Object.assign(dto, {
       email: '  test@example.com  ',
       password: 'validPassword123',
     });
 
     const errors = await validate(dto);
-    expect(errors).toHaveLength(0);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('email');
   });
 
   it('should handle whitespace-only password as invalid', async () => {
-    Object.assign(dto, {
+    const data = {
       email: 'test@example.com',
       password: '   ',
-    });
+    };
+    const transformedDto = plainToClass(SignInDto, data);
 
-    const errors = await validate(dto);
+    const errors = await validate(transformedDto);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('password');
   });

@@ -9,7 +9,7 @@ describe('NotificationsService', () => {
       providers: [NotificationsService],
     }).compile();
 
-    service = module.get<NotificationsService>(NotificationsService);
+    service = module.get(NotificationsService);
   });
 
   it('should be defined', () => {

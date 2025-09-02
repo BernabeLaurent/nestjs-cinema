@@ -51,7 +51,7 @@ describe('UsersService', () => {
       ],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
+    service = module.get(UsersService);
   });
 
   it('Should be defined', () => {
@@ -60,8 +60,7 @@ describe('UsersService', () => {
 
   describe('createUser', () => {
     it('should be defined', () => {
-      const createSpy = jest.spyOn(service, 'create');
-      expect(createSpy).toBeDefined();
+      expect(service.create).toBeDefined();
     });
     it('should call create on createUserProvider', async () => {
       const user = await service.create({

@@ -28,8 +28,8 @@ describe('DataResponseInterceptor', () => {
       ],
     }).compile();
 
-    interceptor = module.get<DataResponseInterceptor>(DataResponseInterceptor);
-    configService = module.get<ConfigService>(ConfigService);
+    interceptor = module.get(DataResponseInterceptor);
+    configService = module.get(ConfigService);
   });
 
   afterEach(() => {

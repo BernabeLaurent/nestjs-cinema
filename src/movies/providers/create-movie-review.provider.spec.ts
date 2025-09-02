@@ -9,7 +9,7 @@ describe('CreateMovieReviewProvider', () => {
       providers: [CreateMovieReviewProvider],
     }).compile();
 
-    provider = module.get<CreateMovieReviewProvider>(CreateMovieReviewProvider);
+    provider = module.get(CreateMovieReviewProvider);
   });
 
   it('should be defined', () => {

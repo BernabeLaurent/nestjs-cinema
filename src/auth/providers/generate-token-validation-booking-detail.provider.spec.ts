@@ -9,7 +9,7 @@ describe('GenerateTokenValidationBookingDetailProvider', () => {
       providers: [GenerateTokenValidationBookingDetailProvider],
     }).compile();
 
-    provider = module.get<GenerateTokenValidationBookingDetailProvider>(GenerateTokenValidationBookingDetailProvider);
+    provider = module.get(GenerateTokenValidationBookingDetailProvider);
   });
 
   it('should be defined', () => {

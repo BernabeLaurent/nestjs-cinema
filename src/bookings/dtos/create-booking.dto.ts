@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsNumber, ValidateNested, IsPositive, IsArray, ArrayMinSize, Min, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateBookingDetailDto } from './create-booking-detail.dto';
 import { Type } from 'class-transformer';
@@ -9,7 +9,8 @@ export class CreateBookingDto {
     example: 1,
   })
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   userId: number;
 
   @ApiProperty({
@@ -17,31 +18,39 @@ export class CreateBookingDto {
     example: 1,
   })
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   sessionCinemaId: number;
 
   @ApiProperty({
-    description: 'Nb de siéges réservés',
+    description: 'Nb de sièges réservés',
     example: 1,
+    minimum: 1,
+    maximum: 10,
   })
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   numberSeats: number;
 
   @ApiProperty({
-    description: 'Nb de siéges handicapés réservés',
+    description: 'Nb de sièges handicapés réservés',
     example: 0,
+    minimum: 0,
   })
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
+  @Min(0)
   numberSeatsDisabled: number;
 
   @ApiProperty({
     description: 'Prix total de la réservation',
     example: 10.45,
+    minimum: 0.01,
   })
   @IsNotEmpty()
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
   totalPrice: number;
 
   @ApiProperty({
@@ -49,6 +58,8 @@ export class CreateBookingDto {
     type: () => [CreateBookingDetailDto],
   })
   @IsNotEmpty()
+  @IsArray()
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => CreateBookingDetailDto)
   reservedSeats: CreateBookingDetailDto[];

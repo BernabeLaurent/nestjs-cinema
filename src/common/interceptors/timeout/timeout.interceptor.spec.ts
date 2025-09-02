@@ -15,10 +15,15 @@ describe('TimeoutInterceptor', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TimeoutInterceptor],
+      providers: [
+        {
+          provide: TimeoutInterceptor,
+          useClass: TimeoutInterceptor,
+        },
+      ],
     }).compile();
 
-    interceptor = module.get<TimeoutInterceptor>(TimeoutInterceptor);
+    interceptor = module.get(TimeoutInterceptor);
   });
 
   it('should be defined', () => {
@@ -59,7 +64,7 @@ describe('TimeoutInterceptor', () => {
           done();
         },
       });
-    });
+    }, 40000);
 
     it('should handle TimeoutError and convert to RequestTimeoutException', (done) => {
       const mockExecutionContext = {} as ExecutionContext;
@@ -177,11 +182,12 @@ describe('TimeoutInterceptor', () => {
         error: (error: RequestTimeoutException) => {
           const elapsed = Date.now() - startTime;
           expect(error).toBeInstanceOf(RequestTimeoutException);
-          expect(elapsed).toBeLessThan(31000); // Should timeout around 30s
+          expect(elapsed).toBeLessThan(32000); // Should timeout around 30s, with some margin
+          expect(elapsed).toBeGreaterThan(29000); // But not too early
           done();
         },
       });
-    }, 35000); // Set test timeout higher than interceptor timeout
+    }, 40000); // Set test timeout higher than interceptor timeout
 
     it('should call next.handle() and return observable', () => {
       const mockData = { test: 'data' };

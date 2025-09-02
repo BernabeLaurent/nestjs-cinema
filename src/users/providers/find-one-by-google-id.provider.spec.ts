@@ -38,7 +38,7 @@ describe('FindOneByGoogleIdProvider', () => {
       ],
     }).compile();
 
-    provider = module.get<FindOneByGoogleIdProvider>(FindOneByGoogleIdProvider);
+    provider = module.get(FindOneByGoogleIdProvider);
   });
 
   afterEach(() => {

@@ -31,7 +31,7 @@ describe('PaginationProvider', () => {
       ],
     }).compile();
 
-    provider = module.get<PaginationProvider>(PaginationProvider);
+    provider = module.get(PaginationProvider);
   });
 
   afterEach(() => {
@@ -226,7 +226,7 @@ describe('PaginationProvider', () => {
         ],
       })
         .compile()
-        .then((module) => module.get<PaginationProvider>(PaginationProvider));
+        .then((module) => module.get(PaginationProvider));
 
       const paginationQuery = new PaginationQueryDto();
       paginationQuery.limit = 5;

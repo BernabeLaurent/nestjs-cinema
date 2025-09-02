@@ -23,7 +23,7 @@ describe('NotificationsModule', () => {
   });
 
   it('should provide NotificationsService', () => {
-    const service = module.get<NotificationsService>(NotificationsService);
+    const service = module.get(NotificationsService);
     expect(service).toBeDefined();
   });
 
@@ -35,7 +35,7 @@ describe('NotificationsModule', () => {
   });
 
   it('should provide EmailProvider', () => {
-    const provider = module.get<EmailProvider>(EmailProvider);
+    const provider = module.get(EmailProvider);
     expect(provider).toBeDefined();
   });
 
