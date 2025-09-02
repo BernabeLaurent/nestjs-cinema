@@ -61,7 +61,7 @@ describe('CreateUserProvider', () => {
       ],
     }).compile();
 
-    provider = module.get<CreateUserProvider>(CreateUserProvider);
+    provider = module.get(CreateUserProvider);
     usersRepository = module.get(getRepositoryToken(User));
   });
 

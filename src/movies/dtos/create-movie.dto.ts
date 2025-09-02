@@ -8,9 +8,14 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  IsPositive,
+  Min,
+  Max,
+  IsInt,
 } from 'class-validator';
 import { Languages } from '../../common/enums/languages.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreateMovieDto {
   @ApiPropertyOptional({
@@ -65,40 +70,106 @@ export class CreateMovieDto {
   @IsOptional()
   originalTagline?: string;
 
+  @ApiPropertyOptional({
+    description: 'Âge minimum recommandé',
+    example: 12,
+    minimum: 0,
+    maximum: 18,
+  })
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @Min(0)
+  @Max(18)
   minimumAge?: number;
 
+  @ApiPropertyOptional({
+    description: 'Durée du film en minutes',
+    example: 120,
+    minimum: 1,
+    maximum: 600,
+  })
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
+  @Max(600)
   runtime?: number;
 
-  @IsNumber()
+  @ApiPropertyOptional({
+    description: 'Note moyenne du film',
+    example: 7.5,
+    minimum: 0,
+    maximum: 10,
+  })
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(10)
   averageRating?: number;
 
+  @ApiPropertyOptional({
+    description: 'Film favoris',
+    example: false,
+    default: false,
+  })
+  @IsOptional()
   @IsBoolean()
   isFavorite?: boolean;
 
+  @ApiProperty({
+    description: 'ID externe du film (TMDB)',
+    example: 12345,
+  })
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   movieExterneId: number;
 
-  @IsNumber()
+  @ApiPropertyOptional({
+    description: 'Note moyenne externe (TMDB)',
+    example: 8.2,
+    minimum: 0,
+    maximum: 10,
+  })
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(10)
   averageRatingExterne?: number;
 
-  @IsDate()
+  @ApiPropertyOptional({
+    description: 'Date de sortie du film',
+    example: '2024-03-15T00:00:00Z',
+  })
   @IsOptional()
+  @Type(() => Date)
+  @IsDate()
   releaseDate?: Date;
 
+  @ApiPropertyOptional({
+    description: 'Film réservé aux adultes',
+    example: false,
+    default: false,
+  })
+  @IsOptional()
   @IsBoolean()
   isAdult?: boolean;
 
-  @IsDate()
+  @ApiProperty({
+    description: 'Date de début de diffusion',
+    example: '2024-03-15T00:00:00Z',
+  })
   @IsNotEmpty()
+  @Type(() => Date)
+  @IsDate()
   startDate: Date;
 
-  @IsDate()
+  @ApiProperty({
+    description: 'Date de fin de diffusion',
+    example: '2024-04-15T00:00:00Z',
+  })
   @IsNotEmpty()
+  @Type(() => Date)
+  @IsDate()
   endDate: Date;
 
   @ApiProperty({
@@ -110,11 +181,21 @@ export class CreateMovieDto {
   @IsNotEmpty()
   originalLanguage: Languages;
 
+  @ApiProperty({
+    description: 'Chemin de l\'image de fond',
+    example: '/path/to/backdrop.jpg',
+  })
   @IsNotEmpty()
   @IsString()
+  @MaxLength(500)
   backdropPath: string;
 
+  @ApiProperty({
+    description: 'Chemin de l\'affiche du film',
+    example: '/path/to/poster.jpg',
+  })
   @IsNotEmpty()
   @IsString()
+  @MaxLength(500)
   posterPath: string;
 }

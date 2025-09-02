@@ -1,21 +1,24 @@
-import { IsDate, IsEnum, IsInt, IsNotEmpty } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TheaterQuality } from '../enums/theaters-qualities.enum';
 import { Languages } from '../../common/enums/languages.enum';
+import { Type } from 'class-transformer';
 
 export class CreateSessionCinemaDto {
   @ApiProperty({
     description: 'Date et heure du début de la séance',
-    example: '2021-01-01T00:00:00Z',
+    example: '2024-03-15T20:30:00Z',
   })
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   startTime: Date;
 
   @ApiProperty({
     description: 'Date et heure de fin de la séance',
-    example: '2021-01-01T00:00:00Z',
+    example: '2024-03-15T22:30:00Z',
   })
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
   endTime: Date;
@@ -39,18 +42,22 @@ export class CreateSessionCinemaDto {
   codeLanguage: Languages;
 
   @ApiProperty({
-    description: 'Id de la salle de cinéma',
+    description: 'ID de la salle de cinéma',
     example: 1,
+    minimum: 1,
   })
   @IsInt()
+  @IsPositive()
   @IsNotEmpty()
   movieTheaterId: number;
 
   @ApiProperty({
-    description: 'Id du film',
+    description: 'ID du film',
     example: 1,
+    minimum: 1,
   })
   @IsInt()
+  @IsPositive()
   @IsNotEmpty()
   movieId: number;
 }

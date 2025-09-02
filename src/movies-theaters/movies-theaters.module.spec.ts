@@ -25,7 +25,7 @@ describe('MoviesTheatersModule', () => {
   });
 
   it('should provide MoviesTheatersService', () => {
-    const service = module.get<MoviesTheatersService>(MoviesTheatersService);
+    const service = module.get(MoviesTheatersService);
     expect(service).toBeDefined();
   });
 

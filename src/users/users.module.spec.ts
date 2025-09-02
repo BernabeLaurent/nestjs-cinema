@@ -31,22 +31,22 @@ describe('UsersModule', () => {
   });
 
   it('should provide UsersService', () => {
-    const service = module.get<UsersService>(UsersService);
+    const service = module.get(UsersService);
     expect(service).toBeDefined();
   });
 
   it('should provide UsersController', () => {
-    const controller = module.get<UsersController>(UsersController);
+    const controller = module.get(UsersController);
     expect(controller).toBeDefined();
   });
 
   it('should provide CreateUserProvider', () => {
-    const provider = module.get<CreateUserProvider>(CreateUserProvider);
+    const provider = module.get(CreateUserProvider);
     expect(provider).toBeDefined();
   });
 
   it('should provide UpdateUserProvider', () => {
-    const provider = module.get<UpdateUserProvider>(UpdateUserProvider);
+    const provider = module.get(UpdateUserProvider);
     expect(provider).toBeDefined();
   });
 

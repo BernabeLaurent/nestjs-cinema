@@ -16,12 +16,12 @@ describe('ImagesModule', () => {
   });
 
   it('should provide ImagesService', () => {
-    const service = module.get<ImagesService>(ImagesService);
+    const service = module.get(ImagesService);
     expect(service).toBeDefined();
   });
 
   it('should export ImagesService', () => {
-    const service = module.get<ImagesService>(ImagesService);
+    const service = module.get(ImagesService);
     expect(service).toBeInstanceOf(ImagesService);
   });
 

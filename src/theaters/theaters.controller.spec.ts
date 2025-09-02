@@ -28,9 +28,9 @@ describe('TheatersController', () => {
 
   beforeEach(async () => {
     const mockTheatersService = {
-      findOneById: jest.fn(() => Promise.resolve(mockTheater)),
-      create: jest.fn(() => Promise.resolve(mockTheater)),
-      update: jest.fn(() => Promise.resolve(mockTheater)),
+      findOneById: jest.fn(() => Promise.resolve(mockTheater as GetTheaterDto)),
+      create: jest.fn(() => Promise.resolve(mockTheater as CreateTheaterDto)),
+      update: jest.fn(() => Promise.resolve(mockTheater as PatchTheaterDto)),
       delete: jest.fn(() => Promise.resolve({ deleted: true, id: 1 })),
     };
 
@@ -44,8 +44,8 @@ describe('TheatersController', () => {
       ],
     }).compile();
 
-    controller = module.get<TheatersController>(TheatersController);
-    theatersService = module.get<TheatersService>(TheatersService);
+    controller = module.get(TheatersController);
+    theatersService = module.get(TheatersService);
   });
 
   it('should be defined', () => {
@@ -55,13 +55,11 @@ describe('TheatersController', () => {
   describe('getTheater', () => {
     it('should return a theater by id', async () => {
       const getTheaterDto: GetTheaterDto = { id: 1 };
-      const findOneByIdSpy = jest
-        .spyOn(theatersService, 'findOneById')
-        .mockResolvedValue(mockTheater);
+      (theatersService.findOneById as jest.Mock).mockImplementation(() => Promise.resolve(mockTheater));
 
       const result = await controller.getTheater(getTheaterDto);
 
-      expect(findOneByIdSpy).toHaveBeenCalledWith(1);
+      expect(theatersService.findOneById).toHaveBeenCalledWith(1);
       expect(result).toEqual(mockTheater);
     });
   });
@@ -80,13 +78,11 @@ describe('TheatersController', () => {
       };
 
       const expectedResult = { ...mockTheater, ...createTheaterDto };
-      const createSpy = jest
-        .spyOn(theatersService, 'create')
-        .mockResolvedValue(expectedResult);
+      (theatersService.create as jest.Mock).mockImplementation(() => Promise.resolve(expectedResult));
 
       const result = await controller.createTheater(createTheaterDto);
 
-      expect(createSpy).toHaveBeenCalledWith(createTheaterDto);
+      expect(theatersService.create).toHaveBeenCalledWith(createTheaterDto);
       expect(result).toEqual(expectedResult);
     });
   });
@@ -96,17 +92,21 @@ describe('TheatersController', () => {
       const id = 1;
       const patchTheaterDto: PatchTheaterDto = {
         name: 'Updated Theater',
+        codeCountry: RegionsIso.FRANCE,
+        address: 'quelque part',
         city: 'Lyon',
-      };
+        zipCode: 83140,
+        phoneNumber: '+33612345678',
+        openingTime: '10:00',
+        closingTime: '00:00',
+      } as PatchTheaterDto;
 
       const updatedTheater = { ...mockTheater, ...patchTheaterDto };
-      const updateSpy = jest
-        .spyOn(theatersService, 'update')
-        .mockResolvedValue(updatedTheater);
+      (theatersService.update as jest.Mock).mockImplementation(() => Promise.resolve(updatedTheater));
 
       const result = await controller.updateTheater(id, patchTheaterDto);
 
-      expect(updateSpy).toHaveBeenCalledWith(id, patchTheaterDto);
+      expect(theatersService.update).toHaveBeenCalledWith(id, patchTheaterDto);
       expect(result).toEqual(updatedTheater);
     });
   });
@@ -115,13 +115,11 @@ describe('TheatersController', () => {
     it('should delete a theater', async () => {
       const id = 1;
       const deleteResult = { deleted: true, id };
-      const deleteSpy = jest
-        .spyOn(theatersService, 'delete')
-        .mockResolvedValue(deleteResult);
+      (theatersService.delete as jest.Mock).mockImplementation(() => Promise.resolve(deleteResult));
 
       const result = await controller.deleteTheater(id);
 
-      expect(deleteSpy).toHaveBeenCalledWith(id);
+      expect(theatersService.delete).toHaveBeenCalledWith(id);
       expect(result).toEqual(deleteResult);
     });
   });

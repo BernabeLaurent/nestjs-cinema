@@ -9,7 +9,7 @@ describe('SessionsCinemasController', () => {
       controllers: [SessionsCinemasController],
     }).compile();
 
-    controller = module.get<SessionsCinemasController>(SessionsCinemasController);
+    controller = module.get(SessionsCinemasController);
   });
 
   it('should be defined', () => {

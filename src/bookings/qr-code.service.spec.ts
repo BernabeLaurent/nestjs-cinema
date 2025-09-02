@@ -9,7 +9,7 @@ describe('QrCodeService', () => {
       providers: [QrCodeService],
     }).compile();
 
-    service = module.get<QrCodeService>(QrCodeService);
+    service = module.get(QrCodeService);
   });
 
   it('should be defined', () => {

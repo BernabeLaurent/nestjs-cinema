@@ -9,7 +9,7 @@ describe('NotificationsController', () => {
       controllers: [NotificationsController],
     }).compile();
 
-    controller = module.get<NotificationsController>(NotificationsController);
+    controller = module.get(NotificationsController);
   });
 
   it('should be defined', () => {

@@ -1,4 +1,5 @@
 import { validate } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 import { GoogleTokenDto } from './google-token.dto';
 
 describe('GoogleTokenDto', () => {
@@ -79,11 +80,10 @@ describe('GoogleTokenDto', () => {
   });
 
   it('should handle whitespace-only token as invalid', async () => {
-    Object.assign(dto, {
-      token: '   ',
-    });
+    const data = { token: '   ' };
+    const transformedDto = plainToClass(GoogleTokenDto, data);
 
-    const errors = await validate(dto);
+    const errors = await validate(transformedDto);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('token');
   });

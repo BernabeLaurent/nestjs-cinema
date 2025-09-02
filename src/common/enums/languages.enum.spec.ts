@@ -133,7 +133,7 @@ describe('Languages Enum', () => {
 
     it('should support language region checking', () => {
       const isEuropeanLanguage = (lang: Languages): boolean => {
-        const europeanLangs = [
+        const europeanLangs: Languages[] = [
           Languages.ENGLISH,
           Languages.FRENCH,
           Languages.GERMAN,
@@ -155,7 +155,7 @@ describe('Languages Enum', () => {
 
     it('should support RTL language detection', () => {
       const isRTLLanguage = (lang: Languages): boolean => {
-        const rtlLanguages = [
+        const rtlLanguages: Languages[] = [
           Languages.ARABIC,
           Languages.HEBREW,
           Languages.PERSIAN,
@@ -200,7 +200,7 @@ describe('Languages Enum', () => {
     it('should include major world languages', () => {
       const majorLanguages = [
         Languages.ENGLISH,
-        Languages.MANDARIN || Languages.CHINESE,
+        Languages.CHINESE,
         Languages.SPANISH,
         Languages.HINDI,
         Languages.ARABIC,

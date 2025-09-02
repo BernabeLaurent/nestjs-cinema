@@ -16,12 +16,12 @@ describe('PaginationModule', () => {
   });
 
   it('should provide PaginationProvider', () => {
-    const provider = module.get<PaginationProvider>(PaginationProvider);
+    const provider = module.get(PaginationProvider);
     expect(provider).toBeDefined();
   });
 
   it('should export PaginationProvider', () => {
-    const provider = module.get<PaginationProvider>(PaginationProvider);
+    const provider = module.get(PaginationProvider);
     expect(provider).toBeInstanceOf(PaginationProvider);
   });
 

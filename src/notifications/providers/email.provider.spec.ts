@@ -9,7 +9,7 @@ describe('EmailProvider', () => {
       providers: [EmailProvider],
     }).compile();
 
-    provider = module.get<EmailProvider>(EmailProvider);
+    provider = module.get(EmailProvider);
   });
 
   it('should be defined', () => {

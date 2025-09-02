@@ -32,7 +32,7 @@ describe('AuthModule', () => {
   });
 
   it('should provide AuthController', () => {
-    const controller = module.get<AuthController>(AuthController);
+    const controller = module.get(AuthController);
     expect(controller).toBeDefined();
   });
 
@@ -44,32 +44,32 @@ describe('AuthModule', () => {
   });
 
   it('should provide AuthService', () => {
-    const service = module.get<AuthService>(AuthService);
+    const service = module.get(AuthService);
     expect(service).toBeDefined();
   });
 
   it('should provide HashingProvider', () => {
-    const provider = module.get<HashingProvider>(HashingProvider);
+    const provider = module.get(HashingProvider);
     expect(provider).toBeDefined();
   });
 
   it('should use BcryptProvider as HashingProvider implementation', () => {
-    const provider = module.get<HashingProvider>(HashingProvider);
+    const provider = module.get(HashingProvider);
     expect(provider).toBeInstanceOf(BcryptProvider);
   });
 
   it('should provide SignInProvider', () => {
-    const provider = module.get<SignInProvider>(SignInProvider);
+    const provider = module.get(SignInProvider);
     expect(provider).toBeDefined();
   });
 
   it('should provide GenerateTokensProvider', () => {
-    const provider = module.get<GenerateTokensProvider>(GenerateTokensProvider);
+    const provider = module.get(GenerateTokensProvider);
     expect(provider).toBeDefined();
   });
 
   it('should provide RefreshTokensProvider', () => {
-    const provider = module.get<RefreshTokensProvider>(RefreshTokensProvider);
+    const provider = module.get(RefreshTokensProvider);
     expect(provider).toBeDefined();
   });
 

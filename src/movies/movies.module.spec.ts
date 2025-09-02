@@ -30,12 +30,12 @@ describe('MoviesModule', () => {
   });
 
   it('should provide MoviesService', () => {
-    const service = module.get<MoviesService>(MoviesService);
+    const service = module.get(MoviesService);
     expect(service).toBeDefined();
   });
 
   it('should provide MoviesController', () => {
-    const controller = module.get<MoviesController>(MoviesController);
+    const controller = module.get(MoviesController);
     expect(controller).toBeDefined();
   });
 

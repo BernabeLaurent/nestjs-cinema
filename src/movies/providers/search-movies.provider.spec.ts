@@ -9,7 +9,7 @@ describe('SearchMoviesProvider', () => {
       providers: [SearchMoviesProvider],
     }).compile();
 
-    provider = module.get<SearchMoviesProvider>(SearchMoviesProvider);
+    provider = module.get(SearchMoviesProvider);
   });
 
   it('should be defined', () => {

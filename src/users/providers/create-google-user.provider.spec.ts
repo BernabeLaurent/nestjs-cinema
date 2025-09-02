@@ -31,7 +31,7 @@ describe('CreateGoogleUserProvider', () => {
       ],
     }).compile();
 
-    provider = module.get<CreateGoogleUserProvider>(CreateGoogleUserProvider);
+    provider = module.get(CreateGoogleUserProvider);
   });
 
   afterEach(() => {

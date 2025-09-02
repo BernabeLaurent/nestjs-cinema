@@ -1,22 +1,28 @@
 import {
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsString,
   Matches,
   MaxLength,
   MinLength,
+  IsInt,
+  Min,
+  Max,
 } from 'class-validator';
 import { RegionsIso } from '../../common/enums/regions-iso.enum';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateTheaterDto {
   @ApiProperty({
-    description: 'Title',
+    description: 'Nom du cinéma',
     example: 'Pathé Grand Ciel',
+    minLength: 2,
+    maxLength: 250,
   })
+  @Transform(({ value }) => value?.trim())
   @IsString()
-  @MinLength(4)
+  @MinLength(2)
   @MaxLength(250)
   @IsNotEmpty()
   name: string;
@@ -48,10 +54,14 @@ export class CreateTheaterDto {
   city: string;
 
   @ApiProperty({
-    description: 'ZipCode',
-    example: '83140',
+    description: 'Code postal',
+    example: 83140,
+    minimum: 1000,
+    maximum: 99999,
   })
-  @IsNumber()
+  @IsInt()
+  @Min(1000)
+  @Max(99999)
   zipCode: number;
 
   @ApiProperty({

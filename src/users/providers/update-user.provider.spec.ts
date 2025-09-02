@@ -9,7 +9,7 @@ describe('UpdateUserProvider', () => {
       providers: [UpdateUserProvider],
     }).compile();
 
-    provider = module.get<UpdateUserProvider>(UpdateUserProvider);
+    provider = module.get(UpdateUserProvider);
   });
 
   it('should be defined', () => {

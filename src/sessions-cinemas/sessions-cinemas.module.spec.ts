@@ -29,7 +29,7 @@ describe('SessionsCinemasModule', () => {
   });
 
   it('should provide SessionsCinemasService', () => {
-    const service = module.get<SessionsCinemasService>(SessionsCinemasService);
+    const service = module.get(SessionsCinemasService);
     expect(service).toBeDefined();
   });
 

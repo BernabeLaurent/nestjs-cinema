@@ -9,7 +9,7 @@ describe('CreateTheaterProvider', () => {
       providers: [CreateTheaterProvider],
     }).compile();
 
-    provider = module.get<CreateTheaterProvider>(CreateTheaterProvider);
+    provider = module.get(CreateTheaterProvider);
   });
 
   it('should be defined', () => {

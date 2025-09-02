@@ -24,8 +24,8 @@ describe('AuthController', () => {
       ],
     }).compile();
 
-    controller = module.get<AuthController>(AuthController);
-    authService = module.get<AuthService>(AuthService);
+    controller = module.get(AuthController);
+    authService = module.get(AuthService);
   });
 
   afterEach(() => {

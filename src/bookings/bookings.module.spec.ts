@@ -39,27 +39,27 @@ describe('BookingsModule', () => {
   });
 
   it('should provide BookingsService', () => {
-    const service = module.get<BookingsService>(BookingsService);
+    const service = module.get(BookingsService);
     expect(service).toBeDefined();
   });
 
   it('should provide BookingsController', () => {
-    const controller = module.get<BookingsController>(BookingsController);
+    const controller = module.get(BookingsController);
     expect(controller).toBeDefined();
   });
 
   it('should provide CreateBookingProvider', () => {
-    const provider = module.get<CreateBookingProvider>(CreateBookingProvider);
+    const provider = module.get(CreateBookingProvider);
     expect(provider).toBeDefined();
   });
 
   it('should provide GetBookingProvider', () => {
-    const provider = module.get<GetBookingProvider>(GetBookingProvider);
+    const provider = module.get(GetBookingProvider);
     expect(provider).toBeDefined();
   });
 
   it('should provide QrCodeService', () => {
-    const service = module.get<QrCodeService>(QrCodeService);
+    const service = module.get(QrCodeService);
     expect(service).toBeDefined();
   });
 
@@ -71,12 +71,12 @@ describe('BookingsModule', () => {
   });
 
   it('should provide UpdateBookingProvider', () => {
-    const provider = module.get<UpdateBookingProvider>(UpdateBookingProvider);
+    const provider = module.get(UpdateBookingProvider);
     expect(provider).toBeDefined();
   });
 
   it('should provide CancelBookingProvider', () => {
-    const provider = module.get<CancelBookingProvider>(CancelBookingProvider);
+    const provider = module.get(CancelBookingProvider);
     expect(provider).toBeDefined();
   });
 
