@@ -9,6 +9,8 @@
         "include": "notifications/templates/**/*",
         "outDir": "dist/"
       }
-    ]
+    ],
+    "watchMode": true,
+    "webpack": false
   }
 }
