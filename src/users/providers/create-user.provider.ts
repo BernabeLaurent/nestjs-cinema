@@ -107,7 +107,8 @@ export class CreateUserProvider {
           },
         );
       } catch (error) {
-        throw new ConflictException(error);
+        // Log the error but don't fail the registration
+        this.logger.error('Failed to send confirmation email:', error);
       }
 
       return {

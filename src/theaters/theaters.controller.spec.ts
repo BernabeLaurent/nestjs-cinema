@@ -55,7 +55,9 @@ describe('TheatersController', () => {
   describe('getTheater', () => {
     it('should return a theater by id', async () => {
       const getTheaterDto: GetTheaterDto = { id: 1 };
-      (theatersService.findOneById as jest.Mock).mockImplementation(() => Promise.resolve(mockTheater));
+      (theatersService.findOneById as jest.Mock).mockImplementation(() =>
+        Promise.resolve(mockTheater),
+      );
 
       const result = await controller.getTheater(getTheaterDto);
 
@@ -78,7 +80,9 @@ describe('TheatersController', () => {
       };
 
       const expectedResult = { ...mockTheater, ...createTheaterDto };
-      (theatersService.create as jest.Mock).mockImplementation(() => Promise.resolve(expectedResult));
+      (theatersService.create as jest.Mock).mockImplementation(() =>
+        Promise.resolve(expectedResult),
+      );
 
       const result = await controller.createTheater(createTheaterDto);
 
@@ -102,7 +106,9 @@ describe('TheatersController', () => {
       } as PatchTheaterDto;
 
       const updatedTheater = { ...mockTheater, ...patchTheaterDto };
-      (theatersService.update as jest.Mock).mockImplementation(() => Promise.resolve(updatedTheater));
+      (theatersService.update as jest.Mock).mockImplementation(() =>
+        Promise.resolve(updatedTheater),
+      );
 
       const result = await controller.updateTheater(id, patchTheaterDto);
 
@@ -115,7 +121,9 @@ describe('TheatersController', () => {
     it('should delete a theater', async () => {
       const id = 1;
       const deleteResult = { deleted: true, id };
-      (theatersService.delete as jest.Mock).mockImplementation(() => Promise.resolve(deleteResult));
+      (theatersService.delete as jest.Mock).mockImplementation(() =>
+        Promise.resolve(deleteResult),
+      );
 
       const result = await controller.deleteTheater(id);
 
