@@ -74,7 +74,9 @@ async function bootstrap() {
     origin: process.env.ALLOWED_ORIGINS?.split(',') || [
       apiUrl,
       'http://localhost:' + portNestjs,
+      'http://127.0.0.1:' + portNestjs,
       'http://localhost:' + portAngular, // Pour angular
+      'http://127.0.0.1:' + portAngular, // Pour angular avec IP
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
