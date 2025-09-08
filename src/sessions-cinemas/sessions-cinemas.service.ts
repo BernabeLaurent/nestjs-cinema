@@ -36,6 +36,14 @@ export class SessionsCinemasService {
     return await this.getSessionCinemaProvider.findAllByTheaterId(id);
   }
 
+  public async getAllSessionsCinemas(): Promise<SessionCinema[] | []> {
+    return await this.getSessionCinemaProvider.findAll();
+  }
+
+  public async searchSessionsByMovie(searchTerm: string): Promise<SessionCinema[] | []> {
+    return await this.getSessionCinemaProvider.findByMovieSearch(searchTerm);
+  }
+
   public async createSessionCinema(
     createSessionCinemaDto: CreateSessionCinemaDto,
   ) {

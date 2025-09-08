@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Auth } from '../auth/decorators/auth.decorator';
@@ -94,7 +95,7 @@ export class SessionsCinemasController {
   @ApiOperation({
     summary: 'Retourne tous les séance de cinéma pour un cinéma',
   })
-  @Get('ByMovieTheater/:id')
+  @Get('ByTheater/:id')
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Sessions cinemas found successfully',
@@ -102,5 +103,19 @@ export class SessionsCinemasController {
   @Auth(AuthType.None)
   public getSessionsCinemasByTheaterId(@Param('id') id: number) {
     return this.sessionsCinemasService.getSessionsCinemaByTheaterId(id);
+  }
+
+  @ApiOperation({ summary: 'Retourne toutes les sessions cinémas' })
+  @Get()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'All sessions cinemas found successfully',
+  })
+  @Auth(AuthType.None)
+  public getAllSessionsCinemas(@Query('search') search?: string) {
+    if (search) {
+      return this.sessionsCinemasService.searchSessionsByMovie(search);
+    }
+    return this.sessionsCinemasService.getAllSessionsCinemas();
   }
 }

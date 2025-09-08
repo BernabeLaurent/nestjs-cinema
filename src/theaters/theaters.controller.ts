@@ -27,15 +27,26 @@ import { RoleUser } from '../users/enums/roles-users.enum';
 export class TheatersController {
   constructor(private readonly theatersService: TheatersService) {}
 
-  @Get('{/:id}')
+  @Get()
+  @ApiOperation({ summary: 'Get all theaters' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'All theaters found successfully',
+  })
+  @Auth(AuthType.None)
+  public getAllTheaters() {
+    return this.theatersService.findAll();
+  }
+
+  @Get(':id')
   @ApiOperation({ summary: 'Get Theater by ID' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'User found successfully',
+    description: 'Theater found successfully',
   })
   @Auth(AuthType.None)
-  public getTheater(@Param() getTheaterDto: GetTheaterDto) {
-    return this.theatersService.findOneById(getTheaterDto.id);
+  public getTheater(@Param('id', ParseIntPipe) id: number) {
+    return this.theatersService.findOneById(id);
   }
 
   @ApiOperation({ summary: 'Create a new theater' })

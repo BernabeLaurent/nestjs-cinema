@@ -19,9 +19,24 @@ export class TheatersService {
   ) {}
 
   /**
-   * Retrouve un user par son id
-   * @param id L'id du user
-   * @returns L'user
+   * Retrouve tous les cinémas
+   * @returns Tous les cinémas
+   */
+  public async findAll() {
+    try {
+      const theaters = await this.theatersRepository.find();
+      return theaters;
+    } catch (error) {
+      throw new RequestTimeoutException('unable to process your request', {
+        description: 'error connecting database' + error,
+      });
+    }
+  }
+
+  /**
+   * Retrouve un cinéma par son id
+   * @param id L'id du cinéma
+   * @returns Le cinéma
    */
   public async findOneById(id: number) {
     let theater: Theater | null;
