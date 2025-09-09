@@ -109,12 +109,18 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TimeoutInterceptor());
 
   // Protection contre les attaques XSS et autres
+  const validPolicies = ['same-origin', 'same-site', 'cross-origin'] as const;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const policy = validPolicies.includes(process.env.POLICY as any)
+    ? (process.env.POLICY as 'same-origin' | 'same-site' | 'cross-origin')
+    : undefined;
+
   app.use(
     helmet({
       contentSecurityPolicy: true,
       crossOriginEmbedderPolicy: true,
       crossOriginOpenerPolicy: true,
-      crossOriginResourcePolicy: { policy: 'same-site' },
+      crossOriginResourcePolicy: { policy },
       dnsPrefetchControl: true,
       frameguard: { action: 'deny' }, // Protection contre le clickjacking
       hidePoweredBy: true,
