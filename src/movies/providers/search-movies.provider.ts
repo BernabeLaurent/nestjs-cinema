@@ -21,6 +21,7 @@ export class SearchMoviesProvider {
   public async search(searchMoviesDto: {
     name: string;
     theaterId?: number;
+    adminSearch?: boolean;
   }): Promise<
     {
       movie: Movie;
@@ -33,7 +34,7 @@ export class SearchMoviesProvider {
       }[];
     }[]
   > {
-    const { name, theaterId } = searchMoviesDto;
+    const { name, theaterId, adminSearch } = searchMoviesDto;
 
     // On vérifie que le cinéma existe s'il est présent
     if (theaterId) {
@@ -60,35 +61,47 @@ export class SearchMoviesProvider {
     oneWeekFromToday.setDate(today.getDate() + 8);
     oneWeekFromToday.setHours(0, 0, 0, 0); // Inclure la fin de la journée
 
-    const queryBuilder = this.movieRepository
-      .createQueryBuilder('movie')
-      .leftJoinAndSelect('movie.sessionsCinemas', 'session')
-      .leftJoinAndSelect('session.movieTheater', 'movieTheater')
-      .leftJoinAndSelect('movieTheater.theater', 'theater')
-      .where('movie.title LIKE :name', { name: `%${name}%` })
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where(
-            new Brackets((qb2) => {
-              qb2
-                .where('movie.startDate <= :weekEnd')
-                .andWhere('movie.endDate >= :today');
-            }),
-          ).orWhere(
-            new Brackets((qb2) => {
-              qb2
-                .where('movie.releaseDate <= :weekEnd')
-                .andWhere('movie.releaseDate >= :today');
-            }),
-          );
-        }),
-      )
-      .andWhere('session.startTime BETWEEN :today AND :weekEnd', {
-        today,
-        weekEnd: oneWeekFromToday,
-      })
-      .orderBy('theater.name', 'ASC')
-      .addOrderBy('session.startTime', 'ASC');
+    const queryBuilder = this.movieRepository.createQueryBuilder('movie');
+
+    // Pour les recherches admin, on retourne tous les films correspondants, même sans sessions
+    if (adminSearch) {
+      queryBuilder
+        .leftJoinAndSelect('movie.sessionsCinemas', 'session')
+        .leftJoinAndSelect('session.movieTheater', 'movieTheater')
+        .leftJoinAndSelect('movieTheater.theater', 'theater')
+        .where('LOWER(movie.title) LIKE LOWER(:name)', { name: `%${name}%` })
+        .orderBy('movie.title', 'ASC');
+    } else {
+      // Recherche normale avec filtres de date
+      queryBuilder
+        .leftJoinAndSelect('movie.sessionsCinemas', 'session')
+        .leftJoinAndSelect('session.movieTheater', 'movieTheater')
+        .leftJoinAndSelect('movieTheater.theater', 'theater')
+        .where('LOWER(movie.title) LIKE LOWER(:name)', { name: `%${name}%` })
+        .andWhere(
+          new Brackets((qb) => {
+            qb.where(
+              new Brackets((qb2) => {
+                qb2
+                  .where('movie.startDate <= :weekEnd')
+                  .andWhere('movie.endDate >= :today');
+              }),
+            ).orWhere(
+              new Brackets((qb2) => {
+                qb2
+                  .where('movie.releaseDate <= :weekEnd')
+                  .andWhere('movie.releaseDate >= :today');
+              }),
+            );
+          }),
+        )
+        .andWhere('session.startTime BETWEEN :today AND :weekEnd', {
+          today,
+          weekEnd: oneWeekFromToday,
+        })
+        .orderBy('theater.name', 'ASC')
+        .addOrderBy('session.startTime', 'ASC');
+    }
 
     if (theaterId) {
       queryBuilder.andWhere('theater.id = :theaterId', { theaterId });
@@ -96,7 +109,7 @@ export class SearchMoviesProvider {
 
     const moviesWithSessions = await queryBuilder.getMany();
 
-    // Si pas de sessions trouvées, on retourne un tableau vide
+    // Si pas de films trouvés, on retourne un tableau vide
     if (!moviesWithSessions || moviesWithSessions.length === 0) {
       return [];
     }

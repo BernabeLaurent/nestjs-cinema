@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsInt, Min } from 'class-validator';
+import { IsString, IsOptional, IsInt, Min, IsBoolean } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SearchMoviesDto {
@@ -19,4 +19,13 @@ export class SearchMoviesDto {
   @IsInt()
   @Min(1)
   theaterId?: number;
+
+  @ApiPropertyOptional({
+    description: 'Recherche admin (ignore les filtres de date)',
+    example: false,
+    type: 'boolean',
+  })
+  @IsOptional()
+  @IsBoolean()
+  adminSearch?: boolean;
 }
