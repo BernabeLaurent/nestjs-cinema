@@ -35,7 +35,7 @@ export class User {
     nullable: false,
     length: 255,
   })
-  @Exclude()
+  @Expose()
   email: string;
 
   @Column({ type: 'varchar', nullable: true })
