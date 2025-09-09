@@ -70,14 +70,19 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   //enable cors
+  const defaultOrigins = [
+    apiUrl,
+    'http://localhost:' + portNestjs,
+    'http://127.0.0.1:' + portNestjs,
+    'http://localhost:' + portAngular, // Pour angular
+    'http://127.0.0.1:' + portAngular, // Pour angular avec IP
+  ];
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? [...process.env.ALLOWED_ORIGINS.split(','), ...defaultOrigins]
+    : defaultOrigins;
+
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || [
-      apiUrl,
-      'http://localhost:' + portNestjs,
-      'http://127.0.0.1:' + portNestjs,
-      'http://localhost:' + portAngular, // Pour angular
-      'http://127.0.0.1:' + portAngular, // Pour angular avec IP
-    ],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -113,7 +118,7 @@ async function bootstrap() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const policy = validPolicies.includes(process.env.POLICY as any)
     ? (process.env.POLICY as 'same-origin' | 'same-site' | 'cross-origin')
-    : undefined;
+    : 'cross-origin';
 
   app.use(
     helmet({
