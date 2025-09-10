@@ -1,27 +1,30 @@
-import { IsDate, IsEnum, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsInt, IsNotEmpty, IsPositive, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TheaterQuality } from '../enums/theaters-qualities.enum';
 import { Languages } from '../../common/enums/languages.enum';
-import { Type } from 'class-transformer';
 
 export class CreateSessionCinemaDto {
-  @ApiProperty({
-    description: 'Date et heure du début de la séance',
-    example: '2024-03-15T20:30:00Z',
+  @ApiPropertyOptional({
+    description: 'Date de la séance (sera combinée avec startTime)',
+    example: '2025-09-11',
   })
-  @Type(() => Date)
-  @IsDate()
-  @IsNotEmpty()
-  startTime: Date;
+  @IsOptional()
+  @IsString()
+  date?: string;
 
   @ApiProperty({
-    description: 'Date et heure de fin de la séance',
-    example: '2024-03-15T22:30:00Z',
+    description: 'Heure de début de la séance ou date/heure complète',
+    example: '20:00',
   })
-  @Type(() => Date)
-  @IsDate()
   @IsNotEmpty()
-  endTime: Date;
+  startTime: string;
+
+  @ApiPropertyOptional({
+    description: 'Heure de fin de la séance ou date/heure complète',
+    example: '22:00',
+  })
+  @IsOptional()
+  endTime?: string;
 
   @ApiProperty({
     enum: TheaterQuality,
@@ -32,24 +35,45 @@ export class CreateSessionCinemaDto {
   @IsNotEmpty()
   quality: TheaterQuality;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     enum: Languages,
     description: 'Langue du film',
     example: Languages.FRENCH,
+    default: Languages.FRENCH,
   })
   @IsEnum(Languages)
-  @IsNotEmpty()
-  codeLanguage: Languages;
+  @IsOptional()
+  codeLanguage?: Languages;
 
-  @ApiProperty({
-    description: 'ID de la salle de cinéma',
+  @ApiPropertyOptional({
+    description: 'ID du cinéma',
+    example: 2,
+    minimum: 1,
+  })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  theaterId?: number;
+
+  @ApiPropertyOptional({
+    description: 'Numéro de la salle',
+    example: 3,
+    minimum: 1,
+  })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  roomId?: number;
+
+  @ApiPropertyOptional({
+    description: 'ID de la salle de cinéma (sera résolu automatiquement si theaterId et roomId sont fournis)',
     example: 1,
     minimum: 1,
   })
+  @IsOptional()
   @IsInt()
   @IsPositive()
-  @IsNotEmpty()
-  movieTheaterId: number;
+  movieTheaterId?: number;
 
   @ApiProperty({
     description: 'ID du film',

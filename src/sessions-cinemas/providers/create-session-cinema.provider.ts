@@ -9,21 +9,33 @@ import { Repository } from 'typeorm';
 import { CreateSessionCinemaDto } from '../dtos/create-session-cinema.dto';
 import { MoviesTheatersService } from '../../movies-theaters/movies-theaters.service';
 import { MoviesService } from '../../movies/movies.service';
+import { MovieTheater } from '../../movies-theaters/movie-theater.entity';
+import { Languages } from '../../common/enums/languages.enum';
 
 @Injectable()
 export class CreateSessionCinemaProvider {
   constructor(
     @InjectRepository(SessionCinema)
     private readonly sessionCinemaRepository: Repository<SessionCinema>,
+    @InjectRepository(MovieTheater)
+    private readonly movieTheaterRepository: Repository<MovieTheater>,
     private readonly moviesTheatersService: MoviesTheatersService,
     private readonly moviesService: MoviesService,
   ) {}
 
   public async create(createSessionCinemaDto: CreateSessionCinemaDto) {
-    const movieTheater = await this.moviesTheatersService.getMovieTheaterById(
-      createSessionCinemaDto.movieTheaterId,
-    );
+    let movieTheaterId = createSessionCinemaDto.movieTheaterId;
 
+    // Si movieTheaterId n'est pas fourni, utiliser roomId directement
+    if (!movieTheaterId && createSessionCinemaDto.roomId) {
+      movieTheaterId = createSessionCinemaDto.roomId;
+    }
+
+    if (!movieTheaterId) {
+      throw new BadRequestException('Either movieTheaterId or roomId must be provided');
+    }
+
+    const movieTheater = await this.moviesTheatersService.getMovieTheaterById(movieTheaterId);
     if (!movieTheater) {
       throw new BadRequestException('Movie Theater not found WITH THIS ID');
     }
@@ -37,10 +49,39 @@ export class CreateSessionCinemaProvider {
       throw new BadRequestException('Movie not found WITH THIS ID');
     }
 
+    // Transformation des dates
+    let startTime: Date;
+    let endTime: Date;
+    
+    if (createSessionCinemaDto.date && createSessionCinemaDto.startTime.includes(':')) {
+      // Format: date + heure (e.g., "2025-09-11" + "20:00")
+      startTime = new Date(`${createSessionCinemaDto.date}T${createSessionCinemaDto.startTime}:00.000Z`);
+    } else {
+      // Format: date complète
+      startTime = new Date(createSessionCinemaDto.startTime);
+    }
+
+    if (createSessionCinemaDto.endTime && createSessionCinemaDto.endTime !== '') {
+      if (createSessionCinemaDto.date && createSessionCinemaDto.endTime.includes(':')) {
+        endTime = new Date(`${createSessionCinemaDto.date}T${createSessionCinemaDto.endTime}:00.000Z`);
+      } else {
+        endTime = new Date(createSessionCinemaDto.endTime);
+      }
+    } else {
+      // Calculer endTime automatiquement (+2h)
+      endTime = new Date(startTime);
+      endTime.setHours(endTime.getHours() + 2);
+    }
+
+    const codeLanguage = createSessionCinemaDto.codeLanguage || Languages.FRENCH;
+
     // On insére la session de cinéma
     try {
       const sessionCinema = this.sessionCinemaRepository.create({
-        ...createSessionCinemaDto,
+        startTime: startTime,
+        endTime: endTime,
+        quality: createSessionCinemaDto.quality,
+        codeLanguage: codeLanguage,
         movie: movie,
         movieTheater: movieTheater,
       });

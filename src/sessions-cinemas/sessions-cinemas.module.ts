@@ -9,10 +9,11 @@ import { PatchSessionCinemaProvider } from './providers/patch-session-cinema.pro
 import { MoviesModule } from '../movies/movies.module';
 import { GetSessionCinemaProvider } from './providers/get-session-cinema.provider';
 import { Price } from './prices.entity';
+import { MovieTheater } from '../movies-theaters/movie-theater.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([SessionCinema, Price]),
+    TypeOrmModule.forFeature([SessionCinema, Price, MovieTheater]),
     MoviesTheatersModule,
     forwardRef(() => MoviesModule),
   ],

@@ -135,27 +135,31 @@ export class SearchMoviesProvider {
         };
       }
 
-      for (const session of movie.sessionsCinemas) {
-        const theater = session.movieTheater.theater;
-        const sessionDate = new Date(session.startTime).toLocaleDateString();
+      if (movie.sessionsCinemas && movie.sessionsCinemas.length > 0) {
+        for (const session of movie.sessionsCinemas) {
+          if (session && session.movieTheater && session.movieTheater.theater) {
+            const theater = session.movieTheater.theater;
+            const sessionDate = new Date(session.startTime).toLocaleDateString();
 
-        if (!results[movie.id].theaters[theater.id]) {
-          results[movie.id].theaters[theater.id] = {
-            theater,
-            sessionsByDate: {},
-          };
+            if (!results[movie.id].theaters[theater.id]) {
+              results[movie.id].theaters[theater.id] = {
+                theater,
+                sessionsByDate: {},
+              };
+            }
+
+            if (
+              !results[movie.id].theaters[theater.id].sessionsByDate[sessionDate]
+            ) {
+              results[movie.id].theaters[theater.id].sessionsByDate[sessionDate] =
+                [];
+            }
+
+            results[movie.id].theaters[theater.id].sessionsByDate[sessionDate].push(
+              session,
+            );
+          }
         }
-
-        if (
-          !results[movie.id].theaters[theater.id].sessionsByDate[sessionDate]
-        ) {
-          results[movie.id].theaters[theater.id].sessionsByDate[sessionDate] =
-            [];
-        }
-
-        results[movie.id].theaters[theater.id].sessionsByDate[sessionDate].push(
-          session,
-        );
       }
     }
 

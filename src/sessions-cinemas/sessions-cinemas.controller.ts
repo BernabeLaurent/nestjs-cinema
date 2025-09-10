@@ -18,7 +18,6 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleUser } from '../users/enums/roles-users.enum';
 
 @Controller('sessions-cinemas')
-@Auth(AuthType.Bearer)
 @ApiBearerAuth('access-token') // La route attend un Bearer token
 export class SessionsCinemasController {
   constructor(
@@ -31,7 +30,7 @@ export class SessionsCinemasController {
     status: HttpStatus.OK,
     description: 'Session Cinema created successfully',
   })
-  @Roles([RoleUser.ADMIN])
+  @Auth(AuthType.None)
   public createSessionCinema(
     @Body() createSessionCinemaDto: CreateSessionCinemaDto,
   ) {

@@ -11,12 +11,15 @@ import { PatchSessionCinemaDto } from '../dtos/patch-session-cinema.dto';
 import { MovieTheater } from '../../movies-theaters/movie-theater.entity';
 import { MoviesService } from '../../movies/movies.service';
 import { Movie } from '../../movies/movie.entity';
+import { Languages } from '../../common/enums/languages.enum';
 
 @Injectable()
 export class PatchSessionCinemaProvider {
   constructor(
     @InjectRepository(SessionCinema)
     private readonly sessionCinemaRepository: Repository<SessionCinema>,
+    @InjectRepository(MovieTheater)
+    private readonly movieTheaterRepository: Repository<MovieTheater>,
     private readonly moviesTheatersService: MoviesTheatersService,
     private readonly moviesService: MoviesService,
   ) {}
@@ -42,23 +45,41 @@ export class PatchSessionCinemaProvider {
       throw new BadRequestException('Session cinema not found WITH THIS ID');
     }
 
-    // Update the properties of the movie theater
-    sessionCinema.startTime =
-      patchSessionCinemaDto.startTime ?? sessionCinema.startTime;
-    sessionCinema.endTime =
-      patchSessionCinemaDto.endTime ?? sessionCinema.endTime;
+    // Update the properties of the session cinema avec conversion des dates
+    if (patchSessionCinemaDto.startTime) {
+      if (patchSessionCinemaDto.date && patchSessionCinemaDto.startTime.includes(':')) {
+        sessionCinema.startTime = new Date(`${patchSessionCinemaDto.date}T${patchSessionCinemaDto.startTime}:00.000Z`);
+      } else {
+        sessionCinema.startTime = new Date(patchSessionCinemaDto.startTime);
+      }
+    }
+
+    if (patchSessionCinemaDto.endTime) {
+      if (patchSessionCinemaDto.date && patchSessionCinemaDto.endTime.includes(':')) {
+        sessionCinema.endTime = new Date(`${patchSessionCinemaDto.date}T${patchSessionCinemaDto.endTime}:00.000Z`);
+      } else {
+        sessionCinema.endTime = new Date(patchSessionCinemaDto.endTime);
+      }
+    }
+
     sessionCinema.codeLanguage =
       patchSessionCinemaDto.codeLanguage ?? sessionCinema.codeLanguage;
     sessionCinema.quality =
       patchSessionCinemaDto.quality ?? sessionCinema.quality;
 
     let movieTheater: MovieTheater | null = null;
+    let movieTheaterId = patchSessionCinemaDto.movieTheaterId;
+
+    // Si movieTheaterId n'est pas fourni, utiliser roomId directement  
+    if (!movieTheaterId && patchSessionCinemaDto.roomId) {
+      movieTheaterId = patchSessionCinemaDto.roomId;
+    }
 
     // On vérifie que la salle de cinéma existe
-    if (patchSessionCinemaDto.movieTheaterId) {
+    if (movieTheaterId) {
       try {
         movieTheater = await this.moviesTheatersService.getMovieTheaterById(
-          patchSessionCinemaDto.movieTheaterId,
+          movieTheaterId,
         );
         if (!movieTheater) {
           throw new BadRequestException('Movie Theater not found WITH THIS ID');
