@@ -170,7 +170,7 @@ export class BookingsController {
     description: 'Unauthorized, invalid or expired token.',
   })
   @Get('validate-booking-detail')
-  @Roles([RoleUser.ADMIN])
+  @Roles([RoleUser.ADMIN, RoleUser.WORKER])
   @UseGuards(BookingTokenGuard)
   @ApiBearerAuth() // La route attend un Bearer token
   @ApiQuery({
