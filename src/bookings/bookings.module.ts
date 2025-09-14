@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { BookingsController } from './bookings.controller';
+import { BookingDetailsController } from './booking-details.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Booking } from './booking.entity';
 import { BookingDetail } from './booking-detail.entity';
@@ -30,7 +31,7 @@ import { ValidateBookingProvider } from './providers/validate-booking.provider';
     CancelBookingProvider,
     ValidateBookingProvider,
   ],
-  controllers: [BookingsController],
+  controllers: [BookingsController, BookingDetailsController],
   exports: [BookingsModule],
   imports: [
     TypeOrmModule.forFeature([Booking, BookingDetail]),

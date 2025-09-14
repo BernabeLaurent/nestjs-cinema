@@ -90,4 +90,57 @@ export class BookingsService {
     this.logger.log('validateBookingDetail');
     return await this.validateBookingDetailProvider.validate(bookingDetailId);
   }
+
+  public async validateBookingBySeat(bookingId: number, seatNumberOrIndex: string | number) {
+    console.log('BookingsService.validateBookingBySeat called with:', { bookingId, seatNumberOrIndex });
+    this.logger.log('validateBookingBySeat', { bookingId, seatNumberOrIndex });
+
+    // Récupérer le booking avec ses booking details
+    const booking = await this.bookingRepository.findOne({
+      where: { id: bookingId },
+      relations: ['reservedSeats']
+    });
+
+    if (!booking) {
+      console.log('ERROR: Booking not found with ID:', bookingId);
+      throw new Error(`Booking ${bookingId} not found`);
+    }
+
+    console.log('Booking found:', booking);
+
+    // Convertir le numéro de siège en index numérique si nécessaire
+    let seatNumber: number;
+    if (typeof seatNumberOrIndex === 'string') {
+      // Convertir "A1" -> 1, "A2" -> 2, "B1" -> 11, etc.
+      const match = seatNumberOrIndex.match(/([A-Z])(\d+)/);
+      if (match) {
+        const row = match[1].charCodeAt(0) - 65; // A=0, B=1, etc.
+        const seat = parseInt(match[2]) - 1; // 1-based vers 0-based
+        seatNumber = row * 10 + seat + 1; // Convertir en numéro unique
+      } else {
+        seatNumber = 1; // Valeur par défaut
+      }
+    } else {
+      seatNumber = seatNumberOrIndex;
+    }
+
+    // Chercher le booking detail existant ou le créer
+    let bookingDetail = booking.reservedSeats?.find(seat => seat.seatNumber === seatNumber);
+
+    if (!bookingDetail) {
+      // Créer un nouveau booking detail si il n'existe pas
+      const { BookingDetail } = await import('./booking-detail.entity');
+      bookingDetail = new BookingDetail();
+      bookingDetail.seatNumber = seatNumber;
+      bookingDetail.isValidated = false;
+      bookingDetail.booking = booking;
+
+      // Sauvegarder le nouveau booking detail
+      const bookingDetailRepository = this.bookingRepository.manager.getRepository(BookingDetail);
+      bookingDetail = await bookingDetailRepository.save(bookingDetail);
+    }
+
+    // Valider le booking detail
+    return await this.validateBookingDetailProvider.validate(bookingDetail.id);
+  }
 }
