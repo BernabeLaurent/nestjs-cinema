@@ -11,8 +11,6 @@ services:
       - mongodb
     volumes:
       - .:/app
-      - /app/dist  # Exclure le dossier dist du volume mount pour garder la version built
-      - /app/node_modules  # Exclure node_modules aussi
       - ./uploads:/app/uploads  # Montée du volume Docker pour les fichiers téléchargés
     restart: unless-stopped
     entrypoint: [ "sh", "./scripts/entrypoint.sh", "node", "dist/main" ]

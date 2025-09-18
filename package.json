@@ -51,6 +51,7 @@
     "fs-extra": "^11.3.0",
     "generate-password": "^1.7.1",
     "google-auth-library": "^9.15.1",
+    "handlebars": "^4.7.8",
     "helmet": "^8.1.0",
     "htmlparser2": "8.0.2",
     "joi": "^17.13.3",
