@@ -22,7 +22,7 @@ services:
       context: ../angular-cinema   # chemin vers le projet Angular
     container_name: angular-cinema-app
     ports:
-      - "4200:80"
+      - "${DATABASE_PORT}:5432"
     environment:
       - API_URL=http://nestjs-backend:3000
     depends_on:
