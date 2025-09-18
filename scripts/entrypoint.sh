@@ -22,7 +22,7 @@ set_env_var() {
 }
 
 # Ajout sécurisé et remplacement
-set_env_var "ALLOWED_ORIGINS" "http://bernabe.codes,http://www.bernabe.codes,http://api.bernabe.codes,http://www.api.bernabe.codes"
+set_env_var "ALLOWED_ORIGINS" "https://bernabe.codes,https://www.bernabe.codes,https://api.bernabe.codes,https://www.api.bernabe.codes"
 
 # Valeurs par défaut si non définies
 DB_HOST=${DATABASE_HOST:-postgres}
