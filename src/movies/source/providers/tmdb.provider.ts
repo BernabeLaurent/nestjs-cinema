@@ -31,7 +31,15 @@ export class TmdbProvider implements MoviesProvider {
     this.defaultLanguage = this.tmdbConfiguration.defaultLanguage as Languages;
   }
 
-  public mapTmdbDtoToMovie(dto: TmdbMovieDto): Partial<CreateMovieDto> {
+  public mapTmdbDtoToMovie(dto: TmdbMovieDto): Partial<CreateMovieDto> | null {
+    // Vérifier si le code langue existe dans l'enum
+    const isValidLanguage = Object.values(Languages).includes(dto.original_language as Languages);
+
+    if (!isValidLanguage) {
+      console.log(`Film ${dto.title} ignoré: code langue '${dto.original_language}' non supporté`);
+      return null;
+    }
+
     return {
       movieExterneId: dto.id,
       title: dto.title,
@@ -152,16 +160,19 @@ export class TmdbProvider implements MoviesProvider {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { results }: UpcomingMoviesInterface = response.data;
 
-      const movie = await Promise.all(
+      const movies = await Promise.all(
         results.map(async (m: TmdbMovieDto) => {
           try {
             return await this.getMovieDetails(m.id);
           } catch (error) {
-            throw new UnauthorizedException(error);
+            console.log(`Erreur lors de la récupération du film ${m.id}: ${error.message}`);
+            return null;
           }
         }),
       );
-      allMovies.push(...movie);
+      // Filtrer les films null (langues non supportées)
+      const validMovies = movies.filter(movie => movie !== null);
+      allMovies.push(...validMovies);
       return allMovies;
     } catch (error) {
       throw new UnauthorizedException(error);
@@ -201,7 +212,11 @@ export class TmdbProvider implements MoviesProvider {
         );
       }
 
-      return await this.createMovieProvider.upsertMovie(data);
+      const movie = await this.createMovieProvider.upsertMovie(data);
+      if (!movie) {
+        throw new Error(`Film avec la langue '${data.original_language}' non supporté`);
+      }
+      return movie;
     } catch (error) {
       throw new UnauthorizedException(error);
     }
@@ -236,16 +251,19 @@ export class TmdbProvider implements MoviesProvider {
         });
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { results, total_pages }: UpcomingMoviesInterface = response.data;
-        const movie = await Promise.all(
+        const movies = await Promise.all(
           results.map(async (m: TmdbMovieDto) => {
             try {
               return await this.getMovieDetails(m.id);
             } catch (error) {
-              throw new UnauthorizedException(error);
+              console.log(`Erreur lors de la récupération du film ${m.id}: ${error.message}`);
+              return null;
             }
           }),
         );
-        allMovies.push(...movie);
+        // Filtrer les films null (langues non supportées)
+        const validMovies = movies.filter(movie => movie !== null);
+        allMovies.push(...validMovies);
         totalPages = total_pages;
         page++;
       } while (page <= totalPages);

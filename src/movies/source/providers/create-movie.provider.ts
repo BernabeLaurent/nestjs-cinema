@@ -18,19 +18,26 @@ export class CreateMovieProvider {
     private readonly tmdbProvider: TmdbProvider,
   ) {}
 
-  public async upsertMovie(movie: TmdbMovieDto): Promise<Movie> {
+  public async upsertMovie(movie: TmdbMovieDto): Promise<Movie | null> {
+    const mappedMovie = this.tmdbProvider.mapTmdbDtoToMovie(movie);
+
+    // Si le mapping retourne null (langue non supportée), on ignore le film
+    if (!mappedMovie) {
+      return null;
+    }
+
     const movieFound = await this.moviesService.getMovieByExternalId(movie.id);
 
     if (movieFound) {
       movie.id = movieFound.movieExterneId;
       return await this.moviesService.updateMovie(
         movieFound.id,
-        this.tmdbProvider.mapTmdbDtoToMovie(movie),
+        mappedMovie,
       );
     } else {
       // Sinon on le crée
       const movieCreated = await this.moviesService.createMovie(
-        this.tmdbProvider.mapTmdbDtoToMovie(movie),
+        mappedMovie,
       );
 
       // On insére le cast
