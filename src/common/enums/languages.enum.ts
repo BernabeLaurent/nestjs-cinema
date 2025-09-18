@@ -124,4 +124,5 @@ export enum Languages {
   INTERLINGUA = 'ia',
 
   UNKNOWN = 'xx',
+  GEORGIE = 'ka',
 }
