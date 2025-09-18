@@ -7,7 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "kill-port": "env-cmd -f .env sh -c 'fuser -k ${NESTJS_PORT:-3000}/tcp || true'",
-    "build": "npx nest build && npm run copy:templates && npm run compodoc",
+    "build": "npx nest build && npm run copy:templates",
+    "build:docs": "npx nest build && npm run copy:templates && npm run compodoc",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "dockerUp": "docker compose up -d",
     "dockerDown": "docker compose down --remove-orphans",
