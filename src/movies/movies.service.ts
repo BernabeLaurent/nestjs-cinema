@@ -33,6 +33,11 @@ import { SearchMoviesDto } from './source/dtos/search-movies.dto';
 import { Theater } from '../theaters/theater.entity';
 import { SessionCinema } from '../sessions-cinemas/session-cinema.entity';
 
+/**
+ * Service principal de gestion des films avec intégration TMDB et cache
+ * Gère les opérations CRUD sur les films, l'intégration avec l'API externe TMDB,
+ * la gestion des critiques et la mise en cache des données
+ */
 @Injectable()
 export class MoviesService {
   constructor(
@@ -55,11 +60,21 @@ export class MoviesService {
     timestamp: true,
   });
 
+  /**
+   * Recherche des films sur l'API externe TMDB
+   * @param query Terme de recherche (titre du film)
+   * @returns Liste des films trouvés sur TMDB
+   */
   public async searchExternal(query: string): Promise<Movie[]> {
     this.logger.log('searchExternal');
     return await this.provider.searchExternalMovies(query);
   }
 
+  /**
+   * Recherche des films dans la base locale avec disponibilités des séances
+   * @param searchMoviesDto Critères de recherche (titre, ville, etc.)
+   * @returns Films avec leurs théâtres et séances disponibles
+   */
   public async search(searchMoviesDto: SearchMoviesDto): Promise<
     {
       movie: Movie;
@@ -140,7 +155,7 @@ export class MoviesService {
     this.logger.log('createMovie');
     const movie = this.moviesRepository.create(createMovieDto);
     try {
-      // return the post
+      // Retourner l'entité créée
       return await this.moviesRepository.save(movie);
     } catch (error) {
       throw new ConflictException(error);
@@ -151,7 +166,7 @@ export class MoviesService {
     this.logger.log('createCast');
     const cast = this.castsRepository.create(createCastDto);
     try {
-      // return the cast
+      // Retourner le casting créé
       return await this.castsRepository.save(cast);
     } catch (error) {
       throw new ConflictException(error);
@@ -181,7 +196,7 @@ export class MoviesService {
       throw new BadRequestException('Movie not found WITH THIS ID');
     }
 
-    // Update the properties of the post
+    // Mettre à jour les propriétés du film
     movie.averageRatingExterne =
       patchMovieDto.averageRatingExterne ?? movie.averageRatingExterne;
     movie.description = patchMovieDto.description ?? movie.description;
@@ -199,7 +214,7 @@ export class MoviesService {
 
     this.logger.debug(`Updated movie data: ${JSON.stringify(movie)}`);
 
-    // save the post and return it
+    // Sauvegarder et retourner l'entité
     try {
       this.logger.debug('Saving updated movie to database');
       await this.moviesRepository.save(movie);

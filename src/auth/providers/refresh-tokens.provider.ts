@@ -25,7 +25,7 @@ export class RefreshTokensProvider {
 
   public async refreshTokens(refreshTokenDto: RefreshTokenDto) {
     try {
-      // verifier le refresh token usign jwt service
+      // Vérifier le refresh token avec le service JWT
       const { sub } = await this.jwtService.verifyAsync<
         Pick<ActiveUserData, 'sub'>
       >(refreshTokenDto.refreshToken, {
@@ -33,13 +33,13 @@ export class RefreshTokensProvider {
         audience: this.jwtConfiguration.audience,
         issuer: this.jwtConfiguration.issuer,
       });
-      //fetch user from db using refresh token
+      // Récupérer l'utilisateur depuis la BDD avec le refresh token
       const user = await this.usersService.findOneById(sub);
 
       if (!user) {
         throw new Error('User not found');
       }
-      // Generate the tokens
+      // Générer les tokens
       return await this.generateTokensProvider.generateTokens(user);
     } catch (error) {
       throw new UnauthorizedException(error);

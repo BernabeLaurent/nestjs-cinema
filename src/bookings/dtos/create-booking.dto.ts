@@ -3,6 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CreateBookingDetailDto } from './create-booking-detail.dto';
 import { Type } from 'class-transformer';
 
+/**
+ * DTO pour la création d'une nouvelle réservation
+ * Associe un utilisateur à une séance avec la sélection des places
+ */
 export class CreateBookingDto {
   @ApiProperty({
     description: 'UserId',

@@ -44,7 +44,7 @@ export class GenerateTokensProvider {
   public async generateTokens(user: User) {
     this.logger.log('generateTokens' + JSON.stringify(user));
     const [accessToken, refreshToken] = await Promise.all([
-      // generate access token
+      // Générer le token d'accès
       this.signToken<Partial<ActiveUserData>>(
         user.id,
         user.roleUser,
@@ -52,7 +52,7 @@ export class GenerateTokensProvider {
         {
           email: user.email,
         },
-      ), // generate refresh token
+      ), // Générer le refresh token
       this.signToken(
         user.id,
         user.roleUser,

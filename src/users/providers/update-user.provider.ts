@@ -32,7 +32,7 @@ export class UpdateUserProvider {
       throw new BadRequestException('User not found WITH THIS ID');
     }
 
-    // Update the properties of the user
+    // Mettre à jour les propriétés de l'utilisateur
     user.lastName = patchUserDto.lastName ?? user.lastName;
     user.firstName = patchUserDto.firstName ?? user.firstName;
     user.city = patchUserDto.city ?? user.city;
@@ -45,7 +45,7 @@ export class UpdateUserProvider {
     user.password = patchUserDto.password ?? user.password;
     user.roleUser = patchUserDto.roleUser ?? user.roleUser;
 
-    // save the post and return it
+    // Sauvegarder et retourner l'entité
     try {
       await this.usersRepository.save(user);
     } catch (error) {

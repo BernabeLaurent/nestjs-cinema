@@ -14,6 +14,10 @@ import { Notification } from '../notifications/notification.entity';
 import { MovieReview } from '../movies/movie-review.entity';
 import { Booking } from '../bookings/booking.entity';
 
+/**
+ * Entité représentant un utilisateur du système de cinéma
+ * Gère les informations personnelles, l'authentification et les réservations
+ */
 @Entity()
 @Exclude()
 export class User {

@@ -15,17 +15,17 @@ export class SignInProvider {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-    private hashingProvider: HashingProvider, // Assuming you have a HashingProvider for password hashing
+    private hashingProvider: HashingProvider, // Provider de hachage pour les mots de passe
 
     private readonly generateTokensProvider: GenerateTokensProvider,
   ) {}
 
   public async signIn(signInDto: SignInDto) {
-    // Find user using email ID
-    // Exception if user not found
+    // Rechercher l'utilisateur par email
+    // Exception si utilisateur non trouvé
     const user = await this.usersService.findOneByEmail(signInDto.email);
 
-    // Check password using hashing provider with compare
+    // Vérifier le mot de passe avec le provider de hachage
     let isEqual: boolean = false;
     if (user.password) {
       try {

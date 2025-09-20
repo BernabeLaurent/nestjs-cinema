@@ -78,7 +78,7 @@ export class TheatersService {
       throw new BadRequestException('Theater not found WITH THIS ID');
     }
 
-    // Update the properties of the theater
+    // Mettre à jour les propriétés du théâtre
     theater.name = patchTheaterDto.name ?? theater.name;
     theater.zipCode = patchTheaterDto.zipCode ?? theater.zipCode;
     theater.city = patchTheaterDto.city ?? theater.city;
@@ -88,7 +88,7 @@ export class TheatersService {
     theater.closingTime = patchTheaterDto.closingTime ?? theater.closingTime;
     theater.phoneNumber = patchTheaterDto.phoneNumber ?? theater.phoneNumber;
 
-    // save the post and return it
+    // Sauvegarder et retourner l'entité
     try {
       await this.theatersRepository.save(theater);
     } catch (error) {

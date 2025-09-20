@@ -14,6 +14,10 @@ import { RegionsIso } from '../../common/enums/regions-iso.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { RoleUser } from '../enums/roles-users.enum';
 
+/**
+ * DTO pour la création d'un nouvel utilisateur
+ * Contient toutes les informations nécessaires pour l'inscription
+ */
 export class CreateUserDto {
   @ApiProperty({
     description: 'FirstName',

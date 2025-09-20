@@ -31,18 +31,30 @@ import { SessionCinema } from '../sessions-cinemas/session-cinema.entity';
 import { Theater } from '../theaters/theater.entity';
 import { Movie } from './movie.entity';
 
+/**
+ * Contrôleur responsable de la gestion des films et critiques
+ * Intègre l'API TMDB pour la recherche et gère les données locales
+ * Permet la création de critiques et leur validation
+ */
 @Controller('movies')
-@ApiTags('Movies')
+@ApiTags('Films')
 @Auth(AuthType.Bearer)
-@ApiBearerAuth('access-token') // La route attend un Bearer token
+@ApiBearerAuth('access-token')
 export class MoviesController {
+  /**
+   * Constructeur du contrôleur des films
+   * @param moviesService Service de gestion des films injecté
+   */
   constructor(private readonly moviesService: MoviesService) {}
 
-  @ApiOperation({ summary: 'Cherche un film sur le service externe' })
+  @ApiOperation({
+    summary: 'Rechercher un film sur TMDB',
+    description: 'Recherche un film sur le service externe TMDB par titre. Réservé aux administrateurs.'
+  })
   @Get('external/search')
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Movies found successfully',
+    description: 'Films trouvés avec succès sur TMDB',
   })
   @Roles([RoleUser.ADMIN])
   public searchExternal(@Query('q') q: string) {

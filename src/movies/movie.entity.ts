@@ -5,6 +5,10 @@ import { MovieReview } from './movie-review.entity';
 import { Exclude, Expose } from 'class-transformer';
 import { Cast } from './cast.entity';
 
+/**
+ * Entité représentant un film avec ses métadonnées TMDB
+ * Stocke les informations complètes du film, ratings et relations
+ */
 @Entity()
 @Exclude()
 export class Movie {

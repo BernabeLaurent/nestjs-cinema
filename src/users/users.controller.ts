@@ -22,17 +22,29 @@ import { AuthType } from '../auth/enums/auth-type.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleUser } from './enums/roles-users.enum';
 
+/**
+ * Contrôleur responsable de la gestion des utilisateurs
+ * Gère l'inscription, la modification et la consultation des profils utilisateurs
+ * Inclut la gestion des rôles et des permissions
+ */
 @Controller('users')
-@ApiTags('Users')
+@ApiTags('Utilisateurs')
 @Auth(AuthType.Bearer)
-@ApiBearerAuth('access-token') // La route attend un Bearer token
+@ApiBearerAuth('access-token')
 export class UsersController {
+  /**
+   * Constructeur du contrôleur des utilisateurs
+   * @param usersService Service de gestion des utilisateurs injecté
+   */
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Créer un utilisateur' })
+  @ApiOperation({
+    summary: 'Créer un nouvel utilisateur',
+    description: 'Inscription d\'un nouvel utilisateur dans le système (accessible sans authentification)'
+  })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'The user has been successfully created.',
+    description: 'L\'utilisateur a été créé avec succès',
   })
   @Post()
   @Auth(AuthType.None)
@@ -40,10 +52,13 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @ApiOperation({ summary: 'Récupérer tous les utilisateurs' })
+  @ApiOperation({
+    summary: 'Récupérer tous les utilisateurs',
+    description: 'Obtient la liste complète des utilisateurs (réservé aux administrateurs)'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Return all users.',
+    description: 'Liste des utilisateurs retournée avec succès',
   })
   @Get()
   @Roles([RoleUser.ADMIN])

@@ -46,22 +46,66 @@ async function bootstrap() {
   const apiVersion = configService.get<string>('API_VERSION') || '1.0.0';
   Logger.log(`API URL: ${apiUrl}`);
 
-  // Swagger config
+  // Configuration Swagger
   const config = new DocumentBuilder()
-    .setTitle('API documentation')
-    .setDescription('API Description Cinéma')
-    .setTermsOfService('')
+    .setTitle('API Système de Gestion de Cinéma')
+    .setDescription(`
+    ## Description
+    API RESTful complète pour un système de gestion de cinéma développé avec NestJS.
+
+    ## Fonctionnalités
+    - 🎬 **Gestion des films** : Ajout, modification, suppression et recherche de films
+    - 🎭 **Gestion des salles** : Configuration des salles et des places
+    - 📅 **Séances de cinéma** : Programmation et gestion des horaires
+    - 🎟️ **Réservations** : Système complet de réservation en ligne
+    - 👥 **Utilisateurs** : Inscription, authentification et gestion des profils
+    - 🔔 **Notifications** : Système d'alertes et de confirmations
+
+    ## Authentification
+    Cette API utilise l'authentification JWT. Pour accéder aux endpoints protégés, vous devez :
+    1. Créer un compte ou vous connecter via \`/auth/login\`
+    2. Utiliser le token JWT retourné dans le header \`Authorization: Bearer <token>\`
+
+    ## Formats de Réponse
+    Toutes les réponses suivent le format standardisé :
+    \`\`\`json
+    {
+      "data": [...],
+      "apiVersion": "1.0.0",
+      "timestamp": "2024-03-20T10:30:00Z"
+    }
+    \`\`\`
+
+    ## Support
+    - Documentation technique : [api.bernabe.codes/documentation](https://api.bernabe.codes/documentation)
+    - Repository GitHub : [github.com/BernabeLaurent/nestjs-cinema](https://github.com/BernabeLaurent/nestjs-cinema)
+    `)
+    .setTermsOfService('https://github.com/BernabeLaurent/nestjs-cinema/blob/main/LICENSE')
+    .setContact(
+      'Support Technique',
+      'https://github.com/BernabeLaurent/nestjs-cinema/issues',
+      'support@bernabe.codes'
+    )
     .setLicense(
-      'MIT Licence',
-      'https://github.com/BernabeLaurent/nestjs-cinema',
+      'Licence MIT',
+      'https://github.com/BernabeLaurent/nestjs-cinema/blob/main/LICENSE',
     )
     .setVersion(apiVersion)
-    .addServer(apiUrl)
+    .addServer(apiUrl, 'Serveur de Production')
+    .addServer('http://localhost:3000', 'Serveur de Développement')
+    .addTag('Authentification', 'Endpoints pour la connexion et la gestion des tokens')
+    .addTag('Films', 'Gestion des films et de leurs métadonnées')
+    .addTag('Salles', 'Configuration et gestion des salles de cinéma')
+    .addTag('Séances', 'Programmation et gestion des séances de cinéma')
+    .addTag('Réservations', 'Système de réservation et gestion des places')
+    .addTag('Utilisateurs', 'Gestion des comptes utilisateurs et profils')
+    .addTag('Notifications', 'Système de notifications et alertes')
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
+        description: 'Entrez votre token JWT obtenu via /auth/login',
       },
       'access-token',
     )
@@ -69,7 +113,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  //enable cors
+  // Activation de CORS
   const defaultOrigins = [
     apiUrl,
     'http://localhost:' + portNestjs,

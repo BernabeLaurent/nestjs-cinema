@@ -34,12 +34,12 @@ export class GoogleAuthenticationService implements OnModuleInit {
 
   public async authenticate(googleTokenDto: GoogleTokenDto) {
     let user: User | null;
-    // verify the google token send by user
+    // Vérifier le token Google envoyé par l'utilisateur
     const loginTicket = await this.oauthClient.verifyIdToken({
       idToken: googleTokenDto.token,
     });
 
-    // Extract the payload from google jwt token
+    // Extraire le payload du token JWT Google
     const payload = loginTicket.getPayload();
     if (!payload) {
       throw new Error('Invalid token payload');
@@ -54,17 +54,17 @@ export class GoogleAuthenticationService implements OnModuleInit {
     if (!email || !firstName || !lastName) {
       throw new BadRequestException('Champs manquants');
     }
-    // find the user in the dbb using the googleid
+    // Rechercher l'utilisateur dans la BDD avec le googleId
     try {
       user = await this.usersServices.findOneByGoogleId(googleId);
     } catch {
       throw new UnauthorizedException('User not found');
     }
-    // if googleid exists generate the token
+    // Si googleId existe, générer le token
     if (user) {
       return await this.generateTokensProvider.generateTokens(user);
     }
-    // if not create a new user and generate the token
+    // Sinon créer un nouvel utilisateur et générer le token
     const newUser = await this.usersServices.createGoogleUser({
       email: email,
       firstName: firstName,

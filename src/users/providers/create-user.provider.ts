@@ -37,7 +37,7 @@ export class CreateUserProvider {
     this.logger.log('create' + JSON.stringify(createUserDto));
 
     let existingUser: User | null = null;
-    // check user email exists
+    // Vérifier si l'email utilisateur existe
     try {
       existingUser = await this.usersRepository.findOne({
         where: {
@@ -53,7 +53,7 @@ export class CreateUserProvider {
     }
     this.logger.log('existingUser' + JSON.stringify(existingUser));
 
-    // Exception if user exists
+    // Exception si l'utilisateur existe
     if (existingUser) {
       throw new BadRequestException(
         'User already exists, please check your email',
