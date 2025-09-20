@@ -21,7 +21,8 @@ export class ImagesService {
   ): Promise<string> {
     const folderPath = this.getFolderPath(imageType);
 
-    const filePath = path.join(folderPath, filename);
+    // Force l'extension .webp
+    const filePath = path.join(folderPath, `${path.parse(filename).name}.webp`);
 
     // Vérifie si le fichier existe déjà
     if (fs.existsSync(filePath)) {
