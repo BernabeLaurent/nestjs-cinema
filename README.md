@@ -1169,6 +1169,7 @@ npm run compodoc
 - Node.js (version 22 ou supérieure)
 - PostgreSQL (version 16 ou supérieure)
 - Docker (optionnel)
+- Nginx (pour la production)
 
 ### Configuration
 1. **Variables d'Environnement**
@@ -1209,6 +1210,192 @@ docker-compose up -d
 # - Backend : http://localhost:3000
 # - Frontend : http://localhost:4200
 # - Documentation : http://localhost:3000/api
+```
+
+### Déploiement Production (Droplet)
+
+#### Analyse de l'Environnement
+```bash
+# Vérifier les services existants
+docker ps
+
+# Services détectés :
+# - live (ports 80, 443) - Service principal existant
+# - ticketing (ports 90, 453)
+# - postgres (port 5433)
+# - mongodb (port 27017)
+```
+
+#### Résolution des Conflits de Ports
+**Problème** : Le container `live` occupe les ports 80/443
+
+**Solutions** :
+1. **Ports alternatifs** (Recommandé)
+   - Nginx sur ports 8080/8443
+   - NestJS sur port 3001
+
+2. **Arrêt du service existant**
+   ```bash
+   docker stop live
+   ```
+
+3. **Configuration hybride**
+   - Modifier le proxy du container `live`
+
+#### Configuration Nginx Production
+```nginx
+# Configuration avec ports alternatifs
+server {
+    listen 8080;
+    server_name bernabe.codes www.bernabe.codes;
+    return 301 https://$host:8443$request_uri;
+}
+
+server {
+    listen 8443 ssl;
+    server_name bernabe.codes www.bernabe.codes;
+
+    root /var/www/angular-cinema/dist;
+    index index.html;
+
+    ssl_certificate /etc/letsencrypt/live/bernabe.codes/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/bernabe.codes/privkey.pem;
+
+    # Frontend Angular
+    location / {
+        try_files $uri /index.html;
+    }
+
+    # API Backend
+    location /api/ {
+        proxy_pass http://127.0.0.1:3001/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+#### Étapes de Déploiement Production
+```bash
+# 1. Préparation
+mkdir -p /var/www/angular-cinema
+cp .env.docker .env
+echo "NESTJS_PORT=3001" >> .env
+
+# 2. Build et démarrage backend
+npm install && npm run build
+docker-compose up -d
+
+# 3. Déploiement frontend Angular
+git clone https://github.com/BernabeLaurent/angular-cinema /var/www/angular-cinema
+cd /var/www/angular-cinema
+npm install && npm run build --prod
+
+# 4. Configuration nginx
+apt install -y nginx
+# Créer le fichier de configuration nginx ci-dessus
+systemctl restart nginx
+```
+
+#### Variables d'Environnement Production
+```env
+NODE_ENV=production
+NESTJS_PORT=3001
+ALLOWED_ORIGINS=https://bernabe.codes:8443,https://www.bernabe.codes:8443
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+MONGODB_URI=mongodb://localhost:27017/cinema
+```
+
+#### Vérifications Post-Déploiement
+```bash
+# Services
+systemctl status nginx
+docker ps
+docker logs nestjs-cinema-app
+
+# Connectivité
+curl -I https://bernabe.codes:8443
+curl -I http://localhost:3001/api/health
+
+# Logs
+tail -f /var/log/nginx/error.log
+docker logs -f nestjs-cinema-app
+```
+
+#### URLs d'Accès Production
+- **Frontend** : https://bernabe.codes:8443
+- **API** : https://bernabe.codes:8443/api
+- **Documentation** : https://bernabe.codes:8443/api/docs
+
+#### Troubleshooting Production
+
+##### Problème : "Site introuvable"
+```bash
+# 1. Vérifier le DNS
+nslookup bernabe.codes
+# Doit pointer vers 159.89.20.85
+
+# 2. Vérifier nginx
+systemctl status nginx
+nginx -t
+
+# 3. Vérifier les ports
+netstat -tuln | grep :8443
+ss -tuln | grep :8443
+
+# 4. Vérifier les logs
+tail -f /var/log/nginx/error.log
+tail -f /var/log/nginx/access.log
+```
+
+##### Problème : API inaccessible
+```bash
+# 1. Vérifier le backend NestJS
+curl http://localhost:3001/api/health
+docker ps | grep nestjs-cinema
+docker logs nestjs-cinema-app
+
+# 2. Vérifier la base de données
+docker ps | grep postgres
+docker logs nestjs-cinema-postgres-1
+
+# 3. Vérifier la configuration
+cat .env | grep NESTJS_PORT
+cat .env | grep DATABASE_
+```
+
+##### Problème : Erreurs SSL/TLS
+```bash
+# 1. Vérifier les certificats
+ls -la /etc/letsencrypt/live/bernabe.codes/
+openssl x509 -in /etc/letsencrypt/live/bernabe.codes/fullchain.pem -text -noout
+
+# 2. Tester SSL
+curl -I https://bernabe.codes:8443
+openssl s_client -connect bernabe.codes:8443
+```
+
+##### Commandes de Maintenance
+```bash
+# Redémarrage complet
+systemctl restart nginx
+docker-compose restart
+
+# Mise à jour de l'application
+git pull origin main
+npm run build
+docker-compose up -d --build
+
+# Sauvegarde base de données
+docker exec nestjs-cinema-postgres-1 pg_dump -U postgres cinema > backup_$(date +%Y%m%d).sql
+
+# Monitoring en temps réel
+docker stats
+htop
 ```
 
 ### Déploiement Automatisé (GitHub Actions)
