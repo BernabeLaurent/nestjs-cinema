@@ -34,26 +34,29 @@ export class ImagesService {
     try {
       const response = await axios.get(imageUrl, { responseType: 'stream' });
 
-      // Sauvegarde l'image dans le fichier
+      // Crée le write stream pour le fichier final
       const writer = fs.createWriteStream(filePath);
-      (response.data as NodeJS.ReadableStream).pipe(writer);
 
-      // Conversion pour réduire la taille de l'image
-      const transformer = sharp().webp({ quality: 70 }); // conversion WebP avec qualité 70%
+      // Pipe le flux téléchargé dans Sharp pour convertir en WebP et réduire la taille
+      const transformer = sharp()
+        .resize({ width: 800 }) // largeur max 800px, ratio conservé
+        .webp({ quality: 70 }); // conversion WebP
 
       (response.data as NodeJS.ReadableStream).pipe(transformer).pipe(writer);
 
       // Retourne une promesse une fois l'écriture terminée
       return new Promise((resolve, reject) => {
         writer.on('finish', () => {
-          this.logger.log(`Image téléchargée avec succès : ${filePath}`);
+          this.logger.log(
+            `Image téléchargée et convertie en WebP avec succès : ${filePath}`,
+          );
           resolve(filePath);
         });
         writer.on('error', (err) => {
           this.logger.error(
             `Erreur lors de l'écriture du fichier : ${err.message}`,
           );
-          reject(err); // En cas d'erreur d'écriture
+          reject(err);
         });
       });
     } catch (error) {
