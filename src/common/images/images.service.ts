@@ -3,6 +3,7 @@ import { ImageType } from '../enums/images-types.enum';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import axios from 'axios';
+import * as sharp from 'sharp';
 
 @Injectable()
 /**
@@ -36,6 +37,11 @@ export class ImagesService {
       // Sauvegarde l'image dans le fichier
       const writer = fs.createWriteStream(filePath);
       (response.data as NodeJS.ReadableStream).pipe(writer);
+
+      // Conversion pour réduire la taille de l'image
+      const transformer = sharp().webp({ quality: 70 }); // conversion WebP avec qualité 70%
+
+      (response.data as NodeJS.ReadableStream).pipe(transformer).pipe(writer);
 
       // Retourne une promesse une fois l'écriture terminée
       return new Promise((resolve, reject) => {
