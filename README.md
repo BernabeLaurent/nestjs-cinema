@@ -1334,6 +1334,140 @@ describe('Bookings (e2e)', () => {
 #### Tests de Validation
 Tests pour les DTOs et validations
 
+##### Qu'est-ce qu'un DTO ?
+
+Un **DTO (Data Transfer Object)** est un pattern de conception qui définit la structure des données échangées entre le client et le serveur. Dans NestJS, les DTOs servent à :
+
+**1. Validation des Données**
+```typescript
+// create-booking.dto.ts
+export class CreateBookingDto {
+  @IsUUID(4, { message: 'ID de session invalide' })
+  sessionId: string;
+
+  @IsArray()
+  @ArrayMinSize(1, { message: 'Au moins une place requise' })
+  @IsString({ each: true })
+  @Matches(/^[A-Z]\d+$/, { each: true, message: 'Format de siège invalide (ex: A1, B12)' })
+  seats: string[];
+
+  @IsOptional()
+  @IsEmail()
+  userEmail?: string;
+}
+```
+
+**2. Type Safety (Sécurité des Types)**
+```typescript
+// Le DTO garantit que les données respectent le format attendu
+@Controller('bookings')
+export class BookingsController {
+  @Post()
+  async create(@Body() createBookingDto: CreateBookingDto) {
+    // TypeScript sait que createBookingDto.seats est un string[]
+    // et que createBookingDto.sessionId est un UUID valide
+    return this.bookingsService.create(createBookingDto);
+  }
+}
+```
+
+**3. Documentation API Automatique**
+```typescript
+// Swagger génère automatiquement la documentation à partir des DTOs
+// avec les types, validations et exemples
+```
+
+**4. Sécurité**
+```typescript
+// Seules les propriétés définies dans le DTO sont acceptées
+// Empêche les attaques par injection de propriétés malveillantes
+```
+
+##### Différence DTO vs Entité
+
+**Entité (Base de Données)**
+```typescript
+// booking.entity.ts
+@Entity()
+export class Booking {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  sessionId: string;
+
+  @Column('simple-array')
+  seats: string[];
+
+  @Column()
+  userId: string;
+
+  @Column({ type: 'enum', enum: BookingStatus })
+  status: BookingStatus;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Column()
+  qrCode: string;
+}
+```
+
+**DTO (API)**
+```typescript
+// create-booking.dto.ts
+export class CreateBookingDto {
+  sessionId: string;
+  seats: string[];
+  userEmail?: string;
+  // Pas d'id, status, dates, qrCode → gérés automatiquement par le service
+}
+```
+
+##### Transformation DTO → Entité
+
+```typescript
+// bookings.service.ts
+async create(createBookingDto: CreateBookingDto): Promise<Booking> {
+  const booking = new Booking();
+  booking.sessionId = createBookingDto.sessionId;
+  booking.seats = createBookingDto.seats;
+  booking.userId = await this.getUserIdFromEmail(createBookingDto.userEmail);
+  booking.status = BookingStatus.PENDING;
+  booking.qrCode = await this.generateQrCode();
+  // id et dates → générés automatiquement par TypeORM
+
+  return this.bookingRepository.save(booking);
+}
+```
+
+##### Validation Avancée avec DTOs
+
+```typescript
+// update-user.dto.ts
+export class UpdateUserDto {
+  @IsOptional()
+  @IsString()
+  @Length(2, 50, { message: 'Le prénom doit faire entre 2 et 50 caractères' })
+  firstName?: string;
+
+  @IsOptional()
+  @IsEmail({}, { message: 'Format d\'email invalide' })
+  email?: string;
+
+  @IsOptional()
+  @IsPhoneNumber('FR', { message: 'Numéro de téléphone français invalide' })
+  phone?: string;
+
+  @IsOptional()
+  @IsDateString({}, { message: 'Format de date invalide (ISO 8601)' })
+  birthDate?: string;
+}
+```
+
 **Exemple - Test de DTO :**
 ```typescript
 // src/auth/dtos/signing.dto.spec.ts
@@ -1369,8 +1503,46 @@ describe('SignInDto', () => {
     expect(errors).toHaveLength(1);
     expect(errors[0].constraints).toHaveProperty('minLength');
   });
+
+  it('should handle complex booking validation', async () => {
+    const createBookingDto = new CreateBookingDto();
+    createBookingDto.sessionId = 'invalid-uuid';
+    createBookingDto.seats = ['INVALID_SEAT', 'A1'];
+
+    const errors = await validate(createBookingDto);
+    expect(errors.length).toBeGreaterThan(0);
+
+    // Vérifier l'erreur UUID
+    const sessionIdErrors = errors.find(error => error.property === 'sessionId');
+    expect(sessionIdErrors?.constraints).toHaveProperty('isUuid');
+
+    // Vérifier l'erreur format siège
+    const seatsErrors = errors.find(error => error.property === 'seats');
+    expect(seatsErrors?.constraints).toHaveProperty('matches');
+  });
 });
 ```
+
+##### Bonnes Pratiques pour les DTOs
+
+1. **Un DTO par Action**
+   ```typescript
+   CreateUserDto, UpdateUserDto, LoginDto // ✅ Spécifique
+   UserDto // ❌ Trop générique
+   ```
+
+2. **Validation Explicite**
+   ```typescript
+   @IsEmail({}, { message: 'Adresse email invalide' }) // ✅ Message clair
+   @IsEmail() // ❌ Message par défaut
+   ```
+
+3. **Réutilisation avec PartialType**
+   ```typescript
+   export class UpdateUserDto extends PartialType(CreateUserDto) {
+     // Toutes les propriétés de CreateUserDto deviennent optionnelles
+   }
+   ```
 
 ### Configuration des Tests
 
