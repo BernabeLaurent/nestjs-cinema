@@ -865,10 +865,11 @@ MOVIE (1) ────< (N) MOVIE_REVIEW    [Un film peut être noté plusieurs 
 MOVIE_THEATER (1) ────< (N) SESSION_CINEMA [Une salle a plusieurs séances]
 
 SESSION_CINEMA (1) ────< (N) BOOKING [Une séance peut être réservée plusieurs fois]
+SESSION_CINEMA (N) ────> (1) PRICE   [Une séance a un prix selon sa qualité]
 
 BOOKING (1) ────< (N) BOOKING_DETAIL [Une réservation contient plusieurs sièges]
 
-PRICE (entité indépendante pour la grille tarifaire)
+PRICE : Grille tarifaire par qualité de salle (HD, UHD_4K, DOLBY_CINEMA, IMAX)
 ```
 
 ##### Diagramme MCD Visuel
@@ -933,11 +934,21 @@ PRICE (entité indépendante pour la grille tarifaire)
 └─────────────┘                          └──────────────┘
 
                     ┌─────────────┐
-                    │   PRICE     │
-                    │ id (PK)     │
-                    │ theaterQual.│
-                    │ price       │
-                    └─────────────┘
+                    │   PRICE     │◄────────────┐
+                    │ id (PK)     │             │
+                    │ theaterQual.│             │
+                    │ price       │             │
+                    └─────────────┘             │
+                                                │
+                              ┌─────────────────┘
+                              │ (via quality)
+                              │
+                    ┌─────────▼───────┐
+                    │ SESSION_CINEMA  │
+                    │ quality         │
+                    │ (determines     │
+                    │  price)         │
+                    └─────────────────┘
 ```
 
 ##### Cardinalités Détaillées
@@ -951,6 +962,7 @@ PRICE (entité indépendante pour la grille tarifaire)
 - **MOVIE → MOVIE_REVIEW** : (0,N) - Un film peut être noté 0 à N fois
 - **MOVIE_THEATER → SESSION_CINEMA** : (0,N) - Une salle a 0 à N séances
 - **SESSION_CINEMA → BOOKING** : (0,N) - Une séance peut être réservée 0 à N fois
+- **SESSION_CINEMA → PRICE** : (N,1) - Plusieurs séances peuvent avoir le même prix selon leur qualité
 - **BOOKING → BOOKING_DETAIL** : (1,N) - Une réservation contient 1 à N sièges
 
 ##### Contraintes Métier
@@ -959,7 +971,159 @@ PRICE (entité indépendante pour la grille tarifaire)
 2. **Cohérence temporelle** : `endTime` > `startTime` dans SESSION_CINEMA
 3. **Capacité** : Le nombre de sièges réservés ≤ capacité de la salle
 4. **Validation** : Les notes MOVIE_REVIEW sont comprises entre 0 et 10
-5. **Intégrité** : Suppression en cascade pour préserver la cohérence
+5. **Tarification** : Le prix d'une séance est déterminé par sa qualité (SESSION_CINEMA.quality → PRICE.theaterQuality)
+6. **Intégrité** : Suppression en cascade pour préserver la cohérence
+
+#### Diagramme PlantUML
+
+Pour une visualisation interactive et modifiable, voici le MCD au format PlantUML :
+
+```plantuml
+@startuml Cinema_MCD
+!define PRIMARY_KEY(x) <u>x</u>
+!define FOREIGN_KEY(x) <i>x</i>
+
+' Entités principales
+entity USER {
+  PRIMARY_KEY(id) : number
+  --
+  email : string <<unique>>
+  password : string
+  firstName : string
+  lastName : string
+  roleUser : RoleUser
+  hasDisability : boolean
+  address : string
+  city : string
+  zipCode : number
+  phoneNumber : string
+}
+
+entity MOVIE {
+  PRIMARY_KEY(id) : number
+  --
+  movieExterneId : number <<TMDB>>
+  title : string
+  originalTitle : string
+  description : text
+  runtime : number
+  averageRating : number
+  releaseDate : Date
+  originalLanguage : Languages
+  posterPath : string
+}
+
+entity THEATER {
+  PRIMARY_KEY(id) : number
+  --
+  name : string
+  address : string
+  city : string
+  zipCode : number
+  openingTime : time
+  closingTime : time
+  phoneNumber : string
+}
+
+entity MOVIE_THEATER {
+  PRIMARY_KEY(id) : number
+  --
+  FOREIGN_KEY(theaterId) : number
+  roomNumber : number
+  numberSeats : number
+  numberSeatsDisabled : number
+}
+
+entity SESSION_CINEMA {
+  PRIMARY_KEY(id) : number
+  --
+  FOREIGN_KEY(movieId) : number
+  FOREIGN_KEY(movieTheaterId) : number
+  startTime : timestamp
+  endTime : timestamp
+  quality : TheaterQuality
+  codeLanguage : Languages
+}
+
+entity BOOKING {
+  PRIMARY_KEY(id) : number
+  --
+  FOREIGN_KEY(userId) : number
+  FOREIGN_KEY(sessionCinemaId) : number
+  status : BookingStatus
+  numberSeats : number
+  totalPrice : number
+}
+
+entity BOOKING_DETAIL {
+  PRIMARY_KEY(id) : number
+  --
+  FOREIGN_KEY(bookingId) : number
+  seatNumber : number
+  isValidated : boolean
+}
+
+entity PRICE {
+  PRIMARY_KEY(id) : number
+  --
+  theaterQuality : TheaterQuality
+  price : number
+}
+
+entity CAST {
+  PRIMARY_KEY(id) : number
+  --
+  FOREIGN_KEY(movieId) : number
+  name : string
+  character : string
+  order : number
+}
+
+entity MOVIE_REVIEW {
+  PRIMARY_KEY(id) : number
+  --
+  FOREIGN_KEY(userId) : number
+  FOREIGN_KEY(movieId) : number
+  note : number <<0-10>>
+  isValidated : boolean
+}
+
+entity NOTIFICATION {
+  PRIMARY_KEY(id) : number
+  --
+  FOREIGN_KEY(userId) : number
+  createDate : Date
+}
+
+' Relations
+USER ||--o{ BOOKING : "fait"
+USER ||--o{ MOVIE_REVIEW : "note"
+USER ||--o{ NOTIFICATION : "reçoit"
+
+THEATER ||--o{ MOVIE_THEATER : "contient"
+
+MOVIE ||--o{ SESSION_CINEMA : "programmé en"
+MOVIE ||--o{ CAST : "joué par"
+MOVIE ||--o{ MOVIE_REVIEW : "noté par"
+
+MOVIE_THEATER ||--o{ SESSION_CINEMA : "diffuse"
+
+SESSION_CINEMA ||--o{ BOOKING : "réservé pour"
+SESSION_CINEMA }o--|| PRICE : "tarif selon qualité"
+
+BOOKING ||--o{ BOOKING_DETAIL : "détaille"
+
+' Notes
+note top of SESSION_CINEMA : Qualité détermine le prix\nvia table PRICE
+note top of PRICE : Grille tarifaire:\nHD, UHD_4K, DOLBY_CINEMA, IMAX
+
+@enduml
+```
+
+**Utilisation :**
+- Copier le code dans [PlantUML Online](https://www.plantuml.com/plantuml/uml/)
+- Utiliser l'extension PlantUML dans VS Code
+- Intégrer dans la documentation technique
 
 #### Diagramme Complet en Ligne
 
