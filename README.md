@@ -763,21 +763,222 @@ Toutes les réponses de l'API suivent un format standardisé :
 ## Base de Données
 
 ### Diagramme de la Base de Données
-Un diagramme complet de la structure de la base de données PostgreSQL est disponible en ligne :
+
+#### MCD (Modèle Conceptuel de Données)
+
+Le système de cinéma est basé sur **11 entités principales** avec leurs relations :
+
+##### Entités Principales
+
+**USER (Utilisateur)**
+- `id` (PK) : Identifiant unique
+- `email` : Email unique (authentification)
+- `password` : Mot de passe hashé
+- `firstName`, `lastName` : Informations personnelles
+- `roleUser` : Rôle (CUSTOMER, ADMIN, etc.)
+- `address`, `city`, `zipCode` : Adresse complète
+- `hasDisability` : Accessibilité PMR
+
+**MOVIE (Film)**
+- `id` (PK) : Identifiant unique
+- `movieExterneId` : ID TMDB pour synchronisation
+- `title`, `originalTitle` : Titres français et original
+- `description` : Synopsis du film
+- `runtime` : Durée en minutes
+- `releaseDate` : Date de sortie
+- `averageRating` : Note moyenne interne
+- `originalLanguage` : Langue originale
+
+**THEATER (Cinéma)**
+- `id` (PK) : Identifiant unique
+- `name` : Nom du cinéma
+- `address`, `city`, `zipCode` : Localisation
+- `openingTime`, `closingTime` : Horaires d'ouverture
+- `phoneNumber` : Contact
+
+**MOVIE_THEATER (Salle)**
+- `id` (PK) : Identifiant unique
+- `theaterId` (FK) : Référence vers le cinéma
+- `roomNumber` : Numéro de la salle
+- `numberSeats` : Nombre de places total
+- `numberSeatsDisabled` : Places PMR
+
+**SESSION_CINEMA (Séance)**
+- `id` (PK) : Identifiant unique
+- `movieId` (FK) : Film programmé
+- `movieTheaterId` (FK) : Salle de projection
+- `startTime`, `endTime` : Horaires de séance
+- `quality` : Qualité (HD, 4K, IMAX, etc.)
+- `codeLanguage` : Langue de diffusion
+
+**BOOKING (Réservation)**
+- `id` (PK) : Identifiant unique
+- `userId` (FK) : Utilisateur ayant réservé
+- `sessionCinemaId` (FK) : Séance réservée
+- `status` : Statut (PENDING, CONFIRMED, CANCELLED)
+- `numberSeats` : Nombre de places
+- `totalPrice` : Prix total
+
+**BOOKING_DETAIL (Détail Réservation)**
+- `id` (PK) : Identifiant unique
+- `bookingId` (FK) : Réservation associée
+- `seatNumber` : Numéro de siège
+- `isValidated` : Validation d'entrée
+
+**CAST (Casting)**
+- `id` (PK) : Identifiant unique
+- `movieId` (FK) : Film associé
+- `name`, `originalName` : Nom de l'acteur
+- `character` : Personnage joué
+- `order` : Ordre d'apparition au générique
+
+**MOVIE_REVIEW (Avis Film)**
+- `id` (PK) : Identifiant unique
+- `userId` (FK) : Utilisateur ayant noté
+- `movieId` (FK) : Film noté
+- `note` : Note de 0 à 10
+- `isValidated` : Validation de l'avis
+
+**NOTIFICATION (Notification)**
+- `id` (PK) : Identifiant unique
+- `userId` (FK) : Destinataire
+- Messages et alertes système
+
+**PRICE (Tarif)**
+- `id` (PK) : Identifiant unique
+- `theaterQuality` : Qualité de salle
+- `price` : Prix de la place
+
+##### Relations du MCD
+
+```
+USER (1) ────< (N) BOOKING          [Un utilisateur peut avoir plusieurs réservations]
+USER (1) ────< (N) MOVIE_REVIEW     [Un utilisateur peut noter plusieurs films]
+USER (1) ────< (N) NOTIFICATION     [Un utilisateur reçoit plusieurs notifications]
+
+THEATER (1) ────< (N) MOVIE_THEATER [Un cinéma contient plusieurs salles]
+
+MOVIE (1) ────< (N) SESSION_CINEMA  [Un film peut avoir plusieurs séances]
+MOVIE (1) ────< (N) CAST            [Un film a plusieurs acteurs]
+MOVIE (1) ────< (N) MOVIE_REVIEW    [Un film peut être noté plusieurs fois]
+
+MOVIE_THEATER (1) ────< (N) SESSION_CINEMA [Une salle a plusieurs séances]
+
+SESSION_CINEMA (1) ────< (N) BOOKING [Une séance peut être réservée plusieurs fois]
+
+BOOKING (1) ────< (N) BOOKING_DETAIL [Une réservation contient plusieurs sièges]
+
+PRICE (entité indépendante pour la grille tarifaire)
+```
+
+##### Diagramme MCD Visuel
+
+```
+                    ┌─────────────┐
+                    │    USER     │
+                    │ id (PK)     │
+                    │ email       │
+                    │ password    │
+                    │ firstName   │
+                    │ lastName    │
+                    │ roleUser    │
+                    │ hasDisability│
+                    └─────────────┘
+                           │
+                 ┌─────────┼─────────┐
+                 │         │         │
+                 ▼         ▼         ▼
+        ┌──────────────┐ ┌────────────┐ ┌──────────────┐
+        │   BOOKING    │ │MOVIE_REVIEW│ │NOTIFICATION  │
+        │ id (PK)      │ │ id (PK)    │ │ id (PK)      │
+        │ userId (FK)  │ │ userId(FK) │ │ userId (FK)  │
+        │ sessionId(FK)│ │ movieId(FK)│ │ createDate   │
+        │ status       │ │ note (0-10)│ └──────────────┘
+        │ totalPrice   │ │ isValidated│
+        │ numberSeats  │ └────────────┘
+        └──────────────┘       │
+               │               │
+               ▼               │
+     ┌─────────────────┐       │
+     │ BOOKING_DETAIL  │       │
+     │ id (PK)         │       │
+     │ bookingId (FK)  │       │
+     │ seatNumber      │       │
+     │ isValidated     │       │
+     └─────────────────┘       │
+                               │
+    ┌──────────────────────────┘
+    │
+    ▼
+┌─────────────┐    ┌─────────────────┐    ┌──────────────┐
+│    MOVIE    │◄──►│ SESSION_CINEMA  │◄──►│MOVIE_THEATER │
+│ id (PK)     │    │ id (PK)         │    │ id (PK)      │
+│ title       │    │ movieId (FK)    │    │ theaterId(FK)│
+│ description │    │ movieTheaterId  │    │ roomNumber   │
+│ runtime     │    │ startTime       │    │ numberSeats  │
+│ releaseDate │    │ endTime         │    │ numberSeats  │
+│ averageRating│   │ quality         │    │ Disabled     │
+│ movieExterne│    │ codeLanguage    │    └──────────────┘
+│ Id (TMDB)   │    └─────────────────┘           │
+└─────────────┘                                 ▼
+       │                                 ┌──────────────┐
+       ▼                                 │   THEATER    │
+┌─────────────┐                          │ id (PK)      │
+│    CAST     │                          │ name         │
+│ id (PK)     │                          │ address      │
+│ movieId(FK) │                          │ city         │
+│ name        │                          │ openingTime  │
+│ character   │                          │ closingTime  │
+│ order       │                          │ phoneNumber  │
+└─────────────┘                          └──────────────┘
+
+                    ┌─────────────┐
+                    │   PRICE     │
+                    │ id (PK)     │
+                    │ theaterQual.│
+                    │ price       │
+                    └─────────────┘
+```
+
+##### Cardinalités Détaillées
+
+- **USER → BOOKING** : (1,N) - Un utilisateur peut avoir 0 à N réservations
+- **USER → MOVIE_REVIEW** : (0,N) - Un utilisateur peut noter 0 à N films
+- **USER → NOTIFICATION** : (0,N) - Un utilisateur reçoit 0 à N notifications
+- **THEATER → MOVIE_THEATER** : (1,N) - Un cinéma a 1 à N salles
+- **MOVIE → SESSION_CINEMA** : (0,N) - Un film peut avoir 0 à N séances
+- **MOVIE → CAST** : (0,N) - Un film a 0 à N acteurs
+- **MOVIE → MOVIE_REVIEW** : (0,N) - Un film peut être noté 0 à N fois
+- **MOVIE_THEATER → SESSION_CINEMA** : (0,N) - Une salle a 0 à N séances
+- **SESSION_CINEMA → BOOKING** : (0,N) - Une séance peut être réservée 0 à N fois
+- **BOOKING → BOOKING_DETAIL** : (1,N) - Une réservation contient 1 à N sièges
+
+##### Contraintes Métier
+
+1. **Unicité** : Un utilisateur ne peut noter qu'une seule fois le même film
+2. **Cohérence temporelle** : `endTime` > `startTime` dans SESSION_CINEMA
+3. **Capacité** : Le nombre de sièges réservés ≤ capacité de la salle
+4. **Validation** : Les notes MOVIE_REVIEW sont comprises entre 0 et 10
+5. **Intégrité** : Suppression en cascade pour préserver la cohérence
+
+#### Diagramme Complet en Ligne
+
+Un diagramme interactif complet de la structure PostgreSQL est disponible :
 [Diagramme de la Base de Données](https://lucid.app/lucidchart/b7bd4ef8-bcfa-4ec5-9307-a6af1f99457b/edit?invitationId=inv_6fe26536-c9f0-4744-96d2-9a207c4695f5)
 
 Ce diagramme inclut :
 - Toutes les tables et leurs relations
 - Les clés primaires et étrangères
 - Les contraintes et index
-- Les types de données
+- Les types de données détaillés
 - Les cardinalités des relations
 
 ### Structure Principale
-- Tables pour les films et leurs métadonnées
-- Tables pour les salles et les séances
-- Tables pour les utilisateurs et les réservations
-- Tables pour les notifications et les logs
+- **Films** : Métadonnées TMDB, casting, avis utilisateurs
+- **Cinémas** : Localisation, salles, capacités
+- **Séances** : Programmation, horaires, qualités
+- **Réservations** : Utilisateurs, sièges, statuts
+- **Système** : Notifications, tarifs, logs
 
 ### Scripts de Base de Données
 
