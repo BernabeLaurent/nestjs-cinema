@@ -32,10 +32,13 @@ export class CreateSessionCinemaProvider {
     }
 
     if (!movieTheaterId) {
-      throw new BadRequestException('Either movieTheaterId or roomId must be provided');
+      throw new BadRequestException(
+        'Either movieTheaterId or roomId must be provided',
+      );
     }
 
-    const movieTheater = await this.moviesTheatersService.getMovieTheaterById(movieTheaterId);
+    const movieTheater =
+      await this.moviesTheatersService.getMovieTheaterById(movieTheaterId);
     if (!movieTheater) {
       throw new BadRequestException('Movie Theater not found WITH THIS ID');
     }
@@ -52,18 +55,31 @@ export class CreateSessionCinemaProvider {
     // Transformation des dates
     let startTime: Date;
     let endTime: Date;
-    
-    if (createSessionCinemaDto.date && createSessionCinemaDto.startTime.includes(':')) {
+
+    if (
+      createSessionCinemaDto.date &&
+      createSessionCinemaDto.startTime.includes(':')
+    ) {
       // Format: date + heure (e.g., "2025-09-11" + "20:00")
-      startTime = new Date(`${createSessionCinemaDto.date}T${createSessionCinemaDto.startTime}:00.000Z`);
+      startTime = new Date(
+        `${createSessionCinemaDto.date}T${createSessionCinemaDto.startTime}:00.000Z`,
+      );
     } else {
       // Format: date complète
       startTime = new Date(createSessionCinemaDto.startTime);
     }
 
-    if (createSessionCinemaDto.endTime && createSessionCinemaDto.endTime !== '') {
-      if (createSessionCinemaDto.date && createSessionCinemaDto.endTime.includes(':')) {
-        endTime = new Date(`${createSessionCinemaDto.date}T${createSessionCinemaDto.endTime}:00.000Z`);
+    if (
+      createSessionCinemaDto.endTime &&
+      createSessionCinemaDto.endTime !== ''
+    ) {
+      if (
+        createSessionCinemaDto.date &&
+        createSessionCinemaDto.endTime.includes(':')
+      ) {
+        endTime = new Date(
+          `${createSessionCinemaDto.date}T${createSessionCinemaDto.endTime}:00.000Z`,
+        );
       } else {
         endTime = new Date(createSessionCinemaDto.endTime);
       }
@@ -73,7 +89,8 @@ export class CreateSessionCinemaProvider {
       endTime.setHours(endTime.getHours() + 2);
     }
 
-    const codeLanguage = createSessionCinemaDto.codeLanguage || Languages.FRENCH;
+    const codeLanguage =
+      createSessionCinemaDto.codeLanguage || Languages.FRENCH;
 
     // On insére la session de cinéma
     try {

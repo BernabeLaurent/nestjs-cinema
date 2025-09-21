@@ -182,7 +182,7 @@ export class CreateMovieDto {
   originalLanguage: Languages;
 
   @ApiProperty({
-    description: 'Chemin de l\'image de fond',
+    description: "Chemin de l'image de fond",
     example: '/path/to/backdrop.jpg',
   })
   @IsNotEmpty()
@@ -191,7 +191,7 @@ export class CreateMovieDto {
   backdropPath: string;
 
   @ApiProperty({
-    description: 'Chemin de l\'affiche du film',
+    description: "Chemin de l'affiche du film",
     example: '/path/to/poster.jpg',
   })
   @IsNotEmpty()

@@ -182,64 +182,62 @@ describe('CreateBookingDto', () => {
   });
 
   it('should handle valid reservedSeats array', async () => {
-    const reservedSeats = [
-      { seatNumber: 1 },
-      { seatNumber: 2 },
-      { seatNumber: 3 },
-    ];
-
-    Object.assign(dto, {
+    const validData = {
       userId: 1,
       sessionCinemaId: 1,
       numberSeats: 3,
       numberSeatsDisabled: 0,
       totalPrice: 31.35,
-      reservedSeats,
-    });
+      reservedSeats: [{ seatNumber: 1 }, { seatNumber: 2 }, { seatNumber: 3 }],
+    };
 
-    const errors = await validate(dto);
+    const validDto = plainToClass(CreateBookingDto, validData);
+    const errors = await validate(validDto);
     expect(errors).toHaveLength(0);
   });
 
   it('should accept zero disabled seats', async () => {
-    Object.assign(dto, {
+    const validData = {
       userId: 1,
       sessionCinemaId: 1,
       numberSeats: 1,
       numberSeatsDisabled: 0,
       totalPrice: 10.45,
       reservedSeats: [{ seatNumber: 1 }],
-    });
+    };
 
-    const errors = await validate(dto);
+    const validDto = plainToClass(CreateBookingDto, validData);
+    const errors = await validate(validDto);
     expect(errors).toHaveLength(0);
   });
 
   it('should accept multiple disabled seats', async () => {
-    Object.assign(dto, {
+    const validData = {
       userId: 1,
       sessionCinemaId: 1,
       numberSeats: 3,
       numberSeatsDisabled: 2,
       totalPrice: 25.0,
       reservedSeats: [{ seatNumber: 1 }, { seatNumber: 2 }, { seatNumber: 3 }],
-    });
+    };
 
-    const errors = await validate(dto);
+    const validDto = plainToClass(CreateBookingDto, validData);
+    const errors = await validate(validDto);
     expect(errors).toHaveLength(0);
   });
 
   it('should accept decimal totalPrice', async () => {
-    Object.assign(dto, {
+    const validData = {
       userId: 1,
       sessionCinemaId: 1,
       numberSeats: 1,
       numberSeatsDisabled: 0,
       totalPrice: 12.75,
       reservedSeats: [{ seatNumber: 1 }],
-    });
+    };
 
-    const errors = await validate(dto);
+    const validDto = plainToClass(CreateBookingDto, validData);
+    const errors = await validate(validDto);
     expect(errors).toHaveLength(0);
   });
 });

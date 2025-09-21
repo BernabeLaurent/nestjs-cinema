@@ -49,7 +49,8 @@ export class MoviesController {
 
   @ApiOperation({
     summary: 'Rechercher un film sur TMDB',
-    description: 'Recherche un film sur le service externe TMDB par titre. Réservé aux administrateurs.'
+    description:
+      'Recherche un film sur le service externe TMDB par titre. Réservé aux administrateurs.',
   })
   @Get('external/search')
   @ApiResponse({

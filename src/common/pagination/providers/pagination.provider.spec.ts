@@ -43,7 +43,9 @@ describe('PaginationProvider', () => {
   });
 
   it('should have request injected', () => {
-    const providerWithRequest = provider as any;
+    const providerWithRequest = provider as unknown as {
+      request: { protocol: string };
+    };
     expect(providerWithRequest.request).toBeDefined();
     expect(providerWithRequest.request.protocol).toBe('http');
   });

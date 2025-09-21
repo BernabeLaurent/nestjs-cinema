@@ -16,18 +16,25 @@ export class LogsService {
 
         try {
           return JSON.parse(
-            JSON.stringify(obj, (key, value) => {
+            JSON.stringify(obj, (key, value: unknown) => {
               if (typeof value === 'object' && value !== null) {
-                if (value.constructor && value.constructor.name === 'Request')
+                const valueObj = value as { constructor?: { name?: string } };
+                if (
+                  valueObj.constructor &&
+                  valueObj.constructor.name === 'Request'
+                )
                   return '[Request Object]';
-                if (value.constructor && value.constructor.name === 'Response')
+                if (
+                  valueObj.constructor &&
+                  valueObj.constructor.name === 'Response'
+                )
                   return '[Response Object]';
                 if (key === 'req' || key === 'res') return '[HTTP Object]';
               }
               return value;
             }),
           );
-        } catch (error) {
+        } catch {
           return {
             error: 'Unable to serialize meta data',
             originalType: typeof obj,
@@ -41,7 +48,7 @@ export class LogsService {
       // Vérification supplémentaire avant sauvegarde
       try {
         JSON.stringify(logData);
-      } catch (error) {
+      } catch {
         logData.meta = {
           error: 'Meta data caused circular reference',
           message: String(meta),

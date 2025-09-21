@@ -29,7 +29,6 @@ export class PatchMovieTheaterProvider {
         id: id,
       });
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       throw new RequestTimeoutException('unable to process your request', {
         description: 'error connecting database' + error,
       });

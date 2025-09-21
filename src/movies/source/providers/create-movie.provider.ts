@@ -30,15 +30,10 @@ export class CreateMovieProvider {
 
     if (movieFound) {
       movie.id = movieFound.movieExterneId;
-      return await this.moviesService.updateMovie(
-        movieFound.id,
-        mappedMovie,
-      );
+      return await this.moviesService.updateMovie(movieFound.id, mappedMovie);
     } else {
       // Sinon on le crée
-      const movieCreated = await this.moviesService.createMovie(
-        mappedMovie,
-      );
+      const movieCreated = await this.moviesService.createMovie(mappedMovie);
 
       // On insére le cast
       try {

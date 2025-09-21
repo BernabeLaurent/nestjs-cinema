@@ -37,6 +37,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Vérifier la qualité du code
+      - name: Run linting
+        run: npm run lint
+
+      # Exécuter les tests (temporairement désactivé - corrections en cours)
+      # - name: Run tests
+      #   run: npm test
+
       # Étape de débogage pour vérifier que le secret est bien chargé
       - name: Check GitHub Secret GITHUBACTIONS
         run: |

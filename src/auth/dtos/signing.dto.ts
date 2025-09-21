@@ -4,9 +4,9 @@ import { Transform } from 'class-transformer';
 
 export class SignInDto {
   @ApiProperty({
-    description: 'Adresse email de l\'utilisateur',
+    description: "Adresse email de l'utilisateur",
     example: 'john.doe@example.com',
-    format: 'email'
+    format: 'email',
   })
   @IsNotEmpty()
   @IsEmail()
@@ -14,12 +14,14 @@ export class SignInDto {
   email: string;
 
   @ApiProperty({
-    description: 'Mot de passe de l\'utilisateur (minimum 8 caractères)',
+    description: "Mot de passe de l'utilisateur (minimum 8 caractères)",
     example: 'MonMotDePasse123!',
     minLength: 1,
-    maxLength: 255
+    maxLength: 255,
   })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsNotEmpty()
   @IsString()
   @Length(1, 255)

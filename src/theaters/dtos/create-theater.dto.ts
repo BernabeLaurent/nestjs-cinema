@@ -20,7 +20,9 @@ export class CreateTheaterDto {
     minLength: 2,
     maxLength: 250,
   })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString()
   @MinLength(2)
   @MaxLength(250)

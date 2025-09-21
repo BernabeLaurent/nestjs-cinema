@@ -15,14 +15,14 @@ export class BookingTokenGuard implements CanActivate {
       query: { token?: string };
       bookingPayload?: unknown;
     }>();
-    
+
     // On récupère le token depuis le query string
     const token = req.query.token;
 
     if (!token) {
       throw new UnauthorizedException('Token manquant ou invalide');
     }
-    
+
     try {
       req.bookingPayload = this.jwtService.verify(token); // injecte dans la requête
       return true;

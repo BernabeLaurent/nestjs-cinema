@@ -107,31 +107,34 @@ describe('CreateBookingDetailDto', () => {
     }
   });
 
-  it('should handle zero as seat number', async () => {
+  it('should fail validation with zero as seat number', async () => {
     Object.assign(dto, {
       seatNumber: 0,
     });
 
     const errors = await validate(dto);
-    expect(errors).toHaveLength(0);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('seatNumber');
   });
 
-  it('should handle negative seat numbers', async () => {
+  it('should fail validation with negative seat numbers', async () => {
     Object.assign(dto, {
       seatNumber: -1,
     });
 
     const errors = await validate(dto);
-    expect(errors).toHaveLength(0);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('seatNumber');
   });
 
-  it('should handle decimal seat numbers', async () => {
+  it('should fail validation with decimal seat numbers', async () => {
     Object.assign(dto, {
       seatNumber: 1.5,
     });
 
     const errors = await validate(dto);
-    expect(errors).toHaveLength(0);
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors[0].property).toBe('seatNumber');
   });
 
   it('should validate with both properties set correctly', async () => {

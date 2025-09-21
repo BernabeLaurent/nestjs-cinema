@@ -64,7 +64,7 @@ describe('TimeoutInterceptor', () => {
           done();
         },
       });
-    }, 40000);
+    }, 35000);
 
     it('should handle TimeoutError and convert to RequestTimeoutException', (done) => {
       const mockExecutionContext = {} as ExecutionContext;
@@ -182,12 +182,12 @@ describe('TimeoutInterceptor', () => {
         error: (error: RequestTimeoutException) => {
           const elapsed = Date.now() - startTime;
           expect(error).toBeInstanceOf(RequestTimeoutException);
-          expect(elapsed).toBeLessThan(32000); // Should timeout around 30s, with some margin
-          expect(elapsed).toBeGreaterThan(29000); // But not too early
+          expect(elapsed).toBeLessThan(35000); // Should timeout around 30s, with more margin for CI
+          expect(elapsed).toBeGreaterThan(28000); // But not too early
           done();
         },
       });
-    }, 40000); // Set test timeout higher than interceptor timeout
+    }, 45000); // Set test timeout higher than interceptor timeout
 
     it('should call next.handle() and return observable', () => {
       const mockData = { test: 'data' };

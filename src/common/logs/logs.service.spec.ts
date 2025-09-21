@@ -5,7 +5,7 @@ import { Log } from './log.schema';
 
 describe('LogsService', () => {
   let service: LogsService;
-  let mockLogModel: any;
+  let mockLogModel: jest.Mock;
 
   beforeEach(async () => {
     // Mock the Mongoose model constructor

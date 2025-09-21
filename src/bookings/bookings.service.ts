@@ -91,14 +91,20 @@ export class BookingsService {
     return await this.validateBookingDetailProvider.validate(bookingDetailId);
   }
 
-  public async validateBookingBySeat(bookingId: number, seatNumberOrIndex: string | number) {
-    console.log('BookingsService.validateBookingBySeat called with:', { bookingId, seatNumberOrIndex });
+  public async validateBookingBySeat(
+    bookingId: number,
+    seatNumberOrIndex: string | number,
+  ) {
+    console.log('BookingsService.validateBookingBySeat called with:', {
+      bookingId,
+      seatNumberOrIndex,
+    });
     this.logger.log('validateBookingBySeat', { bookingId, seatNumberOrIndex });
 
     // Récupérer le booking avec ses booking details
     const booking = await this.bookingRepository.findOne({
       where: { id: bookingId },
-      relations: ['reservedSeats']
+      relations: ['reservedSeats'],
     });
 
     if (!booking) {
@@ -125,7 +131,9 @@ export class BookingsService {
     }
 
     // Chercher le booking detail existant ou le créer
-    let bookingDetail = booking.reservedSeats?.find(seat => seat.seatNumber === seatNumber);
+    let bookingDetail = booking.reservedSeats?.find(
+      (seat) => seat.seatNumber === seatNumber,
+    );
 
     if (!bookingDetail) {
       // Créer un nouveau booking detail si il n'existe pas
@@ -136,7 +144,8 @@ export class BookingsService {
       bookingDetail.booking = booking;
 
       // Sauvegarder le nouveau booking detail
-      const bookingDetailRepository = this.bookingRepository.manager.getRepository(BookingDetail);
+      const bookingDetailRepository =
+        this.bookingRepository.manager.getRepository(BookingDetail);
       bookingDetail = await bookingDetailRepository.save(bookingDetail);
     }
 

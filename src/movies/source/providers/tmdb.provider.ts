@@ -33,10 +33,14 @@ export class TmdbProvider implements MoviesProvider {
 
   public mapTmdbDtoToMovie(dto: TmdbMovieDto): Partial<CreateMovieDto> | null {
     // Vérifier si le code langue existe dans l'enum
-    const isValidLanguage = Object.values(Languages).includes(dto.original_language as Languages);
+    const isValidLanguage = Object.values(Languages).includes(
+      dto.original_language as Languages,
+    );
 
     if (!isValidLanguage) {
-      console.log(`Film ${dto.title} ignoré: code langue '${dto.original_language}' non supporté`);
+      console.log(
+        `Film ${dto.title} ignoré: code langue '${dto.original_language}' non supporté`,
+      );
       return null;
     }
 
@@ -165,13 +169,15 @@ export class TmdbProvider implements MoviesProvider {
           try {
             return await this.getMovieDetails(m.id);
           } catch (error) {
-            console.log(`Erreur lors de la récupération du film ${m.id}: ${error.message}`);
+            console.log(
+              `Erreur lors de la récupération du film ${m.id}: ${(error as Error).message}`,
+            );
             return null;
           }
         }),
       );
       // Filtrer les films null (langues non supportées)
-      const validMovies = movies.filter(movie => movie !== null);
+      const validMovies = movies.filter((movie) => movie !== null);
       allMovies.push(...validMovies);
       return allMovies;
     } catch (error) {
@@ -214,7 +220,9 @@ export class TmdbProvider implements MoviesProvider {
 
       const movie = await this.createMovieProvider.upsertMovie(data);
       if (!movie) {
-        throw new Error(`Film avec la langue '${data.original_language}' non supporté`);
+        throw new Error(
+          `Film avec la langue '${data.original_language}' non supporté`,
+        );
       }
       return movie;
     } catch (error) {
@@ -256,13 +264,15 @@ export class TmdbProvider implements MoviesProvider {
             try {
               return await this.getMovieDetails(m.id);
             } catch (error) {
-              console.log(`Erreur lors de la récupération du film ${m.id}: ${error.message}`);
+              console.log(
+                `Erreur lors de la récupération du film ${m.id}: ${(error as Error).message}`,
+              );
               return null;
             }
           }),
         );
         // Filtrer les films null (langues non supportées)
-        const validMovies = movies.filter(movie => movie !== null);
+        const validMovies = movies.filter((movie) => movie !== null);
         allMovies.push(...validMovies);
         totalPages = total_pages;
         page++;

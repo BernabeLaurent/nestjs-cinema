@@ -1,4 +1,5 @@
 import { validate } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 import { RefreshTokenDto } from './refresh-token.dto';
 
 describe('RefreshTokenDto', () => {
@@ -90,11 +91,12 @@ describe('RefreshTokenDto', () => {
   });
 
   it('should handle whitespace-only strings as invalid', async () => {
-    Object.assign(dto, {
+    const data = {
       refreshToken: '   ',
-    });
+    };
 
-    const errors = await validate(dto);
+    const transformedDto = plainToClass(RefreshTokenDto, data);
+    const errors = await validate(transformedDto);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('refreshToken');
   });

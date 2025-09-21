@@ -157,17 +157,17 @@ export class GetSessionCinemaProvider {
           'price',
           `"price"."theaterQuality"::text = "session"."quality"::text`,
         )
-        .where('LOWER(movie.title) LIKE LOWER(:searchTerm)', { 
-          searchTerm: `%${searchTerm}%` 
+        .where('LOWER(movie.title) LIKE LOWER(:searchTerm)', {
+          searchTerm: `%${searchTerm}%`,
         })
-        .orWhere('LOWER(movie.originalTitle) LIKE LOWER(:searchTerm)', { 
-          searchTerm: `%${searchTerm}%` 
+        .orWhere('LOWER(movie.originalTitle) LIKE LOWER(:searchTerm)', {
+          searchTerm: `%${searchTerm}%`,
         })
-        .orWhere('LOWER(movie.description) LIKE LOWER(:searchTerm)', { 
-          searchTerm: `%${searchTerm}%` 
+        .orWhere('LOWER(movie.description) LIKE LOWER(:searchTerm)', {
+          searchTerm: `%${searchTerm}%`,
         })
-        .orWhere('LOWER(movie.tagline) LIKE LOWER(:searchTerm)', { 
-          searchTerm: `%${searchTerm}%` 
+        .orWhere('LOWER(movie.tagline) LIKE LOWER(:searchTerm)', {
+          searchTerm: `%${searchTerm}%`,
         })
         .getMany();
     } catch (error) {

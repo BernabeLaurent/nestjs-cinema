@@ -12,9 +12,13 @@ import {
 } from '@nestjs/common';
 import { CreateTheaterDto } from './dtos/create-theater.dto';
 import { TheatersService } from './theaters.service';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PatchTheaterDto } from './dtos/patch-theater.dto';
-import { GetTheaterDto } from './dtos/get-theater.dto';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 import { Roles } from '../auth/decorators/roles.decorator';

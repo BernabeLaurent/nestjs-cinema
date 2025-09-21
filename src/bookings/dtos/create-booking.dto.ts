@@ -1,4 +1,13 @@
-import { IsNotEmpty, IsNumber, ValidateNested, IsPositive, IsArray, ArrayMinSize, Min, IsInt } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  ValidateNested,
+  IsPositive,
+  IsArray,
+  ArrayMinSize,
+  Min,
+  IsInt,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateBookingDetailDto } from './create-booking-detail.dto';
 import { Type } from 'class-transformer';

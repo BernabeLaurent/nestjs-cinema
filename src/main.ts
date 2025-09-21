@@ -49,7 +49,8 @@ async function bootstrap() {
   // Configuration Swagger
   const config = new DocumentBuilder()
     .setTitle('API Système de Gestion de Cinéma')
-    .setDescription(`
+    .setDescription(
+      `
     ## Description
     API RESTful complète pour un système de gestion de cinéma développé avec NestJS.
 
@@ -79,12 +80,15 @@ async function bootstrap() {
     ## Support
     - Documentation technique : [api.bernabe.codes/documentation](https://api.bernabe.codes/documentation)
     - Repository GitHub : [github.com/BernabeLaurent/nestjs-cinema](https://github.com/BernabeLaurent/nestjs-cinema)
-    `)
-    .setTermsOfService('https://github.com/BernabeLaurent/nestjs-cinema/blob/main/LICENSE')
+    `,
+    )
+    .setTermsOfService(
+      'https://github.com/BernabeLaurent/nestjs-cinema/blob/main/LICENSE',
+    )
     .setContact(
       'Support Technique',
       'https://github.com/BernabeLaurent/nestjs-cinema/issues',
-      'support@bernabe.codes'
+      'support@bernabe.codes',
     )
     .setLicense(
       'Licence MIT',
@@ -93,7 +97,10 @@ async function bootstrap() {
     .setVersion(apiVersion)
     .addServer(apiUrl, 'Serveur de Production')
     .addServer('http://localhost:3000', 'Serveur de Développement')
-    .addTag('Authentification', 'Endpoints pour la connexion et la gestion des tokens')
+    .addTag(
+      'Authentification',
+      'Endpoints pour la connexion et la gestion des tokens',
+    )
     .addTag('Films', 'Gestion des films et de leurs métadonnées')
     .addTag('Salles', 'Configuration et gestion des salles de cinéma')
     .addTag('Séances', 'Programmation et gestion des séances de cinéma')

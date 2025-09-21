@@ -1,4 +1,11 @@
-import { IsEnum, IsInt, IsNotEmpty, IsPositive, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsPositive,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TheaterQuality } from '../enums/theaters-qualities.enum';
 import { Languages } from '../../common/enums/languages.enum';
@@ -17,6 +24,7 @@ export class CreateSessionCinemaDto {
     example: '20:00',
   })
   @IsNotEmpty()
+  @IsString()
   startTime: string;
 
   @ApiPropertyOptional({
@@ -24,6 +32,7 @@ export class CreateSessionCinemaDto {
     example: '22:00',
   })
   @IsOptional()
+  @IsString()
   endTime?: string;
 
   @ApiProperty({
@@ -66,7 +75,8 @@ export class CreateSessionCinemaDto {
   roomId?: number;
 
   @ApiPropertyOptional({
-    description: 'ID de la salle de cinéma (sera résolu automatiquement si theaterId et roomId sont fournis)',
+    description:
+      'ID de la salle de cinéma (sera résolu automatiquement si theaterId et roomId sont fournis)',
     example: 1,
     minimum: 1,
   })

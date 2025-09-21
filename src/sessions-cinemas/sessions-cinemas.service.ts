@@ -40,7 +40,9 @@ export class SessionsCinemasService {
     return await this.getSessionCinemaProvider.findAll();
   }
 
-  public async searchSessionsByMovie(searchTerm: string): Promise<SessionCinema[] | []> {
+  public async searchSessionsByMovie(
+    searchTerm: string,
+  ): Promise<SessionCinema[] | []> {
     return await this.getSessionCinemaProvider.findByMovieSearch(searchTerm);
   }
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { TheatersService } from './theaters.service';
 import { CreateTheaterProvider } from './providers/create-theater.provider';
@@ -52,7 +53,8 @@ describe('TheatersService', () => {
         TheatersService,
         {
           provide: CreateTheaterProvider,
-          useValue: mockCreateTheaterProvider as unknown as CreateTheaterProvider,
+          useValue:
+            mockCreateTheaterProvider as unknown as CreateTheaterProvider,
         },
         {
           provide: getRepositoryToken(Theater),
@@ -72,26 +74,40 @@ describe('TheatersService', () => {
 
   describe('findOneById', () => {
     it('should return theater when found', async () => {
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.resolve(mockTheater));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.resolve(mockTheater),
+      );
 
       const result = await service.findOneById(1);
 
       expect(result).toEqual(mockTheater);
-      expect(theatersRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(theatersRepository.findOneBy).toHaveBeenCalledWith({
+        id: 1,
+      });
     });
 
     it('should throw BadRequestException when theater not found', async () => {
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.resolve(null as unknown as Theater));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.resolve(null as unknown as Theater),
+      );
 
       await expect(service.findOneById(1)).rejects.toThrow(BadRequestException);
-      await expect(service.findOneById(1)).rejects.toThrow('Theater not found WITH THIS ID');
+      await expect(service.findOneById(1)).rejects.toThrow(
+        'Theater not found WITH THIS ID',
+      );
     });
 
     it('should throw RequestTimeoutException when database error occurs', async () => {
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.reject(new Error('Database error')));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.reject(new Error('Database error')),
+      );
 
-      await expect(service.findOneById(1)).rejects.toThrow(RequestTimeoutException);
-      await expect(service.findOneById(1)).rejects.toThrow('unable to process your request');
+      await expect(service.findOneById(1)).rejects.toThrow(
+        RequestTimeoutException,
+      );
+      await expect(service.findOneById(1)).rejects.toThrow(
+        'unable to process your request',
+      );
     });
   });
 
@@ -109,11 +125,15 @@ describe('TheatersService', () => {
       };
 
       const expectedResult = { ...mockTheater, ...createTheaterDto };
-      (createTheaterProvider.create as jest.Mock).mockImplementation(() => Promise.resolve(expectedResult));
+      (createTheaterProvider.create as jest.Mock).mockImplementation(() =>
+        Promise.resolve(expectedResult),
+      );
 
       const result = await service.create(createTheaterDto);
 
-      expect(createTheaterProvider.create).toHaveBeenCalledWith(createTheaterDto);
+      expect(createTheaterProvider.create).toHaveBeenCalledWith(
+        createTheaterDto,
+      );
       expect(result).toEqual(expectedResult);
     });
   });
@@ -131,15 +151,21 @@ describe('TheatersService', () => {
         closingTime: '00:00',
       } as PatchTheaterDto;
 
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.resolve(mockTheater));
-      (theatersRepository.save as jest.Mock).mockImplementation(() => Promise.resolve({
-        ...mockTheater,
-        ...patchTheaterDto,
-      }));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.resolve(mockTheater),
+      );
+      (theatersRepository.save as jest.Mock).mockImplementation(() =>
+        Promise.resolve({
+          ...mockTheater,
+          ...patchTheaterDto,
+        }),
+      );
 
       const result = await service.update(1, patchTheaterDto);
 
-      expect(theatersRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(theatersRepository.findOneBy).toHaveBeenCalledWith({
+        id: 1,
+      });
       expect(theatersRepository.save).toHaveBeenCalled();
       expect(result.name).toBe(patchTheaterDto.name);
       expect(result.city).toBe(patchTheaterDto.city);
@@ -157,10 +183,16 @@ describe('TheatersService', () => {
         closingTime: '00:00',
       } as PatchTheaterDto;
 
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.resolve(null as unknown as Theater));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.resolve(null as unknown as Theater),
+      );
 
-      await expect(service.update(1, patchTheaterDto)).rejects.toThrow(BadRequestException);
-      await expect(service.update(1, patchTheaterDto)).rejects.toThrow('Theater not found WITH THIS ID');
+      await expect(service.update(1, patchTheaterDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.update(1, patchTheaterDto)).rejects.toThrow(
+        'Theater not found WITH THIS ID',
+      );
     });
 
     it('should throw RequestTimeoutException when save fails', async () => {
@@ -175,39 +207,59 @@ describe('TheatersService', () => {
         closingTime: '00:00',
       } as PatchTheaterDto;
 
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.resolve(mockTheater));
-      (theatersRepository.save as jest.Mock).mockImplementation(() => Promise.reject(new Error('Save error')));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.resolve(mockTheater),
+      );
+      (theatersRepository.save as jest.Mock).mockImplementation(() =>
+        Promise.reject(new Error('Save error')),
+      );
 
-      await expect(service.update(1, patchTheaterDto)).rejects.toThrow(RequestTimeoutException);
+      await expect(service.update(1, patchTheaterDto)).rejects.toThrow(
+        RequestTimeoutException,
+      );
     });
   });
 
   describe('delete', () => {
     it('should delete theater successfully', async () => {
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.resolve(mockTheater));
-      (theatersRepository.softDelete as jest.Mock).mockImplementation(() => Promise.resolve({
-        affected: 1,
-        raw: {},
-        generatedMaps: [],
-      }));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.resolve(mockTheater),
+      );
+      (theatersRepository.softDelete as jest.Mock).mockImplementation(() =>
+        Promise.resolve({
+          affected: 1,
+          raw: {},
+          generatedMaps: [],
+        }),
+      );
 
       const result = await service.delete(1);
 
-      expect(theatersRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(theatersRepository.findOneBy).toHaveBeenCalledWith({
+        id: 1,
+      });
       expect(theatersRepository.softDelete).toHaveBeenCalledWith(1);
       expect(result).toEqual({ deleted: true, id: 1 });
     });
 
     it('should throw BadRequestException when theater not found for deletion', async () => {
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.resolve(null as unknown as Theater));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.resolve(null as unknown as Theater),
+      );
 
       await expect(service.delete(1)).rejects.toThrow(BadRequestException);
-      await expect(service.delete(1)).rejects.toThrow('Theater not found WITH THIS ID');
+      await expect(service.delete(1)).rejects.toThrow(
+        'Theater not found WITH THIS ID',
+      );
     });
 
     it('should throw RequestTimeoutException when delete fails', async () => {
-      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() => Promise.resolve(mockTheater));
-      (theatersRepository.softDelete as jest.Mock).mockImplementation(() => Promise.reject(new Error('Delete error')));
+      (theatersRepository.findOneBy as jest.Mock).mockImplementation(() =>
+        Promise.resolve(mockTheater),
+      );
+      (theatersRepository.softDelete as jest.Mock).mockImplementation(() =>
+        Promise.reject(new Error('Delete error')),
+      );
 
       await expect(service.delete(1)).rejects.toThrow(RequestTimeoutException);
     });

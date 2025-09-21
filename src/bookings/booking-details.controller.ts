@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Patch,
-  Param,
-  HttpStatus,
-  Body,
-} from '@nestjs/common';
+import { Controller, Patch, Param, HttpStatus, Body } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import {
   ApiBearerAuth,
@@ -24,7 +18,9 @@ import { RoleUser } from '../users/enums/roles-users.enum';
 export class BookingDetailsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
-  @ApiOperation({ summary: 'Valider un détail de réservation par booking ID et siège' })
+  @ApiOperation({
+    summary: 'Valider un détail de réservation par booking ID et siège',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'The booking detail has been successfully validated.',
@@ -41,17 +37,20 @@ export class BookingDetailsController {
   @Roles([RoleUser.ADMIN, RoleUser.WORKER])
   public validateBookingDetail(
     @Param('bookingDetailId') bookingDetailId: number,
-    @Body() body: { bookingId?: number; seatNumber?: string }
+    @Body() body: { bookingId?: number; seatNumber?: string },
   ) {
     console.log('BookingDetailsController.validateBookingDetail called with:', {
       bookingDetailId,
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
 
     // Si on reçoit bookingId et seatNumber dans le body, créer un nouveau booking detail
     if (body.bookingId && body.seatNumber) {
       console.log('Using validateBookingBySeat with body data');
-      return this.bookingsService.validateBookingBySeat(body.bookingId, body.seatNumber);
+      return this.bookingsService.validateBookingBySeat(
+        body.bookingId,
+        body.seatNumber,
+      );
     }
 
     // Si l'ID est un vrai ID de booking detail (< 1000), utiliser la validation directe
@@ -63,7 +62,8 @@ export class BookingDetailsController {
     // Sinon, c'est un ID fictif, essayer de le décoder
     console.log('Decoding fictional ID:', bookingDetailId);
     const originalId = bookingDetailId - 1000;
-    const bookingId = Math.floor(originalId / 100) || Math.floor(originalId / 10) || originalId;
+    const bookingId =
+      Math.floor(originalId / 100) || Math.floor(originalId / 10) || originalId;
     const seatIndex = originalId % 100;
 
     const row = String.fromCharCode(65 + Math.floor(seatIndex / 10));

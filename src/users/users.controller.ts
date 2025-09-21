@@ -40,11 +40,12 @@ export class UsersController {
 
   @ApiOperation({
     summary: 'Créer un nouvel utilisateur',
-    description: 'Inscription d\'un nouvel utilisateur dans le système (accessible sans authentification)'
+    description:
+      "Inscription d'un nouvel utilisateur dans le système (accessible sans authentification)",
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'L\'utilisateur a été créé avec succès',
+    description: "L'utilisateur a été créé avec succès",
   })
   @Post()
   @Auth(AuthType.None)
@@ -54,7 +55,8 @@ export class UsersController {
 
   @ApiOperation({
     summary: 'Récupérer tous les utilisateurs',
-    description: 'Obtient la liste complète des utilisateurs (réservé aux administrateurs)'
+    description:
+      'Obtient la liste complète des utilisateurs (réservé aux administrateurs)',
   })
   @ApiResponse({
     status: HttpStatus.OK,

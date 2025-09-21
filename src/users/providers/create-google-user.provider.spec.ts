@@ -55,7 +55,7 @@ describe('CreateGoogleUserProvider', () => {
 
     expect(mockRepository.create).toHaveBeenCalledWith({
       ...mockGoogleUser,
-      password: expect.any(String),
+      password: expect.any(String) as string,
     });
     expect(mockRepository.save).toHaveBeenCalledWith(mockUser);
     expect(result).toEqual(mockUser);
@@ -73,8 +73,8 @@ describe('CreateGoogleUserProvider', () => {
 
     await provider.createGoogleUser(mockGoogleUser);
 
-    const createCall = mockRepository.create.mock.calls[0][0];
-    const generatedPassword = createCall.password;
+    const createCall = mockRepository.create.mock.calls[0] as [any];
+    const generatedPassword = (createCall[0] as { password: string }).password;
 
     expect(generatedPassword).toBeDefined();
     expect(typeof generatedPassword).toBe('string');

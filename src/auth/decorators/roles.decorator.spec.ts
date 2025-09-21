@@ -36,7 +36,7 @@ describe('Roles Decorator', () => {
         const decoratorModule = await import('./roles.decorator');
         expect(decoratorModule).toBeDefined();
         expect(decoratorModule.Roles).toBeDefined();
-      } catch (e) {
+      } catch {
         // Si l'import échoue à cause du mock, on teste juste que le fichier existe
         expect(true).toBe(true);
       }
@@ -45,8 +45,8 @@ describe('Roles Decorator', () => {
     it('should support decorator pattern conceptually', () => {
       // Test conceptuel sans dépendances externes
       const roleDecorator = (roles: string[]) => {
-        return (target: any) => {
-          target.allowedRoles = roles;
+        return <T extends new (...args: any[]) => any>(target: T) => {
+          (target as T & { allowedRoles: string[] }).allowedRoles = roles;
           return target;
         };
       };
@@ -59,7 +59,13 @@ describe('Roles Decorator', () => {
         TestController,
       );
 
-      expect(DecoratedController.allowedRoles).toEqual(['ADMIN', 'WORKER']);
+      expect(
+        (
+          DecoratedController as typeof TestController & {
+            allowedRoles: string[];
+          }
+        ).allowedRoles,
+      ).toEqual(['ADMIN', 'WORKER']);
     });
   });
 

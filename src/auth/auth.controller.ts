@@ -31,11 +31,12 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Connexion utilisateur',
-    description: 'Authentifie un utilisateur avec son email et mot de passe et retourne un token JWT'
+    description:
+      'Authentifie un utilisateur avec son email et mot de passe et retourne un token JWT',
   })
   @ApiBody({
     type: SignInDto,
-    description: 'Informations de connexion (email et mot de passe)'
+    description: 'Informations de connexion (email et mot de passe)',
   })
   @ApiResponse({
     status: 200,
@@ -49,13 +50,13 @@ export class AuthController {
             id: '123',
             email: 'user@example.com',
             firstName: 'John',
-            lastName: 'Doe'
-          }
+            lastName: 'Doe',
+          },
         },
         apiVersion: '1.0.0',
-        timestamp: '2024-03-20T10:30:00Z'
-      }
-    }
+        timestamp: '2024-03-20T10:30:00Z',
+      },
+    },
   })
   @ApiResponse({
     status: 401,
@@ -64,9 +65,9 @@ export class AuthController {
       example: {
         statusCode: 401,
         message: 'Email ou mot de passe incorrect',
-        error: 'Unauthorized'
-      }
-    }
+        error: 'Unauthorized',
+      },
+    },
   })
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
@@ -78,11 +79,12 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Actualiser les tokens',
-    description: 'Génère de nouveaux tokens JWT à partir d\'un refresh token valide'
+    description:
+      "Génère de nouveaux tokens JWT à partir d'un refresh token valide",
   })
   @ApiBody({
     type: RefreshTokenDto,
-    description: 'Token de rafraîchissement'
+    description: 'Token de rafraîchissement',
   })
   @ApiResponse({
     status: 200,
@@ -91,16 +93,16 @@ export class AuthController {
       example: {
         data: {
           access_token: 'eyJhbGciOiJIUzI1NiIs...',
-          refresh_token: 'eyJhbGciOiJIUzI1NiIs...'
+          refresh_token: 'eyJhbGciOiJIUzI1NiIs...',
         },
         apiVersion: '1.0.0',
-        timestamp: '2024-03-20T10:30:00Z'
-      }
-    }
+        timestamp: '2024-03-20T10:30:00Z',
+      },
+    },
   })
   @ApiResponse({
     status: 401,
-    description: 'Refresh token invalide ou expiré'
+    description: 'Refresh token invalide ou expiré',
   })
   @Post('refresh-tokens')
   @HttpCode(HttpStatus.OK)

@@ -1,9 +1,13 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class RefreshTokenDto {
   @IsNotEmpty()
   @IsString()
+  @Transform(({ value }: { value: any }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @ApiProperty({
     description: 'Token',
     example:

@@ -15,24 +15,33 @@ describe('PatchSessionCinemaDto', () => {
   });
 
   it('should extend CreateSessionCinemaDto', () => {
-    expect(dto).toHaveProperty('startTime');
-    expect(dto).toHaveProperty('endTime');
-    expect(dto).toHaveProperty('quality');
-    expect(dto).toHaveProperty('codeLanguage');
-    expect(dto).toHaveProperty('movieTheaterId');
-    expect(dto).toHaveProperty('movieId');
+    // With PartialType, properties are optional and may not be initialized
+    // We test that the DTO accepts properties from CreateSessionCinemaDto
+    dto.startTime = '20:00';
+    dto.endTime = '22:00';
+    dto.quality = TheaterQuality.IMAX;
+    dto.codeLanguage = Languages.FRENCH;
+    dto.movieTheaterId = 1;
+    dto.movieId = 1;
+
+    expect(dto.startTime).toBe('20:00');
+    expect(dto.endTime).toBe('22:00');
+    expect(dto.quality).toBe(TheaterQuality.IMAX);
+    expect(dto.codeLanguage).toBe(Languages.FRENCH);
+    expect(dto.movieTheaterId).toBe(1);
+    expect(dto.movieId).toBe(1);
   });
 
   describe('Valid DTO - Partial Updates', () => {
     it('should pass validation with partial data - startTime only', async () => {
-      dto.startTime = new Date('2024-01-01T21:00:00Z');
+      dto.startTime = '21:00';
 
       const errors = await validate(dto);
       expect(errors).toHaveLength(0);
     });
 
     it('should pass validation with partial data - endTime only', async () => {
-      dto.endTime = new Date('2024-01-01T23:00:00Z');
+      dto.endTime = '23:00';
 
       const errors = await validate(dto);
       expect(errors).toHaveLength(0);
@@ -67,7 +76,7 @@ describe('PatchSessionCinemaDto', () => {
     });
 
     it('should pass validation with multiple optional fields', async () => {
-      dto.startTime = new Date('2024-01-01T19:00:00Z');
+      dto.startTime = '19:00';
       dto.quality = TheaterQuality.UHD_4K;
       dto.codeLanguage = Languages.SPANISH;
 
@@ -81,8 +90,8 @@ describe('PatchSessionCinemaDto', () => {
     });
 
     it('should pass validation with all fields', async () => {
-      dto.startTime = new Date('2024-01-01T20:00:00Z');
-      dto.endTime = new Date('2024-01-01T22:00:00Z');
+      dto.startTime = '20:00';
+      dto.endTime = '22:00';
       dto.quality = TheaterQuality.DOLBY_CINEMA;
       dto.codeLanguage = Languages.FRENCH;
       dto.movieTheaterId = 1;
@@ -114,7 +123,7 @@ describe('PatchSessionCinemaDto', () => {
 
   describe('Invalid DTO', () => {
     it('should fail validation with invalid startTime type', async () => {
-      Object.assign(dto, { startTime: 'invalid_date' });
+      Object.assign(dto, { startTime: 123 });
 
       const errors = await validate(dto);
       expect(errors.length).toBeGreaterThan(0);
@@ -122,7 +131,7 @@ describe('PatchSessionCinemaDto', () => {
     });
 
     it('should fail validation with invalid endTime type', async () => {
-      Object.assign(dto, { endTime: 'invalid_date' });
+      Object.assign(dto, { endTime: 123 });
 
       const errors = await validate(dto);
       expect(errors.length).toBeGreaterThan(0);

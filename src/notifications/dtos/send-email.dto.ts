@@ -52,5 +52,5 @@ export class SendEmailDto {
   })
   @IsOptional()
   @IsObject()
-  context?: JSON;
+  context?: Record<string, any>;
 }

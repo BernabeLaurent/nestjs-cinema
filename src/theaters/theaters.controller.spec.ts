@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { TheatersController } from './theaters.controller';
 import { TheatersService } from './theaters.service';
@@ -59,7 +60,7 @@ describe('TheatersController', () => {
         Promise.resolve(mockTheater),
       );
 
-      const result = await controller.getTheater(getTheaterDto);
+      const result = await controller.getTheater(getTheaterDto.id);
 
       expect(theatersService.findOneById).toHaveBeenCalledWith(1);
       expect(result).toEqual(mockTheater);

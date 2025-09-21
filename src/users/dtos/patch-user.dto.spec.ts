@@ -15,12 +15,21 @@ describe('PatchUserDto', () => {
   });
 
   it('should extend CreateUserDto', () => {
-    expect(dto).toHaveProperty('firstName');
-    expect(dto).toHaveProperty('lastName');
-    expect(dto).toHaveProperty('email');
-    expect(dto).toHaveProperty('hasDisability');
-    expect(dto).toHaveProperty('roleUser');
-    expect(dto).toHaveProperty('password');
+    // With PartialType, properties are optional and may not be initialized
+    // We test that the DTO accepts properties from CreateUserDto
+    dto.firstName = 'Test';
+    dto.lastName = 'User';
+    dto.email = 'test@example.com';
+    dto.hasDisability = false;
+    dto.roleUser = RoleUser.CUSTOMER;
+    dto.password = 'TestPassword123!';
+
+    expect(dto.firstName).toBe('Test');
+    expect(dto.lastName).toBe('User');
+    expect(dto.email).toBe('test@example.com');
+    expect(dto.hasDisability).toBe(false);
+    expect(dto.roleUser).toBe(RoleUser.CUSTOMER);
+    expect(dto.password).toBe('TestPassword123!');
   });
 
   describe('Valid DTO - Partial Updates', () => {

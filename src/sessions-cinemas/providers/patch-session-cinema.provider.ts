@@ -11,7 +11,6 @@ import { PatchSessionCinemaDto } from '../dtos/patch-session-cinema.dto';
 import { MovieTheater } from '../../movies-theaters/movie-theater.entity';
 import { MoviesService } from '../../movies/movies.service';
 import { Movie } from '../../movies/movie.entity';
-import { Languages } from '../../common/enums/languages.enum';
 
 @Injectable()
 export class PatchSessionCinemaProvider {
@@ -35,7 +34,6 @@ export class PatchSessionCinemaProvider {
         id: id,
       });
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       throw new RequestTimeoutException('unable to process your request', {
         description: 'error connecting database' + error,
       });
@@ -47,16 +45,26 @@ export class PatchSessionCinemaProvider {
 
     // Update the properties of the session cinema avec conversion des dates
     if (patchSessionCinemaDto.startTime) {
-      if (patchSessionCinemaDto.date && patchSessionCinemaDto.startTime.includes(':')) {
-        sessionCinema.startTime = new Date(`${patchSessionCinemaDto.date}T${patchSessionCinemaDto.startTime}:00.000Z`);
+      if (
+        patchSessionCinemaDto.date &&
+        patchSessionCinemaDto.startTime.includes(':')
+      ) {
+        sessionCinema.startTime = new Date(
+          `${patchSessionCinemaDto.date}T${patchSessionCinemaDto.startTime}:00.000Z`,
+        );
       } else {
         sessionCinema.startTime = new Date(patchSessionCinemaDto.startTime);
       }
     }
 
     if (patchSessionCinemaDto.endTime) {
-      if (patchSessionCinemaDto.date && patchSessionCinemaDto.endTime.includes(':')) {
-        sessionCinema.endTime = new Date(`${patchSessionCinemaDto.date}T${patchSessionCinemaDto.endTime}:00.000Z`);
+      if (
+        patchSessionCinemaDto.date &&
+        patchSessionCinemaDto.endTime.includes(':')
+      ) {
+        sessionCinema.endTime = new Date(
+          `${patchSessionCinemaDto.date}T${patchSessionCinemaDto.endTime}:00.000Z`,
+        );
       } else {
         sessionCinema.endTime = new Date(patchSessionCinemaDto.endTime);
       }
@@ -70,7 +78,7 @@ export class PatchSessionCinemaProvider {
     let movieTheater: MovieTheater | null = null;
     let movieTheaterId = patchSessionCinemaDto.movieTheaterId;
 
-    // Si movieTheaterId n'est pas fourni, utiliser roomId directement  
+    // Si movieTheaterId n'est pas fourni, utiliser roomId directement
     if (!movieTheaterId && patchSessionCinemaDto.roomId) {
       movieTheaterId = patchSessionCinemaDto.roomId;
     }
@@ -78,9 +86,8 @@ export class PatchSessionCinemaProvider {
     // On vérifie que la salle de cinéma existe
     if (movieTheaterId) {
       try {
-        movieTheater = await this.moviesTheatersService.getMovieTheaterById(
-          movieTheaterId,
-        );
+        movieTheater =
+          await this.moviesTheatersService.getMovieTheaterById(movieTheaterId);
         if (!movieTheater) {
           throw new BadRequestException('Movie Theater not found WITH THIS ID');
         }
