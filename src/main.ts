@@ -7,6 +7,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import { TimeoutInterceptor } from './common/interceptors/timeout/timeout.interceptor';
+import { RollbarInterceptor } from './common/interceptors/rollbar/rollbar.interceptor';
 import helmet from 'helmet';
 import { Logger } from '@nestjs/common';
 import { LogsService } from './common/logs/logs.service';
@@ -171,6 +172,9 @@ async function bootstrap() {
 
   // ⏱️ Timeout global en millisecondes
   app.useGlobalInterceptors(new TimeoutInterceptor());
+
+  // 🔍 Monitoring d'erreurs Rollbar
+  app.useGlobalInterceptors(app.get(RollbarInterceptor));
 
   // Protection contre les attaques XSS et autres
   const validPolicies = ['same-origin', 'same-site', 'cross-origin'] as const;

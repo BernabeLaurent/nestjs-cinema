@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { PaginationProvider } from './common/pagination/providers/pagination.provider';
 import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
 import { DataResponseInterceptor } from './common/interceptors/data-response/data-response.interceptor';
+import { RollbarInterceptor } from './common/interceptors/rollbar/rollbar.interceptor';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
 import { RolesGuard } from './auth/guards/access-token/roles.guard';
@@ -25,6 +26,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { ImagesModule } from './common/images/images.module';
 import emailConfig from './notifications/config/email.config';
 import jwtConfig from './auth/config/jwt.config';
+import rollbarConfig from './config/rollbar.config';
 
 // Ajout de modules de configuration pour rendre le fichier plus lisible
 import { DatabaseModule } from './config/database.module';
@@ -47,6 +49,7 @@ import { LogsModule } from './common/logs/logs.module';
         cronFetchMoviesConfig,
         emailConfig,
         jwtConfig,
+        rollbarConfig,
       ],
     }),
 
@@ -95,6 +98,7 @@ import { LogsModule } from './common/logs/logs.module';
     },
     AccessTokenGuard,
     BookingTokenGuard,
+    RollbarInterceptor,
   ],
 })
 export class AppModule {}

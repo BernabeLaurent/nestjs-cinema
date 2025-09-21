@@ -18,4 +18,10 @@ export default Joi.object({
   JWT_TOKEN_ISSUER: Joi.string().required(),
   JWT_ACCESS_TOKEN_TTL: Joi.number().required(),
   JWT_REFRESH_TOKEN_TTL: Joi.number().required(),
+  ROLLBAR_ACCESS_TOKEN: Joi.string().required(),
+  ROLLBAR_ENVIRONMENT: Joi.string()
+    .valid('dev', 'production', 'test', 'staging')
+    .default('dev'),
+  ROLLBAR_ENABLED: Joi.boolean().default(true),
+  ROLLBAR_CODE_VERSION: Joi.string().optional(),
 });
