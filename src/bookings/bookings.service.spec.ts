@@ -12,7 +12,8 @@ import { ValidateBookingDetailProvider } from './providers/validate-booking-deta
 
 describe('BookingsService', () => {
   let service: BookingsService;
-  let repository: Repository<Booking>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let _repository: Repository<Booking>;
 
   const mockRepository = {
     findOne: jest.fn(),
@@ -89,7 +90,7 @@ describe('BookingsService', () => {
     }).compile();
 
     service = module.get(BookingsService);
-    repository = module.get(getRepositoryToken(Booking));
+    _repository = module.get(getRepositoryToken(Booking));
   });
 
   it('should be defined', () => {

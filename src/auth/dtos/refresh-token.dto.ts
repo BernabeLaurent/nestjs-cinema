@@ -5,7 +5,7 @@ import { Transform } from 'class-transformer';
 export class RefreshTokenDto {
   @IsNotEmpty()
   @IsString()
-  @Transform(({ value }: { value: any }) =>
+  @Transform(({ value }: { value: any }): string =>
     typeof value === 'string' ? value.trim() : value,
   )
   @ApiProperty({
