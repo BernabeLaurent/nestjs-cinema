@@ -1123,7 +1123,310 @@ npm run test:e2e
 
 # Couverture des tests
 npm run test:cov
+
+# Tests en mode watch (développement)
+npm run test:watch
+
+# Tests avec détails verbeux
+npm run test:verbose
 ```
+
+### Types de Tests
+
+#### Tests Unitaires
+Tests pour chaque composant individuellement (services, contrôleurs, providers, DTOs, etc.)
+
+**Exemple - Service d'authentification :**
+```typescript
+// src/auth/auth.controller.spec.ts
+describe('AuthController', () => {
+  let controller: AuthController;
+  let authService: AuthService;
+
+  const mockAuthService = {
+    signIn: jest.fn(),
+    refreshTokens: jest.fn(),
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [AuthController],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: mockAuthService,
+        },
+      ],
+    }).compile();
+
+    controller = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
+  });
+
+  it('should sign in user successfully', async () => {
+    const signInDto: SignInDto = {
+      email: 'test@example.com',
+      password: 'password123'
+    };
+
+    const expectedResult = {
+      access_token: 'jwt-token',
+      refresh_token: 'refresh-token'
+    };
+
+    mockAuthService.signIn.mockResolvedValue(expectedResult);
+
+    const result = await controller.signIn(signInDto);
+
+    expect(authService.signIn).toHaveBeenCalledWith(signInDto);
+    expect(result).toEqual(expectedResult);
+  });
+});
+```
+
+**Exemple - Service de réservations :**
+```typescript
+// src/bookings/bookings.service.spec.ts
+describe('BookingsService', () => {
+  let service: BookingsService;
+  let repository: Repository<Booking>;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        BookingsService,
+        {
+          provide: getRepositoryToken(Booking),
+          useValue: {
+            save: jest.fn(),
+            find: jest.fn(),
+            findOne: jest.fn(),
+            delete: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<BookingsService>(BookingsService);
+    repository = module.get<Repository<Booking>>(getRepositoryToken(Booking));
+  });
+
+  it('should create a booking successfully', async () => {
+    const createBookingDto = {
+      sessionId: '123',
+      seats: ['A1', 'A2'],
+      userId: '456'
+    };
+
+    const savedBooking = {
+      id: '789',
+      ...createBookingDto,
+      status: BookingStatus.CONFIRMED
+    };
+
+    jest.spyOn(repository, 'save').mockResolvedValue(savedBooking);
+
+    const result = await service.create(createBookingDto);
+
+    expect(repository.save).toHaveBeenCalledWith(
+      expect.objectContaining(createBookingDto)
+    );
+    expect(result).toEqual(savedBooking);
+  });
+});
+```
+
+#### Tests End-to-End (e2e)
+Tests d'intégration complets simulant un utilisateur réel
+
+**Exemple - Test e2e de l'authentification :**
+```typescript
+// test/auth.e2e-spec.ts
+describe('Authentication (e2e)', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  it('/auth/login (POST) - should authenticate user', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password123'
+      })
+      .expect(201)
+      .expect((res) => {
+        expect(res.body.data.access_token).toBeDefined();
+        expect(res.body.data.refresh_token).toBeDefined();
+      });
+  });
+
+  it('/auth/login (POST) - should reject invalid credentials', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: 'test@example.com',
+        password: 'wrongpassword'
+      })
+      .expect(401);
+  });
+});
+```
+
+**Exemple - Test e2e de réservation :**
+```typescript
+// test/bookings.e2e-spec.ts
+describe('Bookings (e2e)', () => {
+  let app: INestApplication;
+  let authToken: string;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+
+    // Obtenir un token d'authentification
+    const loginResponse = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'test@example.com', password: 'password123' });
+
+    authToken = loginResponse.body.data.access_token;
+  });
+
+  it('/bookings (POST) - should create a booking', () => {
+    return request(app.getHttpServer())
+      .post('/bookings')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({
+        sessionId: '123',
+        seats: ['A1', 'A2']
+      })
+      .expect(201)
+      .expect((res) => {
+        expect(res.body.data.id).toBeDefined();
+        expect(res.body.data.status).toBe('CONFIRMED');
+        expect(res.body.data.qrCode).toBeDefined();
+      });
+  });
+
+  it('/bookings (GET) - should get user bookings', () => {
+    return request(app.getHttpServer())
+      .get('/bookings')
+      .set('Authorization', `Bearer ${authToken}`)
+      .expect(200)
+      .expect((res) => {
+        expect(Array.isArray(res.body.data)).toBe(true);
+      });
+  });
+});
+```
+
+#### Tests de Validation
+Tests pour les DTOs et validations
+
+**Exemple - Test de DTO :**
+```typescript
+// src/auth/dtos/signing.dto.spec.ts
+describe('SignInDto', () => {
+  let dto: SignInDto;
+
+  beforeEach(() => {
+    dto = new SignInDto();
+  });
+
+  it('should validate valid email and password', async () => {
+    dto.email = 'test@example.com';
+    dto.password = 'password123';
+
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('should reject invalid email format', async () => {
+    dto.email = 'invalid-email';
+    dto.password = 'password123';
+
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].constraints).toHaveProperty('isEmail');
+  });
+
+  it('should reject password too short', async () => {
+    dto.email = 'test@example.com';
+    dto.password = '123';
+
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].constraints).toHaveProperty('minLength');
+  });
+});
+```
+
+### Configuration des Tests
+
+#### Jest Configuration
+```json
+// package.json
+{
+  "jest": {
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "rootDir": "./",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": ["**/*.(t|j)s"],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
+```
+
+#### Configuration E2E
+```json
+// test/jest-e2e.json
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  }
+}
+```
+
+### Bonnes Pratiques de Test
+
+1. **Organisation des Tests**
+   - Un fichier `.spec.ts` par fichier source
+   - Tests e2e dans le dossier `test/`
+   - Mocks et utilitaires dans `test/helpers/`
+
+2. **Isolation des Tests**
+   - Chaque test doit être indépendant
+   - Nettoyage de la base de données entre les tests
+   - Utilisation de mocks pour les dépendances externes
+
+3. **Couverture de Code**
+   - Minimum 80% de couverture
+   - Tests des cas limites et d'erreur
+   - Validation des entrées et sorties
+
+4. **Performance**
+   - Tests rapides (< 100ms par test unitaire)
+   - Base de données en mémoire pour les tests
+   - Parallélisation des tests
 
 ### Qualité du Code
 - Tests unitaires pour chaque service
