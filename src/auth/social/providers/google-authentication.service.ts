@@ -13,6 +13,7 @@ import { GoogleTokenDto } from '../dtos/google-token.dto';
 import { UsersService } from 'src/users/users.service';
 import { GenerateTokensProvider } from 'src/auth/providers/generate-tokens.provider';
 import { User } from 'src/users/user.entity';
+import { RollbarService } from '../../../common/services/rollbar.service';
 
 @Injectable()
 export class GoogleAuthenticationService implements OnModuleInit {
@@ -24,6 +25,7 @@ export class GoogleAuthenticationService implements OnModuleInit {
     @Inject(forwardRef(() => UsersService))
     private readonly usersServices: UsersService,
     private readonly generateTokensProvider: GenerateTokensProvider,
+    private readonly rollbarService: RollbarService,
   ) {}
 
   onModuleInit() {
@@ -62,8 +64,14 @@ export class GoogleAuthenticationService implements OnModuleInit {
     }
     // Si googleId existe, générer le token
     if (user) {
-      return await this.generateTokensProvider.generateTokens(user);
+      const tokens = await this.generateTokensProvider.generateTokens(user);
+
+      // Track connexion Google réussie pour utilisateur existant
+      this.rollbarService.trackUserLogin(user.id, user.email, user.roleUser);
+
+      return tokens;
     }
+
     // Sinon créer un nouvel utilisateur et générer le token
     const newUser = await this.usersServices.createGoogleUser({
       email: email,
@@ -71,6 +79,22 @@ export class GoogleAuthenticationService implements OnModuleInit {
       lastName: lastName,
       googleId: googleId,
     });
-    return await this.generateTokensProvider.generateTokens(newUser);
+
+    const tokens = await this.generateTokensProvider.generateTokens(newUser);
+
+    // Track création de compte et connexion Google
+    this.rollbarService.trackEvent('user_google_registration', {
+      userId: newUser.id,
+      email: newUser.email,
+      role: newUser.roleUser,
+    });
+
+    this.rollbarService.trackUserLogin(
+      newUser.id,
+      newUser.email,
+      newUser.roleUser,
+    );
+
+    return tokens;
   }
 }

@@ -13,6 +13,8 @@ import { RefreshTokensProvider } from './providers/refresh-tokens.provider';
 import { GoogleAuthenticationController } from './social/google-authentication.controller';
 import { GoogleAuthenticationService } from './social/providers/google-authentication.service';
 import { GenerateTokenValidationBookingDetailProvider } from './providers/generate-token-validation-booking-detail.provider';
+import { RollbarService } from '../common/services/rollbar.service';
+import rollbarConfig from '../config/rollbar.config';
 
 @Module({
   controllers: [AuthController, GoogleAuthenticationController],
@@ -24,10 +26,12 @@ import { GenerateTokenValidationBookingDetailProvider } from './providers/genera
     RefreshTokensProvider,
     GoogleAuthenticationService,
     GenerateTokenValidationBookingDetailProvider,
+    RollbarService,
   ],
   imports: [
     forwardRef(() => UsersModule),
     ConfigModule.forFeature(jwtConfig),
+    ConfigModule.forFeature(rollbarConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
   exports: [
