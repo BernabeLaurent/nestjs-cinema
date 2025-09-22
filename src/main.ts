@@ -47,85 +47,105 @@ async function bootstrap() {
   const apiVersion = configService.get<string>('API_VERSION') || '1.0.0';
   Logger.log(`API URL: ${apiUrl}`);
 
-  // Configuration Swagger
-  const config = new DocumentBuilder()
-    .setTitle('API Système de Gestion de Cinéma')
-    .setDescription(
-      `
-    ## Description
-    API RESTful complète pour un système de gestion de cinéma développé avec NestJS.
+  // Configuration Swagger - Toujours activé sauf si explicitement désactivé
+  const enableSwagger = process.env.SWAGGER_ENABLED !== 'false';
+  Logger.log(`Swagger enabled: ${enableSwagger}`);
 
-    ## Fonctionnalités
-    - 🎬 **Gestion des films** : Ajout, modification, suppression et recherche de films
-    - 🎭 **Gestion des cinémas** : Configuration et gestion des établissements cinéma
-    - 🏛️ **Gestion des salles** : Configuration des salles spécifiques par cinéma
-    - 📅 **Séances de cinéma** : Programmation et gestion des horaires
-    - 🎟️ **Réservations** : Système complet de réservation en ligne
-    - 👥 **Utilisateurs** : Inscription, authentification et gestion des profils
-    - 🔔 **Notifications** : Système d'alertes et de confirmations
+  if (enableSwagger) {
+    const config = new DocumentBuilder()
+      .setTitle('API Système de Gestion de Cinéma')
+      .setDescription(
+        `## Description
+API RESTful complète pour un système de gestion de cinéma développé avec NestJS.
 
-    ## Authentification
-    Cette API utilise l'authentification JWT. Pour accéder aux endpoints protégés, vous devez :
-    1. Créer un compte ou vous connecter via \`/auth/sign-in\`
-    2. Utiliser le token JWT retourné dans le header \`Authorization: Bearer <token>\`
+## Fonctionnalités
+- 🎬 **Gestion des films** : Ajout, modification, suppression et recherche de films
+- 🎭 **Gestion des cinémas** : Configuration et gestion des établissements cinéma
+- 🏛️ **Gestion des salles** : Configuration des salles spécifiques par cinéma
+- 📅 **Séances de cinéma** : Programmation et gestion des horaires
+- 🎟️ **Réservations** : Système complet de réservation en ligne
+- 👥 **Utilisateurs** : Inscription, authentification et gestion des profils
+- 🔔 **Notifications** : Système d'alertes et de confirmations
 
-    ## Formats de Réponse
-    Toutes les réponses suivent le format standardisé :
-    \`\`\`json
-    {
-      "data": [...],
-      "apiVersion": "1.0.0",
-      "timestamp": "2024-03-20T10:30:00Z"
-    }
-    \`\`\`
+## Authentification
+Cette API utilise l'authentification JWT. Pour accéder aux endpoints protégés, vous devez :
+1. Créer un compte ou vous connecter via \`/auth/sign-in\`
+2. Utiliser le token JWT retourné dans le header \`Authorization: Bearer <token>\`
 
-    ## Support
-    - Documentation technique : [api.bernabe.codes/documentation](https://api.bernabe.codes/documentation)
-    - Repository GitHub : [github.com/BernabeLaurent/nestjs-cinema](https://github.com/BernabeLaurent/nestjs-cinema)
-    `,
-    )
-    .setTermsOfService(
-      'https://github.com/BernabeLaurent/nestjs-cinema/blob/main/LICENSE',
-    )
-    .setContact(
-      'Support Technique',
-      'https://github.com/BernabeLaurent/nestjs-cinema/issues',
-      'support@bernabe.codes',
-    )
-    .setLicense(
-      'Licence MIT',
-      'https://github.com/BernabeLaurent/nestjs-cinema/blob/main/LICENSE',
-    )
-    .setVersion(apiVersion)
-    .addServer(apiUrl, 'Serveur de Production')
-    .addServer('http://localhost:3000', 'Serveur de Développement')
-    .addTag(
-      'Authentification',
-      'Endpoints pour la connexion et la gestion des tokens',
-    )
-    .addTag('Films', 'Gestion des films et de leurs métadonnées')
-    .addTag('Cinémas', 'Configuration et gestion des cinémas')
-    .addTag('Salles de Cinéma', 'Gestion des salles spécifiques par cinéma')
-    .addTag('Séances', 'Programmation et gestion des séances de cinéma')
-    .addTag('Réservations', 'Système de réservation et gestion des places')
-    .addTag(
-      'Détails de Réservation',
-      'Validation et gestion des détails de réservation',
-    )
-    .addTag('Utilisateurs', 'Gestion des comptes utilisateurs et profils')
-    .addTag('Notifications', 'Système de notifications et alertes')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        description: 'Entrez votre token JWT obtenu via /auth/login',
+## Formats de Réponse
+Toutes les réponses suivent le format standardisé :
+\`\`\`json
+{
+  "data": [...],
+  "apiVersion": "1.0.0",
+  "timestamp": "2024-03-20T10:30:00Z"
+}
+\`\`\`
+
+## Support
+- Documentation technique : [api.bernabe.codes/documentation](https://api.bernabe.codes/documentation)
+- Repository GitHub : [github.com/BernabeLaurent/nestjs-cinema](https://github.com/BernabeLaurent/nestjs-cinema)`,
+      )
+      .setTermsOfService(
+        'https://github.com/BernabeLaurent/nestjs-cinema/blob/main/LICENSE',
+      )
+      .setContact(
+        'Support Technique',
+        'https://github.com/BernabeLaurent/nestjs-cinema/issues',
+        'support@bernabe.codes',
+      )
+      .setLicense(
+        'Licence MIT',
+        'https://github.com/BernabeLaurent/nestjs-cinema/blob/main/LICENSE',
+      )
+      .setVersion(apiVersion)
+      .addServer(apiUrl, 'Serveur de Production')
+      .addServer('http://localhost:3000', 'Serveur de Développement')
+      .addTag(
+        'Authentification',
+        'Endpoints pour la connexion et la gestion des tokens',
+      )
+      .addTag('Films', 'Gestion des films et de leurs métadonnées')
+      .addTag('Cinémas', 'Configuration et gestion des cinémas')
+      .addTag('Salles de Cinéma', 'Gestion des salles spécifiques par cinéma')
+      .addTag('Séances', 'Programmation et gestion des séances de cinéma')
+      .addTag('Réservations', 'Système de réservation et gestion des places')
+      .addTag(
+        'Détails de Réservation',
+        'Validation et gestion des détails de réservation',
+      )
+      .addTag('Utilisateurs', 'Gestion des comptes utilisateurs et profils')
+      .addTag('Notifications', 'Système de notifications et alertes')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Entrez votre token JWT obtenu via /auth/login',
+        },
+        'access-token',
+      )
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        displayOperationId: true,
+        filter: true,
+        showExtensions: true,
+        showCommonExtensions: true,
+        docExpansion: 'list',
       },
-      'access-token',
-    )
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+      customSiteTitle: 'API Cinéma - Documentation',
+      customfavIcon: '/favicon.ico',
+      customJs: [
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+      ],
+      customCssUrl: [
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+      ],
+    });
+  }
 
   // Activation de CORS
   const defaultOrigins = [
