@@ -57,7 +57,8 @@ async function bootstrap() {
 
     ## Fonctionnalités
     - 🎬 **Gestion des films** : Ajout, modification, suppression et recherche de films
-    - 🎭 **Gestion des salles** : Configuration des salles et des places
+    - 🎭 **Gestion des cinémas** : Configuration et gestion des établissements cinéma
+    - 🏛️ **Gestion des salles** : Configuration des salles spécifiques par cinéma
     - 📅 **Séances de cinéma** : Programmation et gestion des horaires
     - 🎟️ **Réservations** : Système complet de réservation en ligne
     - 👥 **Utilisateurs** : Inscription, authentification et gestion des profils
@@ -65,7 +66,7 @@ async function bootstrap() {
 
     ## Authentification
     Cette API utilise l'authentification JWT. Pour accéder aux endpoints protégés, vous devez :
-    1. Créer un compte ou vous connecter via \`/auth/login\`
+    1. Créer un compte ou vous connecter via \`/auth/sign-in\`
     2. Utiliser le token JWT retourné dans le header \`Authorization: Bearer <token>\`
 
     ## Formats de Réponse
@@ -103,9 +104,14 @@ async function bootstrap() {
       'Endpoints pour la connexion et la gestion des tokens',
     )
     .addTag('Films', 'Gestion des films et de leurs métadonnées')
-    .addTag('Salles', 'Configuration et gestion des salles de cinéma')
+    .addTag('Cinémas', 'Configuration et gestion des cinémas')
+    .addTag('Salles de Cinéma', 'Gestion des salles spécifiques par cinéma')
     .addTag('Séances', 'Programmation et gestion des séances de cinéma')
     .addTag('Réservations', 'Système de réservation et gestion des places')
+    .addTag(
+      'Détails de Réservation',
+      'Validation et gestion des détails de réservation',
+    )
     .addTag('Utilisateurs', 'Gestion des comptes utilisateurs et profils')
     .addTag('Notifications', 'Système de notifications et alertes')
     .addBearerAuth(

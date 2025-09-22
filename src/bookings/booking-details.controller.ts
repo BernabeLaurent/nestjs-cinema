@@ -12,7 +12,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleUser } from '../users/enums/roles-users.enum';
 
 @Controller('booking-details')
-@ApiTags('Booking Details')
+@ApiTags('Détails de Réservation')
 @Auth(AuthType.Bearer)
 @ApiBearerAuth('access-token')
 export class BookingDetailsController {

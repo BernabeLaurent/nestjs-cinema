@@ -27,7 +27,7 @@ import { RoleUser } from '../users/enums/roles-users.enum';
 import { BookingTokenGuard } from 'src/auth/guards/access-token/booking-token-guard';
 
 @Controller('bookings')
-@ApiTags('Bookings')
+@ApiTags('Réservations')
 @Auth(AuthType.Bearer)
 @ApiBearerAuth('access-token') // La route attend un Bearer token
 export class BookingsController {

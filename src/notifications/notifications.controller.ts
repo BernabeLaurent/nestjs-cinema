@@ -1,11 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { SendEmailDto } from './dtos/send-email.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 
 @Controller('notifications')
+@ApiTags('Notifications')
 @Auth(AuthType.Bearer)
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}

@@ -8,7 +8,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Auth } from '../auth/decorators/auth.decorator';
 import { AuthType } from '../auth/enums/auth-type.enum';
 import { SessionsCinemasService } from './sessions-cinemas.service';
@@ -18,6 +23,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleUser } from '../users/enums/roles-users.enum';
 
 @Controller('sessions-cinemas')
+@ApiTags('Séances')
 @ApiBearerAuth('access-token') // La route attend un Bearer token
 export class SessionsCinemasController {
   constructor(

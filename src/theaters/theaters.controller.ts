@@ -25,7 +25,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RoleUser } from '../users/enums/roles-users.enum';
 
 @Controller('theaters')
-@ApiTags('Theaters')
+@ApiTags('Cinémas')
 @Auth(AuthType.Bearer)
 @ApiBearerAuth('access-token') // La route attend un Bearer token
 export class TheatersController {
