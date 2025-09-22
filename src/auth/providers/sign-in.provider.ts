@@ -60,7 +60,11 @@ export class SignInProvider {
       return tokens;
     } catch (error) {
       // Track tentative de connexion échouée pour utilisateur inexistant
-      if (error instanceof Error && error.message?.includes('User not found')) {
+      if (
+        error instanceof Error &&
+        (error.message?.includes('User not found') ||
+          error.message?.includes('email inconnu'))
+      ) {
         this.rollbarService.trackFailedLogin(
           signInDto.email,
           'Utilisateur inexistant',

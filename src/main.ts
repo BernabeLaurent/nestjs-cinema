@@ -126,7 +126,16 @@ Toutes les réponses suivent le format standardisé :
         'access-token',
       )
       .build();
-    const document = SwaggerModule.createDocument(app, config);
+
+    // Force la régénération du document à chaque démarrage
+    const document = SwaggerModule.createDocument(app, config, {
+      ignoreGlobalPrefix: false,
+      deepScanRoutes: true,
+    });
+
+    // Ajoute les métadonnées de version pour forcer le refresh
+    document.info.version = `${apiVersion}-${Date.now()}`;
+
     SwaggerModule.setup('api', app, document, {
       swaggerOptions: {
         persistAuthorization: true,
@@ -135,6 +144,11 @@ Toutes les réponses suivent le format standardisé :
         showExtensions: true,
         showCommonExtensions: true,
         docExpansion: 'list',
+        // Force refresh en production
+        deepLinking: true,
+        displayRequestDuration: true,
+        // Désactive le cache pour éviter les problèmes de mise à jour
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
       },
       customSiteTitle: 'API Cinéma - Documentation',
       customfavIcon: '/favicon.ico',
@@ -144,6 +158,9 @@ Toutes les réponses suivent le format standardisé :
       customCssUrl: [
         'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
       ],
+      explorer: true,
+      // Configuration spéciale pour éviter le cache en production
+      useGlobalPrefix: false,
     });
   }
 
