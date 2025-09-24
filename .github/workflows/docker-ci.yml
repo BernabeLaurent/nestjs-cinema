@@ -79,6 +79,80 @@ jobs:
         run: |
           scp -i ~/.ssh/github-actions .env.docker root@159.89.20.85:/var/www/nestjs-cinema/.env
 
+      # Backup des bases de données avant déploiement
+      - name: Backup Databases
+        run: |
+          ssh -i ~/.ssh/github-actions root@159.89.20.85 << 'EOF'
+            cd /var/www/nestjs-cinema
+
+            # Configuration des backups
+            BACKUP_DIR="/var/backups/nestjs-cinema"
+            BACKUP_DATE=$(date +"%Y%m%d_%H%M%S")
+
+            echo "=== Backup des bases de données ==="
+            mkdir -p "$BACKUP_DIR"
+
+            # Charger les variables d'environnement
+            if [ -f ".env" ]; then
+              source .env
+              echo "📋 Configuration chargée depuis .env"
+            fi
+
+            # Backup PostgreSQL
+            echo "📦 Backup PostgreSQL..."
+            if command -v docker >/dev/null 2>&1; then
+              # Utiliser le nom exact du conteneur PostgreSQL du docker-compose
+              POSTGRES_CONTAINER="nestjs-cinema-postgres-1"
+              if docker ps --format "{{.Names}}" | grep -q "$POSTGRES_CONTAINER"; then
+                docker exec "$POSTGRES_CONTAINER" pg_dump -U "${DATABASE_USER:-postgres}" -d "${DATABASE_NAME:-cinema}" > "$BACKUP_DIR/postgres_backup_${BACKUP_DATE}.sql"
+                if [ $? -eq 0 ]; then
+                  gzip "$BACKUP_DIR/postgres_backup_${BACKUP_DATE}.sql"
+                  echo "✅ Backup PostgreSQL créé: $BACKUP_DIR/postgres_backup_${BACKUP_DATE}.sql.gz"
+                else
+                  echo "❌ Erreur lors du backup PostgreSQL"
+                fi
+              else
+                echo "⚠️ Conteneur PostgreSQL ($POSTGRES_CONTAINER) non trouvé"
+                echo "Conteneurs disponibles:"
+                docker ps --format "{{.Names}}"
+              fi
+            fi
+
+            # Backup MongoDB
+            echo "📦 Backup MongoDB..."
+            if command -v docker >/dev/null 2>&1; then
+              # Utiliser le nom exact du conteneur MongoDB du docker-compose
+              MONGO_CONTAINER="nestjs-cinema-mongodb-1"
+              if docker ps --format "{{.Names}}" | grep -q "$MONGO_CONTAINER"; then
+                # Extraire le nom de la DB depuis MONGODB_URI ou utiliser "cinema" par défaut
+                MONGO_DB_NAME="cinema"
+                if [ ! -z "$MONGODB_URI" ]; then
+                  MONGO_DB_NAME=$(echo "$MONGODB_URI" | sed 's|.*/||')
+                fi
+
+                docker exec "$MONGO_CONTAINER" mongodump --db "$MONGO_DB_NAME" --out /tmp/mongo_backup_${BACKUP_DATE}
+                docker cp "$MONGO_CONTAINER":/tmp/mongo_backup_${BACKUP_DATE} "$BACKUP_DIR/"
+                if [ $? -eq 0 ]; then
+                  tar -czf "$BACKUP_DIR/mongo_backup_${BACKUP_DATE}.tar.gz" -C "$BACKUP_DIR" "mongo_backup_${BACKUP_DATE}"
+                  rm -rf "$BACKUP_DIR/mongo_backup_${BACKUP_DATE}"
+                  echo "✅ Backup MongoDB créé: $BACKUP_DIR/mongo_backup_${BACKUP_DATE}.tar.gz"
+                else
+                  echo "❌ Erreur lors du backup MongoDB"
+                fi
+              else
+                echo "⚠️ Conteneur MongoDB ($MONGO_CONTAINER) non trouvé"
+                echo "Conteneurs disponibles:"
+                docker ps --format "{{.Names}}"
+              fi
+            fi
+
+            # Nettoyer les anciens backups (>7 jours)
+            find "$BACKUP_DIR" -name "*backup*" -mtime +7 -delete 2>/dev/null
+            echo "🧹 Anciens backups nettoyés (>7 jours)"
+
+            echo "✅ Backup terminé avec succès"
+          EOF
+
       # Déployer l'application sur le Droplet
       - name: Deploy to Droplet
         run: |
