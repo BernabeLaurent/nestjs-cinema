@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateMovieTheaterDto {
@@ -7,6 +7,7 @@ export class CreateMovieTheaterDto {
     example: '300',
   })
   @IsNumber()
+  @Min(1)
   @IsNotEmpty()
   numberSeats: number;
 
@@ -15,6 +16,7 @@ export class CreateMovieTheaterDto {
     example: '10',
   })
   @IsNumber()
+  @Min(0)
   @IsOptional()
   numberSeatsDisabled?: number;
 
@@ -23,6 +25,7 @@ export class CreateMovieTheaterDto {
     example: '5',
   })
   @IsNumber()
+  @Min(1)
   @IsNotEmpty()
   roomNumber: number;
 
@@ -31,6 +34,7 @@ export class CreateMovieTheaterDto {
     example: 1,
   })
   @IsInt()
+  @Min(1)
   @IsNotEmpty()
   theaterId: number;
 }

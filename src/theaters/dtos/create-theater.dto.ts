@@ -17,14 +17,14 @@ export class CreateTheaterDto {
   @ApiProperty({
     description: 'Nom du cinéma',
     example: 'Pathé Grand Ciel',
-    minLength: 2,
+    minLength: 4,
     maxLength: 250,
   })
   @Transform(({ value }: { value: unknown }) =>
     typeof value === 'string' ? value.trim() : value,
   )
   @IsString()
-  @MinLength(2)
+  @MinLength(4)
   @MaxLength(250)
   @IsNotEmpty()
   name: string;

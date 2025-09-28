@@ -11,7 +11,7 @@ import emailConfig from './config/email.config';
 @Module({
   providers: [NotificationsService, EmailProvider],
   controllers: [NotificationsController],
-  exports: [NotificationsService],
+  exports: [NotificationsService, EmailProvider],
   imports: [
     TypeOrmModule.forFeature([Notification]),
     ConfigModule.forFeature(emailConfig),

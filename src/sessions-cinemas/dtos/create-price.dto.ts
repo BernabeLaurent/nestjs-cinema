@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TheaterQuality } from '../enums/theaters-qualities.enum';
-import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 
 export class PriceDto {
   @ApiProperty({
@@ -18,6 +18,7 @@ export class PriceDto {
     type: Number,
   })
   @IsNumber()
+  @IsPositive()
   @IsNotEmpty()
   price: number;
 }

@@ -80,7 +80,7 @@ export class TmdbMovieDto {
   @IsObject()
   @ValidateNested()
   @Type(() => CollectionDto)
-  belongs_to_collection: CollectionDto;
+  belongs_to_collection: CollectionDto | null;
 
   @IsNumber()
   budget: number;

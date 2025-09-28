@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt } from 'class-validator';
+import { IsInt, Min } from 'class-validator';
 
 export class GetUserDto {
   @ApiPropertyOptional({
@@ -7,5 +7,6 @@ export class GetUserDto {
     example: 1234,
   })
   @IsInt()
+  @Min(1)
   id: number;
 }

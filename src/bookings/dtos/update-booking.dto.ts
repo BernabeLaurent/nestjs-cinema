@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, ValidateIf } from 'class-validator';
 import { BookingStatus } from '../enums/booking-status.enum';
 
 export class UpdateBookingDto {
@@ -8,7 +8,9 @@ export class UpdateBookingDto {
     enum: BookingStatus,
     required: false,
   })
-  @IsOptional()
-  @IsEnum(BookingStatus)
+  @ValidateIf((o, value) => value !== undefined)
+  @IsEnum(BookingStatus, {
+    message: 'Status must be a valid BookingStatus enum value',
+  })
   public status?: BookingStatus;
 }

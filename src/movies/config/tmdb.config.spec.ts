@@ -77,6 +77,6 @@ describe('TMDB Config', () => {
   });
 
   it('should have correct configuration key', () => {
-    expect(tmdbConfig.KEY).toBe('tmdb');
+    expect(tmdbConfig.KEY).toBe('CONFIGURATION(tmdb)');
   });
 });

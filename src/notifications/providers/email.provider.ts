@@ -126,4 +126,45 @@ export class EmailProvider {
     const template = Handlebars.compile(source);
     return template(context);
   }
+
+  /**
+   * Envoie un email simple sans template
+   */
+  async sendEmail(emailData: {
+    to: string;
+    subject: string;
+    html: string;
+  }): Promise<void> {
+    const auth = {
+      username: 'api',
+      password: this.emailConfiguration.mailgunApiKey || '',
+    };
+
+    const data = qs.stringify({
+      from: `Cinéphoria <mailgun@${this.emailConfiguration.mailgunDomain}>`,
+      to: emailData.to,
+      subject: emailData.subject,
+      html: emailData.html,
+    });
+
+    try {
+      await axios.post(
+        `${this.emailConfiguration.mailgunBaseUrl}${this.emailConfiguration.mailgunDomain}/messages`,
+        data,
+        {
+          auth,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      );
+
+      this.logger.log(`Email envoyé avec succès à ${emailData.to}`);
+    } catch (error) {
+      this.logger.error(`Erreur lors de l'envoi de l'email à ${emailData.to}`);
+      throw new RequestTimeoutException(error, {
+        description: "Problème d'envoi d'email",
+      });
+    }
+  }
 }

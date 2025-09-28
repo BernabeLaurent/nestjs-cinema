@@ -57,6 +57,6 @@ describe('Cron Config', () => {
   });
 
   it('should have correct configuration key', () => {
-    expect(cronConfig.KEY).toBe('cronFetchMoviesConfig');
+    expect(cronConfig.KEY).toBe('CONFIGURATION(cronFetchMoviesConfig)');
   });
 });

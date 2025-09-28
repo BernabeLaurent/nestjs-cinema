@@ -15,6 +15,12 @@ import { GoogleAuthenticationService } from './social/providers/google-authentic
 import { GenerateTokenValidationBookingDetailProvider } from './providers/generate-token-validation-booking-detail.provider';
 import { RollbarService } from '../common/services/rollbar.service';
 import rollbarConfig from '../config/rollbar.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PasswordResetToken } from './password-reset-token.entity';
+import { User } from '../users/user.entity';
+import { PasswordResetProvider } from './providers/password-reset.provider';
+import { PasswordResetEmailProvider } from './providers/password-reset-email.provider';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   controllers: [AuthController, GoogleAuthenticationController],
@@ -27,9 +33,13 @@ import rollbarConfig from '../config/rollbar.config';
     GoogleAuthenticationService,
     GenerateTokenValidationBookingDetailProvider,
     RollbarService,
+    PasswordResetProvider,
+    PasswordResetEmailProvider,
   ],
   imports: [
     forwardRef(() => UsersModule),
+    NotificationsModule,
+    TypeOrmModule.forFeature([PasswordResetToken, User]),
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(rollbarConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
