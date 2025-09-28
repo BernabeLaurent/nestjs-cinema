@@ -9,8 +9,6 @@ import { BadRequestException } from '@nestjs/common';
 
 describe('AuthController - Password Reset', () => {
   let controller: AuthController;
-  let passwordResetProvider: PasswordResetProvider;
-  let passwordResetEmailProvider: PasswordResetEmailProvider;
 
   const mockAuthService = {
     signIn: jest.fn(),
@@ -47,12 +45,6 @@ describe('AuthController - Password Reset', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    passwordResetProvider = module.get<PasswordResetProvider>(
-      PasswordResetProvider,
-    );
-    passwordResetEmailProvider = module.get<PasswordResetEmailProvider>(
-      PasswordResetEmailProvider,
-    );
 
     // Reset all mocks before each test
     jest.clearAllMocks();

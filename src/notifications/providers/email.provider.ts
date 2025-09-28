@@ -141,7 +141,7 @@ export class EmailProvider {
     };
 
     const data = qs.stringify({
-      from: `Cinéphoria <mailgun@${this.emailConfiguration.mailgunDomain}>`,
+      from: `Cinéma <mailgun@${this.emailConfiguration.mailgunDomain}>`,
       to: emailData.to,
       subject: emailData.subject,
       html: emailData.html,

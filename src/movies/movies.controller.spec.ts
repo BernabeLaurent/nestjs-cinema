@@ -7,12 +7,10 @@ import { PatchMovieDto } from './dtos/patch-movie.dto';
 import { CreateReviewMovieDto } from './dtos/create-review-movie.dto';
 import { ValidateReviewMovieDto } from './dtos/validate-review-movie.dto';
 import { SearchMoviesDto } from './source/dtos/search-movies.dto';
-import { ValidationPipe } from '@nestjs/common';
 import { Movie } from './movie.entity';
 
 describe('MoviesController', () => {
   let controller: MoviesController;
-  let moviesService: MoviesService;
 
   const mockMovie: Movie = {
     id: 1,
@@ -56,7 +54,6 @@ describe('MoviesController', () => {
     }).compile();
 
     controller = module.get<MoviesController>(MoviesController);
-    moviesService = module.get<MoviesService>(MoviesService);
 
     // Reset all mocks before each test
     jest.clearAllMocks();

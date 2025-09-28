@@ -17,11 +17,11 @@ export class PasswordResetEmailProvider {
 
     const emailContent = {
       to: email,
-      subject: 'Réinitialisation de votre mot de passe - Cinéphoria',
+      subject: 'Réinitialisation de votre mot de passe',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #1976D2; margin: 0;">🎬 Cinéphoria</h1>
+            <h1 style="color: #1976D2; margin: 0;">🎬</h1>
           </div>
 
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px;">
@@ -29,7 +29,7 @@ export class PasswordResetEmailProvider {
 
             <p>Bonjour,</p>
 
-            <p>Vous avez demandé la réinitialisation de votre mot de passe pour votre compte Cinéphoria.</p>
+            <p>Vous avez demandé la réinitialisation de votre mot de passe pour votre compte.</p>
 
             <p>Cliquez sur le bouton ci-dessous pour définir un nouveau mot de passe :</p>
 
@@ -61,7 +61,7 @@ export class PasswordResetEmailProvider {
               Cet email a été envoyé automatiquement, merci de ne pas y répondre.
             </p>
             <p style="color: #666; font-size: 12px; margin: 5px 0 0 0;">
-              © ${new Date().getFullYear()} Cinéphoria - Tous droits réservés
+              © ${new Date().getFullYear()} Tous droits réservés
             </p>
           </div>
         </div>
@@ -73,22 +73,30 @@ export class PasswordResetEmailProvider {
       this.logger.log(`Email de réinitialisation envoyé à ${email}`);
 
       // Track envoi d'email réussi
-      this.rollbarService.trackEvent('password_reset_email_sent', {
-        email_sent_to: email,
-        frontend_url: frontendUrl,
-        result: 'success'
-      }, 'info');
+      this.rollbarService.trackEvent(
+        'password_reset_email_sent',
+        {
+          email_sent_to: email,
+          frontend_url: frontendUrl,
+          result: 'success',
+        },
+        'info',
+      );
     } catch (error) {
       this.logger.error(
         `Erreur envoi email réinitialisation à ${email}: ${error instanceof Error ? error.message : String(error)}`,
       );
 
       // Track erreur d'envoi d'email
-      this.rollbarService.trackEvent('password_reset_email_failed', {
-        email_intended_for: email,
-        error_message: error instanceof Error ? error.message : String(error),
-        result: 'email_send_failed'
-      }, 'error');
+      this.rollbarService.trackEvent(
+        'password_reset_email_failed',
+        {
+          email_intended_for: email,
+          error_message: error instanceof Error ? error.message : String(error),
+          result: 'email_send_failed',
+        },
+        'error',
+      );
 
       throw error;
     }

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PasswordResetProvider } from './password-reset.provider';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { PasswordResetToken } from '../password-reset-token.entity';
 import { User } from '../../users/user.entity';
 import { BadRequestException } from '@nestjs/common';
@@ -10,10 +9,6 @@ import { RollbarService } from '../../common/services/rollbar.service';
 
 describe('PasswordResetProvider', () => {
   let provider: PasswordResetProvider;
-  let tokenRepository: Repository<PasswordResetToken>;
-  let userRepository: Repository<User>;
-  let hashingProvider: HashingProvider;
-  let rollbarService: RollbarService;
 
   const mockTokenRepository = {
     findOne: jest.fn(),
@@ -67,12 +62,6 @@ describe('PasswordResetProvider', () => {
     }).compile();
 
     provider = module.get<PasswordResetProvider>(PasswordResetProvider);
-    tokenRepository = module.get<Repository<PasswordResetToken>>(
-      getRepositoryToken(PasswordResetToken),
-    );
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
-    hashingProvider = module.get<HashingProvider>(HashingProvider);
-    rollbarService = module.get<RollbarService>(RollbarService);
 
     // Reset all mocks before each test
     jest.clearAllMocks();
@@ -89,7 +78,7 @@ describe('PasswordResetProvider', () => {
         token: 'generated-token',
         user: mockUser,
         userId: mockUser.id,
-        expiresAt: expect.any(Date),
+        expiresAt: new Date(),
       });
       mockTokenRepository.save.mockResolvedValue({});
       mockTokenRepository.update.mockResolvedValue({});
@@ -235,10 +224,6 @@ describe('PasswordResetProvider', () => {
     });
 
     it('should throw BadRequestException for already used token', async () => {
-      const usedToken = {
-        ...mockResetToken,
-        used: true,
-      };
       mockTokenRepository.findOne.mockResolvedValue(null); // Car used: false dans la query
 
       await expect(

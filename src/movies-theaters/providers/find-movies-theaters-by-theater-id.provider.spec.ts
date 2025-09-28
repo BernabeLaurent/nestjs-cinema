@@ -2,11 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FindMoviesTheatersByTheaterIdProvider } from './find-movies-theaters-by-theater-id.provider';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MovieTheater } from '../movie-theater.entity';
-import { Repository } from 'typeorm';
 
 describe('FindMoviesTheatersByTheaterIdProvider', () => {
   let provider: FindMoviesTheatersByTheaterIdProvider;
-  let repository: Repository<MovieTheater>;
 
   const mockRepository = {
     find: jest.fn(),
@@ -24,9 +22,6 @@ describe('FindMoviesTheatersByTheaterIdProvider', () => {
     }).compile();
 
     provider = module.get(FindMoviesTheatersByTheaterIdProvider);
-    repository = module.get<Repository<MovieTheater>>(
-      getRepositoryToken(MovieTheater),
-    );
 
     jest.clearAllMocks();
   });

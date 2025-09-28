@@ -23,21 +23,29 @@ export class PasswordResetProvider {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
       // Track tentative de reset pour email inexistant (sans révéler l'email)
-      this.rollbarService.trackEvent('password_reset_request', {
-        email_exists: false,
-        result: 'email_not_found'
-      }, 'warning');
+      this.rollbarService.trackEvent(
+        'password_reset_request',
+        {
+          email_exists: false,
+          result: 'email_not_found',
+        },
+        'warning',
+      );
 
       // Même réponse pour éviter l'énumération d'emails
       return 'success';
     }
 
     // Track demande de reset légitime
-    this.rollbarService.trackEvent('password_reset_request', {
-      user_id: user.id,
-      email_exists: true,
-      result: 'token_generated'
-    }, 'info');
+    this.rollbarService.trackEvent(
+      'password_reset_request',
+      {
+        user_id: user.id,
+        email_exists: true,
+        result: 'token_generated',
+      },
+      'info',
+    );
 
     // Invalider les anciens tokens de cet utilisateur
     await this.tokenRepository.update(
@@ -71,10 +79,14 @@ export class PasswordResetProvider {
 
     if (!resetToken) {
       // Track tentative d'utilisation de token invalide
-      this.rollbarService.trackEvent('password_reset_attempt', {
-        result: 'invalid_token',
-        token_provided: !!token
-      }, 'warning');
+      this.rollbarService.trackEvent(
+        'password_reset_attempt',
+        {
+          result: 'invalid_token',
+          token_provided: !!token,
+        },
+        'warning',
+      );
 
       throw new BadRequestException('Token invalide ou expiré');
     }
@@ -82,11 +94,18 @@ export class PasswordResetProvider {
     // Vérifier l'expiration
     if (new Date() > resetToken.expiresAt) {
       // Track tentative d'utilisation de token expiré
-      this.rollbarService.trackEvent('password_reset_attempt', {
-        user_id: resetToken.userId,
-        result: 'expired_token',
-        token_age_hours: Math.round((new Date().getTime() - resetToken.expiresAt.getTime()) / (1000 * 60 * 60))
-      }, 'warning');
+      this.rollbarService.trackEvent(
+        'password_reset_attempt',
+        {
+          user_id: resetToken.userId,
+          result: 'expired_token',
+          token_age_hours: Math.round(
+            (new Date().getTime() - resetToken.expiresAt.getTime()) /
+              (1000 * 60 * 60),
+          ),
+        },
+        'warning',
+      );
 
       throw new BadRequestException('Token expiré');
     }
@@ -103,11 +122,15 @@ export class PasswordResetProvider {
     await this.tokenRepository.update(resetToken.id, { used: true });
 
     // Track réinitialisation réussie
-    this.rollbarService.trackEvent('password_reset_success', {
-      user_id: resetToken.userId,
-      user_email: resetToken.user.email,
-      user_role: resetToken.user.roleUser
-    }, 'info');
+    this.rollbarService.trackEvent(
+      'password_reset_success',
+      {
+        user_id: resetToken.userId,
+        user_email: resetToken.user.email,
+        user_role: resetToken.user.roleUser,
+      },
+      'info',
+    );
   }
 
   async validateResetToken(token: string): Promise<boolean> {
