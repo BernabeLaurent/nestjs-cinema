@@ -1,12 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from './movies.service';
-import { Repository } from 'typeorm';
 import { Movie } from './movie.entity';
 import { MovieReview } from './movie-review.entity';
 import { Cast } from './cast.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 import {
   NotFoundException,
   RequestTimeoutException,
@@ -14,7 +12,6 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { MoviesProviderToken } from './movies.config';
-import { MoviesProvider } from './interfaces/movies-provider.interface';
 import { FindOneMovieByExternalIdProvider } from './providers/find-one-movie-by-external-id.provider';
 import { CreateMovieReviewProvider } from './providers/create-movie-review.provider';
 import { ValidateMovieReviewProvider } from './providers/validate-movie-review.provider';
@@ -29,15 +26,6 @@ import { SearchMoviesDto } from './source/dtos/search-movies.dto';
 
 describe('MoviesService', () => {
   let service: MoviesService;
-  let moviesRepository: Repository<Movie>;
-  let movieReviewRepository: Repository<MovieReview>;
-  let castsRepository: Repository<Cast>;
-  let cacheManager: Cache;
-  let moviesProvider: MoviesProvider;
-  let findOneMovieByExternalIdProvider: FindOneMovieByExternalIdProvider;
-  let createMovieReviewProvider: CreateMovieReviewProvider;
-  let validateMovieReviewProvider: ValidateMovieReviewProvider;
-  let searchMoviesProvider: SearchMoviesProvider;
 
   const mockMovie: Movie = {
     id: 1,
@@ -145,25 +133,6 @@ describe('MoviesService', () => {
     }).compile();
 
     service = module.get<MoviesService>(MoviesService);
-    moviesRepository = module.get<Repository<Movie>>(getRepositoryToken(Movie));
-    movieReviewRepository = module.get<Repository<MovieReview>>(
-      getRepositoryToken(MovieReview),
-    );
-    castsRepository = module.get<Repository<Cast>>(getRepositoryToken(Cast));
-    cacheManager = module.get<Cache>(CACHE_MANAGER);
-    moviesProvider = module.get<MoviesProvider>(MoviesProviderToken);
-    findOneMovieByExternalIdProvider =
-      module.get<FindOneMovieByExternalIdProvider>(
-        FindOneMovieByExternalIdProvider,
-      );
-    createMovieReviewProvider = module.get<CreateMovieReviewProvider>(
-      CreateMovieReviewProvider,
-    );
-    validateMovieReviewProvider = module.get<ValidateMovieReviewProvider>(
-      ValidateMovieReviewProvider,
-    );
-    searchMoviesProvider =
-      module.get<SearchMoviesProvider>(SearchMoviesProvider);
 
     // Reset all mocks before each test
     jest.clearAllMocks();
@@ -474,7 +443,7 @@ describe('MoviesService', () => {
         ...patchMovieDto,
       });
 
-      const result = await service.updateMovie(movieId, patchMovieDto);
+      await service.updateMovie(movieId, patchMovieDto);
 
       expect(queryBuilder.where).toHaveBeenCalledWith('movie.id = :id', {
         id: movieId,

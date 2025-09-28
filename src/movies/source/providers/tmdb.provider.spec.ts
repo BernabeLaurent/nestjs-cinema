@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { TmdbProvider } from './tmdb.provider';
-import { ConfigType } from '@nestjs/config';
 import tmdbConfig from '../../config/tmdb.config';
 import { CreateMovieProvider } from './create-movie.provider';
 import { CreateCastProvider } from './create-cast.provider';
@@ -11,7 +11,7 @@ import { TmdbMovieDto } from '../dtos/tmdb-movie.dto';
 import { CastDto } from '../dtos/cast.dto';
 import { Movie } from '../../movie.entity';
 import { Cast } from '../../cast.entity';
-import { RequestTimeoutException, UnauthorizedException } from '@nestjs/common';
+import { RequestTimeoutException } from '@nestjs/common';
 import axios from 'axios';
 
 // Mock axios
@@ -20,10 +20,6 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('TmdbProvider', () => {
   let provider: TmdbProvider;
-  let tmdbConfiguration: ConfigType<typeof tmdbConfig>;
-  let createMovieProvider: CreateMovieProvider;
-  let createCastProvider: CreateCastProvider;
-  let imagesService: ImagesService;
 
   const mockTmdbConfig = {
     apiKey: 'test-api-key',
@@ -125,12 +121,6 @@ describe('TmdbProvider', () => {
     }).compile();
 
     provider = module.get<TmdbProvider>(TmdbProvider);
-    tmdbConfiguration = module.get<ConfigType<typeof tmdbConfig>>(
-      tmdbConfig.KEY,
-    );
-    createMovieProvider = module.get<CreateMovieProvider>(CreateMovieProvider);
-    createCastProvider = module.get<CreateCastProvider>(CreateCastProvider);
-    imagesService = module.get<ImagesService>(ImagesService);
 
     // Reset all mocks before each test
     jest.clearAllMocks();
